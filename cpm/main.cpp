@@ -1,7 +1,15 @@
 #include <sstd/sstd.hpp>
 
 
-sstd::vvec<std::string> read_packagesList(const std::string& path_packages){
+struct pkg{
+    std::string name;
+    uint ver100;
+    uint ver010;
+    uint ver001;
+    std::vector<struct pkg> v_depend;
+};
+
+sstd::vvec<std::string> read_packages_txt(const std::string& path_packages){
     sstd::printn(path_packages);
     std::vector<std::string> v_line = sstd::getCommandList( path_packages );
     uint len=v_line.size();
@@ -16,10 +24,16 @@ sstd::vvec<std::string> read_packagesList(const std::string& path_packages){
     return vv_ret;
 }
 
+std::vector<struct pkg> get_packagesList(){
+    std::vector<std::string> v_path = sstd::glob("./cpm/packages/*", "d");
+    sstd::print(v_path);
+    return std::vector<struct pkg>();
+}
+
 int main(int argc, char *argv[]){
-    std::string dir_tmp       = "tmp_cpm";          // -t tmp_cpm
     std::string dir_install   = "env_cpm";          // -i env_cpm
     std::string path_packages = "packages_cpm.txt"; // -p packages_cpm.txt
+    std::string dir_tmp       = "tmp_cpm";          // -t tmp_cpm
     
     char c = ' ';
     for(int i=1; i<argc; ++i){
@@ -33,19 +47,11 @@ int main(int argc, char *argv[]){
         default: { break; }
         }
     }
-    sstd::print(dir_install);
-    sstd::print(dir_tmp);
-    sstd::print(path_packages);
-
-    sstd::vvec<std::string> vv_packages = read_packagesList( path_packages );
+    
+    sstd::vvec<std::string> vv_packages = read_packages_txt( path_packages );
     sstd::printn( vv_packages );
     
-    /*
-    std::string tmpDir   = argv[1];
-    std::string path_in  = argv[2];
-    std::string path_out = argv[3];
-    */
-    
+    get_packagesList();
     
     return 0;
 }

@@ -1,16 +1,42 @@
-#include <sstd/sstd.hpp>
-
+#include <vector>
+#include <string>
 
 struct pkg{
     std::string name;
-    uint ver100;
-    uint ver010;
-    uint ver001;
+    uint ver100=0;
+    uint ver010=0;
+    uint ver001=0;
+    bool latest=false;
     std::vector<struct pkg> v_depend;
 };
+namespace sstd{
+    void print(const struct pkg& rhs);
+    void print_for_vT(const struct pkg& rhs);
+    void for_printn(const struct pkg& rhs);
+}
+void sstd::print(const struct pkg& rhs){
+    printf("name: %s v%d.%d.%d latest: %c v_depend: [ ", rhs.name.c_str(), rhs.ver100, rhs.ver010, rhs.ver001, (rhs.latest ? 'T':'F'));
+    for(uint i=0; i<rhs.v_depend.size(); ++i){
+        sstd::print_for_vT(rhs.v_depend[i]);
+    }
+    printf("]\n");
+}
+void sstd::print_for_vT(const struct pkg& rhs){
+    printf("[name: %s v%d.%d.%d latest: %c v_depend: [", rhs.name.c_str(), rhs.ver100, rhs.ver010, rhs.ver001, (rhs.latest ? 'T':'F'));
+    for(uint i=0; i<rhs.v_depend.size(); ++i){
+        sstd::print_for_vT((const struct pkg&)rhs.v_depend[i]);
+    }
+    printf("]]");
+}
+void sstd::for_printn(const struct pkg& rhs){ printf(" = "); sstd::print(rhs); }
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------------------------------------
+
+#include <sstd/sstd.hpp> // include after "sstd::print_for_vT"
+
 
 sstd::vvec<std::string> read_packages_txt(const std::string& path_packages){
-    sstd::printn(path_packages);
     std::vector<std::string> v_line = sstd::getCommandList( path_packages );
     uint len=v_line.size();
     
@@ -24,10 +50,43 @@ sstd::vvec<std::string> read_packages_txt(const std::string& path_packages){
     return vv_ret;
 }
 
-std::vector<struct pkg> get_packagesList(){
-    std::vector<std::string> v_path = sstd::glob("./cpm/packages/*", "d");
-    sstd::print(v_path);
-    return std::vector<struct pkg>();
+std::vector<struct pkg> read_packages_dir(){
+    std::vector<struct pkg> v_ret;
+    std::vector<std::string> v_package = sstd::glob("./cpm/packages/*", "d");
+
+    for(uint p=0; p<v_package.size(); ++p){
+        std::vector<std::string> v_package_inst, v_package_deps;
+        
+        v_package_inst = sstd::glob(v_package[p]+"/install_v*.sh", "f");
+        v_package_deps = sstd::glob(v_package[p]+"/install_v*_dependents.txt", "f");
+        uint len = v_package_inst.size(); if(len != v_package_deps.size()){ sstd::pdbg("ERROR: get_packagesList(): number of install_v*.sh and install_v*_dependents.txt is not same.\n"); return v_ret; }
+        for(uint i=0; i<len; ++i){
+            std::string ret_ver;   sstd::strmatch_getWC(sstd::getFileName(v_package_inst[i].c_str()), "install_v*.sh", ret_ver);
+            std::string ret_ver_d; sstd::strmatch_getWC(sstd::getFileName(v_package_deps[i].c_str()), "install_v*_dependents.txt", ret_ver_d);
+            if(ret_ver != ret_ver_d){ sstd::pdbg("ERROR: get_packagesList(): version of install_v*.sh and install_v*_dependents.txt is not same.\n"); return v_ret; }
+            
+            std::vector<std::string> ver = sstd::split(ret_ver, '.');
+            struct pkg r;
+            r.name   = v_package[p];
+            r.ver100 = std::stoi(ver[0]);
+            r.ver010 = std::stoi(ver[1]);
+            r.ver001 = std::stoi(ver[2]);
+            //r.v_depend = read_dependents_txt();
+            
+            v_ret <<= r;
+        }
+        
+        v_package_inst = sstd::glob(v_package[p]+"/install_latest.sh", "f");
+        v_package_deps = sstd::glob(v_package[p]+"/install_latest_dependents.txt", "f");
+        len = v_package_inst.size(); if(len != v_package_deps.size()){ sstd::pdbg("ERROR: get_packagesList(): number of install_latest.sh and install_latest_dependents.txt is not same.\n"); return v_ret; }
+        struct pkg r;
+        r.name   = v_package[p];
+        r.latest = true;
+        //r.v_depend = read_dependents_txt();
+            
+        v_ret <<= r;
+    }
+    return v_ret;
 }
 
 int main(int argc, char *argv[]){
@@ -49,9 +108,10 @@ int main(int argc, char *argv[]){
     }
     
     sstd::vvec<std::string> vv_packages = read_packages_txt( path_packages );
-    sstd::printn( vv_packages );
+//    sstd::printn( vv_packages );
     
-    get_packagesList();
+    std::vector<struct pkg> v_pkg = read_packages_dir();
+    sstd::printn(v_pkg);
     
     return 0;
 }

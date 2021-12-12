@@ -117,11 +117,16 @@ bool solve_depends___dummy(std::vector<struct pkg>& v_pkg_ret, const std::vector
 void install_libs(const std::string& dir_install, const std::string& dir_tmp, const std::vector<struct pkg>& v_inst_pkg){
     sstd::mkdir(dir_tmp);
     sstd::mkdir(dir_install);
-
+    
     for(uint i=0; i<v_inst_pkg.size(); ++i){
         struct pkg p = v_inst_pkg[i];
         sstd::mkdir(sstd::ssprintf("%s/%s", dir_tmp.c_str(), p.name.c_str()));
-        sstd::system(sstd::ssprintf("cp ./cpm/packages/%s/install_v%d.%d.%d.sh ./%s/%s", p.name.c_str(), p.ver100, p.ver010, p.ver001, dir_tmp.c_str(), p.name.c_str()));
+        std::string     inst = sstd::ssprintf("install_v%d.%d.%d.sh", p.ver100, p.ver010, p.ver001);
+        std::string dir_inst = sstd::ssprintf("cpm/packages/%s", p.name.c_str());
+        std::string dir_tmp_pkg = sstd::ssprintf("%s/%s", dir_tmp.c_str(), p.name.c_str());
+        
+        sstd::system(sstd::ssprintf("cp %s/%s %s", dir_inst.c_str(), inst.c_str(), dir_tmp_pkg.c_str()));
+        sstd::system(sstd::ssprintf("cd %s; sh ./%s", dir_tmp_pkg.c_str(), inst.c_str()));
     }
     
     return;

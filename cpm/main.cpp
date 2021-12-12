@@ -120,10 +120,11 @@ void install_libs(const std::string& dir_install, const std::string& dir_tmp, co
 
     for(uint i=0; i<v_inst_pkg.size(); ++i){
         struct pkg p = v_inst_pkg[i];
-        sstd::system(sstd::ssprintf("cp ./cpm/packages/%s/install_v%d.%d.%d.sh ./%s", p.name.c_str(), p.ver100, p.ver010, p.ver001, dir_tmp.c_str()));
+        sstd::mkdir(sstd::ssprintf("%s/%s", dir_tmp.c_str(), p.name.c_str()));
+        sstd::system(sstd::ssprintf("cp ./cpm/packages/%s/install_v%d.%d.%d.sh ./%s/%s", p.name.c_str(), p.ver100, p.ver010, p.ver001, dir_tmp.c_str(), p.name.c_str()));
     }
     
-    return ;
+    return;
 }
 
 int main(int argc, char *argv[]){

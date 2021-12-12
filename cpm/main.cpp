@@ -2,7 +2,7 @@
 #include <string>
 
 struct pkg{
-    std::string name;
+    std::string name; // for dbg
     uint ver100=0;
     uint ver010=0;
     uint ver001=0;
@@ -34,6 +34,7 @@ void sstd::for_printn(const struct pkg& rhs){ printf(" = "); sstd::print(rhs); }
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 
 #include <sstd/sstd.hpp> // include after "sstd::print_for_vT"
+#include <unordered_map>
 
 
 sstd::vvec<std::string> read_packages_txt(const std::string& path_packages){
@@ -50,8 +51,8 @@ sstd::vvec<std::string> read_packages_txt(const std::string& path_packages){
     return vv_ret;
 }
 
-std::vector<struct pkg> read_packages_dir(){
-    std::vector<struct pkg> v_ret;
+bool read_packages_dir(std::unordered_map<std::string,std::vector<struct pkg>>& table_vPkg_ret){
+    table_vPkg_ret.clear();
     std::vector<std::string> v_package = sstd::glob("./cpm/packages/*", "d");
 
     for(uint p=0; p<v_package.size(); ++p){
@@ -59,34 +60,51 @@ std::vector<struct pkg> read_packages_dir(){
         
         v_package_inst = sstd::glob(v_package[p]+"/install_v*.sh", "f");
         v_package_deps = sstd::glob(v_package[p]+"/install_v*_dependents.txt", "f");
-        uint len = v_package_inst.size(); if(len != v_package_deps.size()){ sstd::pdbg("ERROR: get_packagesList(): number of install_v*.sh and install_v*_dependents.txt is not same.\n"); return v_ret; }
+        uint len = v_package_inst.size(); if(len != v_package_deps.size()){ sstd::pdbg("ERROR: get_packagesList(): number of install_v*.sh and install_v*_dependents.txt is not same.\n"); return false; }
         for(uint i=0; i<len; ++i){
             std::string ret_ver;   sstd::strmatch_getWC(sstd::getFileName(v_package_inst[i].c_str()), "install_v*.sh", ret_ver);
             std::string ret_ver_d; sstd::strmatch_getWC(sstd::getFileName(v_package_deps[i].c_str()), "install_v*_dependents.txt", ret_ver_d);
-            if(ret_ver != ret_ver_d){ sstd::pdbg("ERROR: get_packagesList(): version of install_v*.sh and install_v*_dependents.txt is not same.\n"); return v_ret; }
+            if(ret_ver != ret_ver_d){ sstd::pdbg("ERROR: get_packagesList(): version of install_v*.sh and install_v*_dependents.txt is not same.\n"); return false; }
             
             std::vector<std::string> ver = sstd::split(ret_ver, '.');
             struct pkg r;
-            r.name   = v_package[p];
+            r.name   = sstd::getFileName( v_package[p].c_str() );
             r.ver100 = std::stoi(ver[0]);
             r.ver010 = std::stoi(ver[1]);
             r.ver001 = std::stoi(ver[2]);
-            //r.v_depend = read_dependents_txt();
+//          r.v_depend = read_dependents_txt();
             
-            v_ret <<= r;
+            table_vPkg_ret[ r.name ] <<= r;
         }
         
         v_package_inst = sstd::glob(v_package[p]+"/install_latest.sh", "f");
         v_package_deps = sstd::glob(v_package[p]+"/install_latest_dependents.txt", "f");
-        len = v_package_inst.size(); if(len != v_package_deps.size()){ sstd::pdbg("ERROR: get_packagesList(): number of install_latest.sh and install_latest_dependents.txt is not same.\n"); return v_ret; }
+        len = v_package_inst.size(); if(len != v_package_deps.size()){ sstd::pdbg("ERROR: get_packagesList(): number of install_latest.sh and install_latest_dependents.txt is not same.\n"); return false; }
         struct pkg r;
-        r.name   = v_package[p];
+        r.name   = sstd::getFileName( v_package[p].c_str() );
         r.latest = true;
-        //r.v_depend = read_dependents_txt();
-            
-        v_ret <<= r;
+//      r.v_depend = read_dependents_txt();
+        
+        table_vPkg_ret[ r.name ] <<= r;
     }
-    return v_ret;
+    return true;
+}
+std::vector<struct pkg> solve_depends___dummy(const sstd::vvec<std::string>& vv_packages, const std::unordered_map<std::string, std::vector<struct pkg>>& table_vPkg){
+    std::vector<struct pkg> v_inst_pkg;
+    
+    for(uint i=0; i<vv_packages.size(); ++i){
+        sstd::printn(vv_packages[i]);
+        
+//        table_vPkg = vv_packages[i];
+
+//        v_inst_pkg <<= ;
+    }
+    
+    
+    return v_inst_pkg;
+}
+void install_libs(const std::string& dir_install, const std::string& dir_tmp, const std::vector<struct pkg>& v_inst_pkg){
+    return ;
 }
 
 int main(int argc, char *argv[]){
@@ -108,10 +126,21 @@ int main(int argc, char *argv[]){
     }
     
     sstd::vvec<std::string> vv_packages = read_packages_txt( path_packages );
-//    sstd::printn( vv_packages );
+//  sstd::printn( vv_packages );
     
-    std::vector<struct pkg> v_pkg = read_packages_dir();
-    sstd::printn(v_pkg);
+    std::unordered_map<std::string, std::vector<struct pkg>> table_vPkg; if(!read_packages_dir(table_vPkg)){ return -1; }
+    for(auto itr=table_vPkg.begin(); itr!=table_vPkg.end(); ++itr) {
+        sstd::printn(itr->first);
+        sstd::printn(itr->second);
+        printf("\n");
+    }
+    
+    // Solveing the dependencies
+    //   Not implimented yet.
+//  std::vector<struct pkg> v_inst_pkg = solve_depends(vv_packages, v_pkg);
+    std::vector<struct pkg> v_inst_pkg = solve_depends___dummy(vv_packages, table_vPkg);
+    
+    install_libs(dir_install, dir_tmp, v_inst_pkg);
     
     return 0;
 }

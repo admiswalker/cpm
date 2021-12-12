@@ -1,2 +1,4 @@
+env_cpm/*
+tmp_cpm/*
 cpm/sstd/*
 cpm.exe

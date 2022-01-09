@@ -3,8 +3,6 @@
 # Usage
 #   1. Set `CACHE_DIR` and `export` value before call this script.
 
-gcc --version
-
 mkdir -p $CACHE_DIR
 mkdir -p $BUILD_DIR
 mkdir -p $INST_PATH

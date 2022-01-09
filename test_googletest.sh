@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source ./set_env.sh
+
 CALL_DIR=`pwd -P`
 
 export CACHE_DIR=$CALL_DIR/'env_cpm/cache'

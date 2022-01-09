@@ -1,5 +1,5 @@
 
 # ./cpm/cpm.exe [path to packages.txt]
-./cpm/cpm.exe -p packages_cpm.txt -t tmp_cpm -i env_cpm
+./cpm/cpm.exe -p packages_cpm.txt -t env_cpm/build -i env_cpm/local
 
 

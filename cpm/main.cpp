@@ -2,12 +2,30 @@
 #include <string>
 
 struct pkg{
+private:
+public:
     std::string name; // for dbg
     uint ver100=0;
     uint ver010=0;
     uint ver001=0;
     bool latest=false;
     std::vector<struct pkg> v_depend;
+    /*
+    pkg(){
+        ver100=0;
+        ver010=0;
+        ver001=0;
+        latest=false;
+    }
+    pkg(const std::string& name_in, const uint ver100_in, const uint ver010_in, const uint ver001_in){
+        name  =name_in;
+        ver100=ver100_in;
+        ver010=ver010_in;
+        ver001=ver001_in;
+        latest=false;
+    }
+    ~pkg(){}
+    */
 };
 namespace sstd{
     void print(const struct pkg& rhs);
@@ -121,8 +139,8 @@ void install_libs(const std::string& dir_install, const std::string& dir_tmp, co
     for(uint i=0; i<v_inst_pkg.size(); ++i){
         struct pkg p = v_inst_pkg[i];
         sstd::mkdir(sstd::ssprintf("%s/%s", dir_tmp.c_str(), p.name.c_str()));
-        std::string     inst = sstd::ssprintf("install_v%d.%d.%d.sh", p.ver100, p.ver010, p.ver001);
-        std::string dir_inst = sstd::ssprintf("cpm/packages/%s", p.name.c_str());
+        std::string     inst    = sstd::ssprintf("install_v%d.%d.%d.sh", p.ver100, p.ver010, p.ver001);
+        std::string dir_inst    = sstd::ssprintf("cpm/packages/%s", p.name.c_str());
         std::string dir_tmp_pkg = sstd::ssprintf("%s/%s", dir_tmp.c_str(), p.name.c_str());
         
         sstd::system(sstd::ssprintf("cp %s/%s %s", dir_inst.c_str(), inst.c_str(), dir_tmp_pkg.c_str()));
@@ -133,9 +151,9 @@ void install_libs(const std::string& dir_install, const std::string& dir_tmp, co
 }
 
 int main(int argc, char *argv[]){
-    std::string dir_install   = "env_cpm";          // -i env_cpm
+    std::string dir_install   = "env_cpm/local";    // -i env_cpm/local
     std::string path_packages = "packages_cpm.txt"; // -p packages_cpm.txt
-    std::string dir_tmp       = "tmp_cpm";          // -t tmp_cpm
+    std::string dir_tmp       = "env_cpm/build";    // -t env_cpm/build
     
     char c = ' ';
     for(int i=1; i<argc; ++i){

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Usage
-#   1. Set `CACHE_DIR` and `export` value before call this script.
+#   - Set values of `CACHE_DIR`, `BUILD_DIR` and `INST_PATH` using `export` before call this script.
 
 mkdir -p $CACHE_DIR
 mkdir -p $BUILD_DIR

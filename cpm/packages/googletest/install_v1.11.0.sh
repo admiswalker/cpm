@@ -34,8 +34,8 @@ if [ ! -e $INST_PATH/lib/libgtest_main.a ]; then
     cd $BUILD_DIR/googletest-release-1.11.0;
     mkdir -p build; cd build; cmake ..; make
     
-    mv lib/ $INST_PATH
-    cd ../googletest; mv include/ $INST_PATH
+    cp -r lib/* -t $INST_PATH/lib
+    cd ../googletest; cp -r include/* -t $INST_PATH/include
 fi
 # ----------------------------------------------- installation: end ---
 

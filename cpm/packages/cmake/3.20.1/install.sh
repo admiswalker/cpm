@@ -46,7 +46,8 @@ fi
 # --- installation: begin ---------------------------------------------
 if [ ! -e $INST_PATH/lib/libgtest_main.a ]; then
     cd $BUILD_DIR/$fName_base;
-    ./configure --prefix=$$INST_PATH
+#    ./configure --prefix=$INST_PATH -- -DCMAKE_USE_OPENSSL=OFF
+    ./bootstrap --prefix=$INST_PATH -- -DCMAKE_USE_OPENSSL=OFF
     
     make -j
     make install

@@ -30,13 +30,11 @@ if [ ! -e $CACHE_DIR/$libName/$fName_hash ]; then
 fi
 
 # check hash
-cd $CACHE_DIR/$libName;
-sha256sum -c --ignore-missing $CACHE_DIR/$libName/$fName_hash >/dev/null 2>&1
+find $CACHE_DIR/$libName -name $fName_hash -type f -print0 | xargs -0 grep $(sha256sum $CACHE_DIR/$libName/$fName) >/dev/null 2>&1
 if [ ! $? = 0 ]; then
     echo 'ERROR: cmake: hash value of downloaded file is not match.'
     return -1
 fi
-cd $CALL_DIR;
 
 # unpacking the archive file
 if [ ! -e $BUILD_DIR/$fName_base ]; then
@@ -46,8 +44,8 @@ fi
 # --- installation: begin ---------------------------------------------
 if [ ! -e $INST_PATH/lib/libgtest_main.a ]; then
     cd $BUILD_DIR/$fName_base;
-#    ./configure --prefix=$INST_PATH -- -DCMAKE_USE_OPENSSL=OFF
-    ./bootstrap --prefix=$INST_PATH -- -DCMAKE_USE_OPENSSL=OFF
+    ./configure --prefix=$INST_PATH -- -DCMAKE_USE_OPENSSL=OFF
+    #./bootstrap --prefix=$INST_PATH -- -DCMAKE_USE_OPENSSL=OFF
     
     make -j
     make install

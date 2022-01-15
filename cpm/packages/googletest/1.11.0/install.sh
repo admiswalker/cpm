@@ -3,6 +3,9 @@
 # Usage
 #   - Set values of `CACHE_DIR`, `BUILD_DIR` and `INST_PATH` using `export` before call this script.
 
+echo '--- begin: install googletest/1.11.0 -------------------------------------------'
+echo '--------------------------------------------------------------------------------'
+
 mkdir -p $CACHE_DIR
 mkdir -p $BUILD_DIR
 mkdir -p $INST_PATH
@@ -49,4 +52,7 @@ if [ ! -e $INST_PATH/lib/libgtest_main.a ]; then
     cd ../googletest; cp -r include/* -t $INST_PATH/include
 fi
 # ----------------------------------------------- installation: end ---
+
+echo '--------------------------------------------- end: install googletest/1.11.0 ---'
+echo '--------------------------------------------------------------------------------'
 

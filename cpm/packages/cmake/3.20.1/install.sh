@@ -3,7 +3,8 @@
 # Usage
 #   - Set values of `CACHE_DIR`, `BUILD_DIR` and `INST_PATH` using `export` before call this script.
 
-CALL_DIR=`pwd -P`
+echo '--- begin: install cmake/3.20.1 ------------------------------------------------'
+echo '--------------------------------------------------------------------------------'
 
 mkdir -p $CACHE_DIR
 mkdir -p $BUILD_DIR
@@ -51,4 +52,7 @@ if [ ! -e $INST_PATH/lib/libgtest_main.a ]; then
     make install
 fi
 # ----------------------------------------------- installation: end ---
+
+echo '--------------------------------------------------------------------------------'
+echo '-------------------------------------------------- end: install cmake/3.20.1 ---'
 

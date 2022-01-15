@@ -3,7 +3,8 @@
 # Usage
 #   - Set values of `CACHE_DIR`, `BUILD_DIR` and `INST_PATH` using `export` before call this script.
 
-CALL_DIR=`pwd -P`
+echo '--- begin: install openssl/1.1.1m ----------------------------------------------'
+echo '--------------------------------------------------------------------------------'
 
 mkdir -p $CACHE_DIR
 mkdir -p $BUILD_DIR
@@ -50,4 +51,7 @@ if [ ! -e $INST_PATH/bin/$libName ]; then
     make install
 fi
 # ----------------------------------------------- installation: end ---
+
+echo '------------------------------------------------ end: install openssl/1.1.1m ---'
+echo '--------------------------------------------------------------------------------'
 

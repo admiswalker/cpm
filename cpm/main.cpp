@@ -57,11 +57,23 @@ void sstd::for_printn(const struct pkg& rhs){ printf(" = "); sstd::print(rhs); }
 bool isSameVer(const struct pkg& lhs, const struct pkg& rhs){
     return ((lhs.ver100==rhs.ver100) && (lhs.ver010==rhs.ver010) && (lhs.ver001==rhs.ver001) && (lhs.ver==rhs.ver));
 }
-
+/*
+void split_tag_ver(std::string& tag_ret, std::string& ver_ret, const std::string& ver_in, const char splitter){
+    std::vector<std::string> v = sstd::split(ver_in, splitter);
+    if(v.size()>=2){
+        tag_ret = v[0];
+        ver_ret = v[1];
+    }else{
+        ver_ret = v[0];
+    }
+}
+*/
 bool is_ver_num(const std::vector<std::string>& ver){
     return ( ver.size()>=3 && sstd::isNum(ver[0]) && sstd::isNum(ver[1]) && sstd::isNum(ver[2]) );
 }
 bool str2struct_pkg(struct pkg& r, const std::string& name_in, const std::string& ver_in){
+//    std::string tag, ver_sd; split_tag_ver(tag, ver_sd, ver_in, ':'); // "tag:ver" -> "tag", "ver"
+    
     std::vector<std::string> ver = sstd::split(ver_in, '.');
     if(ver.size()>=3){
         if(ver[0].size()==0){ sstd::pdbg("ERROR: ver[0].size()==0.\n"); return false; }
@@ -98,9 +110,9 @@ bool read_packages_txt(std::vector<struct pkg>& v_pkg_ret, const std::string& pa
     }
     return true;
 }
-bool read_packages_dir(std::unordered_map<std::string,std::vector<struct pkg>>& table_vPkg_ret, const std::string& dir_packages){
+bool read_packages_dir(std::unordered_map<std::string,std::vector<struct pkg>>& table_vPkg_ret, const std::string& packages_dir){
     table_vPkg_ret.clear();
-    std::vector<std::string> v_package = sstd::glob(dir_packages+"/*", "d");
+    std::vector<std::string> v_package = sstd::glob(packages_dir+"/*", "d");
 
     for(uint p=0; p<v_package.size(); ++p){
         std::vector<std::string> v_ver_path; //, v_package_inst, v_package_deps;
@@ -143,30 +155,45 @@ bool solve_depends___dummy(std::vector<struct pkg>& v_pkg_ret,
     
     return true;
 }
-void install_libs(const std::string& dir_install, const std::string& dir_tmp, const std::vector<struct pkg>& v_inst_pkg){
-    sstd::mkdir(dir_tmp);
-    sstd::mkdir(dir_install);
+void install_libs(const std::string& CACHE_DIR,
+                  const std::string& BUILD_DIR,
+                  const std::string& INST_PATH,
+                  const std::string& packages_dir, 
+                  const std::vector<struct pkg>& v_pkg){
+    // mkdir in the install.sh
+    // 
+    // sstd::mkdir(CACHE_DIR);
+    // sstd::mkdir(BUILD_DIR);
+    // sstd::mkdir(INST_PATH);
     
-    for(uint i=0; i<v_inst_pkg.size(); ++i){
-        struct pkg p = v_inst_pkg[i];
-        sstd::mkdir(sstd::ssprintf("%s/%s", dir_tmp.c_str(), p.name.c_str()));
-        std::string     inst    = sstd::ssprintf("install_v%d.%d.%d.sh", p.ver100, p.ver010, p.ver001);
-        std::string dir_inst    = sstd::ssprintf("cpm/packages/%s", p.name.c_str());
-        std::string dir_tmp_pkg = sstd::ssprintf("%s/%s", dir_tmp.c_str(), p.name.c_str());
+    for(uint i=0; i<v_pkg.size(); ++i){
+        struct pkg p = v_pkg[i];
+
+        std::string build_pkg_dir = sstd::ssprintf("%s/%s-%s", BUILD_DIR.c_str(), p.name.c_str(), p.ver.c_str());
+        sstd::system("mkdir -p "+build_pkg_dir);
         
-        sstd::system(sstd::ssprintf("cp %s/%s %s", dir_inst.c_str(), inst.c_str(), dir_tmp_pkg.c_str()));
-        sstd::system(sstd::ssprintf("cd %s; sh ./%s", dir_tmp_pkg.c_str(), inst.c_str()));
+        std::string cmd;
+        cmd += sstd::ssprintf("export CACHE_DIR=%s\n", CACHE_DIR.c_str());
+        cmd += sstd::ssprintf("export BUILD_DIR=%s\n", build_pkg_dir.c_str());
+        cmd += sstd::ssprintf("export INST_PATH=%s\n", INST_PATH.c_str());
+        cmd += "\n";
+        cmd += sstd::ssprintf("sh %s/%s/%s/install.sh\n", packages_dir.c_str(), p.name.c_str(), p.ver.c_str());
+        
+        sstd::system(cmd);
     }
     
     return;
 }
 
 int main(int argc, char *argv[]){
-    std::string dir_install   = "env_cpm/local";    // -i env_cpm/local
     std::string path_packages = "packages_cpm.txt"; // -p packages_cpm.txt
-    std::string dir_tmp       = "env_cpm/build";    // -t env_cpm/build
     
-    std::string dir_packages  = "cpm/packages";
+    std::string call_path = sstd::system_stdout("pwd"); call_path.pop_back(); // pop_back() delete '\n'.
+    std::string CACHE_DIR = call_path+"/env_cpm/cache";
+    std::string BUILD_DIR = call_path+"/env_cpm/build"; // -t env_cpm/build
+    std::string INST_PATH = call_path+"/env_cpm/local"; // -i env_cpm/local
+    
+    std::string packages_dir = call_path+"/cpm/packages";
     
     char c = ' ';
     for(int i=1; i<argc; ++i){
@@ -174,17 +201,32 @@ int main(int argc, char *argv[]){
         if(s[0] == '-'){ c=s[1]; continue; }
         
         switch(c){
-        case 'i': { dir_install=s; break; }
+        case 'i': { INST_PATH=s; break; }
         case 'p': { path_packages=s; break; }
-        case 't': { dir_tmp=s; break; }
+        case 't': { BUILD_DIR=s; break; }
         default: { break; }
         }
     }
 
+    printf("\n");
+    printf("+---------------------------------------------------+\n");
+    printf("|                                                   |\n");
+    printf("|      Welcome to Cpp Package Manager (CPM) !       |\n");
+    printf("|                                                   |\n");
+    printf("+---------------------------------------------------+\n");
+    printf("\n");
+    time_m timem; sstd::measureTime_start(timem);
+    
+    sstd::printn(path_packages);
+    sstd::printn(call_path);
+    sstd::printn(CACHE_DIR);
+    sstd::printn(BUILD_DIR);
+    sstd::printn(INST_PATH);
+
     std::vector<struct pkg> v_pkg_requested; if(!read_packages_txt( v_pkg_requested, path_packages )){ return -1; }
 //    sstd::printn( v_pkg_requested );
     
-    std::unordered_map<std::string, std::vector<struct pkg>> table_vPkg; if(!read_packages_dir( table_vPkg, dir_packages )){ return -1; }
+    std::unordered_map<std::string, std::vector<struct pkg>> table_vPkg; if(!read_packages_dir( table_vPkg, packages_dir )){ return -1; }
     for(auto itr=table_vPkg.begin(); itr!=table_vPkg.end(); ++itr) {
         sstd::printn(itr->first);
         sstd::printn(itr->second);
@@ -197,9 +239,12 @@ int main(int argc, char *argv[]){
     std::vector<struct pkg> v_inst_pkg; if(!solve_depends___dummy( v_inst_pkg, v_pkg_requested, table_vPkg )){ return -1; }
     sstd::printn(v_inst_pkg);
     
-    return 0;
-    install_libs(dir_install, dir_tmp, v_inst_pkg);
+//  return 0;
+    install_libs(CACHE_DIR, BUILD_DIR, INST_PATH, packages_dir, v_inst_pkg);
     
+    printf("\n");
+    sstd::measureTime_stop_print(timem);
+    sstd::pauseIfWin32();
     return 0;
 }
 

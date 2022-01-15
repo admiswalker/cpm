@@ -3,6 +3,8 @@
 # Usage
 #   - Set values of `CACHE_DIR`, `BUILD_DIR` and `INST_PATH` using `export` before call this script.
 
+echo '--- begin: install baseArchive/amd64_gcc-8.4.0 ---------------------------------'
+
 mkdir -p $CACHE_DIR
 mkdir -p $BUILD_DIR
 mkdir -p $INST_PATH
@@ -39,4 +41,6 @@ if [ ! -e $INST_PATH/bin/gcc ]; then
     tar -Jxf $CACHE_DIR/$fName -C $INST_PATH
 fi
 # ----------------------------------------------- installation: end ---
+
+echo '----------------------------------- end: install baseArchive/amd64_gcc-8.4.0 ---'
 

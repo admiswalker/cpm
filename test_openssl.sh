@@ -8,5 +8,5 @@ export CACHE_DIR=$CALL_DIR/'env_cpm/cache'
 export BUILD_DIR=$CALL_DIR/'env_cpm/build'
 export INST_PATH=$CALL_DIR/'env_cpm/local'
 
-sh ./cpm/packages/openssl/1.1.1_m/install.sh
+sh ./cpm/packages/openssl/1.1.1.m/install.sh
 

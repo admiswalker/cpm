@@ -5,24 +5,23 @@ struct pkg{
 private:
 public:
     std::string name; // for dbg
-    uint ver100=0;
-    uint ver010=0;
-    uint ver001=0;
-    bool latest=false;
+    std::string ver;
+    uint ver100=0; // v_major
+    uint ver010=0; // v_minor
+    uint ver001=0; // v_patch
+    std::string verExtra;
     std::vector<struct pkg> v_depend;
     /*
     pkg(){
         ver100=0;
         ver010=0;
         ver001=0;
-        latest=false;
     }
     pkg(const std::string& name_in, const uint ver100_in, const uint ver010_in, const uint ver001_in){
         name  =name_in;
         ver100=ver100_in;
         ver010=ver010_in;
         ver001=ver001_in;
-        latest=false;
     }
     ~pkg(){}
     */
@@ -33,14 +32,14 @@ namespace sstd{
     void for_printn(const struct pkg& rhs);
 }
 void sstd::print(const struct pkg& rhs){
-    printf("name: %s v%d.%d.%d latest: %c v_depend: [ ", rhs.name.c_str(), rhs.ver100, rhs.ver010, rhs.ver001, (rhs.latest ? 'T':'F'));
+    printf("name: %s, verStr: %s, ver: %d.%d.%d, verExtra: %s, v_depend: [ ", rhs.name.c_str(), rhs.ver.c_str(), rhs.ver100, rhs.ver010, rhs.ver001, rhs.verExtra.c_str());
     for(uint i=0; i<rhs.v_depend.size(); ++i){
         sstd::print_for_vT(rhs.v_depend[i]);
     }
     printf("]\n");
 }
 void sstd::print_for_vT(const struct pkg& rhs){
-    printf("[name: %s v%d.%d.%d latest: %c v_depend: [", rhs.name.c_str(), rhs.ver100, rhs.ver010, rhs.ver001, (rhs.latest ? 'T':'F'));
+    printf("[name: %s, verStr: %s, ver: %d.%d.%d, verExtra: %s, v_depend: [", rhs.name.c_str(), rhs.ver.c_str(), rhs.ver100, rhs.ver010, rhs.ver001, rhs.verExtra.c_str());
     for(uint i=0; i<rhs.v_depend.size(); ++i){
         sstd::print_for_vT((const struct pkg&)rhs.v_depend[i]);
     }
@@ -74,10 +73,43 @@ bool read_packages_txt(std::vector<struct pkg>& v_pkg_ret, const std::string& pa
     return true;
 }
 
-bool read_packages_dir(std::unordered_map<std::string,std::vector<struct pkg>>& table_vPkg_ret){
+bool is_ver_num(const std::vector<std::string>& ver){
+    return ( ver.size()>=3 && sstd::isNum(ver[0]) && sstd::isNum(ver[1]) && sstd::isNum(ver[2]) );
+}
+bool read_packages_dir(std::unordered_map<std::string,std::vector<struct pkg>>& table_vPkg_ret, const std::string& dir_packages){
     table_vPkg_ret.clear();
-    std::vector<std::string> v_package = sstd::glob("./cpm/packages/*", "d");
+    std::vector<std::string> v_package = sstd::glob(dir_packages+"/*", "d");
 
+    for(uint p=0; p<v_package.size(); ++p){
+        std::vector<std::string> v_ver_path, v_package_inst, v_package_deps;
+
+        v_ver_path = sstd::glob(v_package[p]+"/*", "d");
+        sstd::print(v_ver_path);
+        if(v_ver_path.size()==0){ sstd::pdbg("ERROR: %s: number of installable package is 0.\n", v_package[p].c_str()); return false; }
+        
+        for(uint i=0; i<v_ver_path.size(); ++i){
+            std::string ver_str = sstd::getFileName( v_ver_path[i].c_str() );
+            std::vector<std::string> ver = sstd::split(ver_str, '.');
+            
+            struct pkg r;
+            r.name = sstd::getFileName( v_package[p].c_str() );
+            if( is_ver_num(ver) ){
+                r.ver    = ver_str;
+                r.ver100 = std::stoi( ver[0] );
+                r.ver010 = std::stoi( ver[1] );
+                r.ver001 = std::stoi( ver[2] );
+            }else{
+                r.ver = ver_str;
+            }
+            if(ver.size()==4){
+                r.verExtra = ver[3];
+            }
+//          r.v_depend = read_dependents_txt();
+            
+            table_vPkg_ret[ r.name ] <<= r;
+        }
+    }
+    /*
     for(uint p=0; p<v_package.size(); ++p){
         std::vector<std::string> v_package_inst, v_package_deps;
         
@@ -110,6 +142,7 @@ bool read_packages_dir(std::unordered_map<std::string,std::vector<struct pkg>>& 
         
         table_vPkg_ret[ r.name ] <<= r;
     }
+    */
     return true;
 }
 bool solve_depends___dummy(std::vector<struct pkg>& v_pkg_ret, const std::vector<struct pkg>& v_pkg_requested, const std::unordered_map<std::string, std::vector<struct pkg>>& table_vPkg){
@@ -155,6 +188,8 @@ int main(int argc, char *argv[]){
     std::string path_packages = "packages_cpm.txt"; // -p packages_cpm.txt
     std::string dir_tmp       = "env_cpm/build";    // -t env_cpm/build
     
+    std::string dir_packages  = "./cpm/packages";
+    
     char c = ' ';
     for(int i=1; i<argc; ++i){
         std::string s = argv[i]; if(s.size() < 2){ sstd::pdbg("ERROR: Unexpectec input: %s.\n", s.c_str()); return -1; }
@@ -169,14 +204,15 @@ int main(int argc, char *argv[]){
     }
 
     std::vector<struct pkg> v_pkg_requested; if(!read_packages_txt( v_pkg_requested, path_packages )){ return -1; }
-//  sstd::printn( v_pkg );
+//    sstd::printn( v_pkg_requested );
     
-    std::unordered_map<std::string, std::vector<struct pkg>> table_vPkg; if(!read_packages_dir( table_vPkg )){ return -1; }
+    std::unordered_map<std::string, std::vector<struct pkg>> table_vPkg; if(!read_packages_dir( table_vPkg, dir_packages )){ return -1; }
     for(auto itr=table_vPkg.begin(); itr!=table_vPkg.end(); ++itr) {
         sstd::printn(itr->first);
         sstd::printn(itr->second);
         printf("\n");
     }
+    return 0;
     
     // Solveing the dependencies
     //   Not implimented yet.

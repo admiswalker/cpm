@@ -155,16 +155,23 @@ bool solve_depends___dummy(std::vector<struct pkg>& v_pkg_ret,
     
     return true;
 }
+void gen_archive(const std::string& save_name, const std::string& path){
+    sstd::system(sstd::ssprintf("cd %s; tar -Jcf %s.tar.xz *", path.c_str(), save_name.c_str(), path.c_str()));
+    return;
+}
 void install_libs(const std::string& CACHE_DIR,
                   const std::string& BUILD_DIR,
                   const std::string& INST_PATH,
-                  const std::string& packages_dir, 
+                  const std::string& packages_dir,
+                  const bool TF_genArchive, const std::string& archive_dir,
                   const std::vector<struct pkg>& v_pkg){
     // mkdir in the install.sh
     // 
     // sstd::mkdir(CACHE_DIR);
     // sstd::mkdir(BUILD_DIR);
     // sstd::mkdir(INST_PATH);
+    std::string INST_PATH_tmp = sstd::ssprintf("%s%s", INST_PATH.c_str(), (TF_genArchive ? "_archive":""));
+    sstd::mkdir(INST_PATH_tmp);
     
     for(uint i=0; i<v_pkg.size(); ++i){
         struct pkg p = v_pkg[i];
@@ -175,11 +182,18 @@ void install_libs(const std::string& CACHE_DIR,
         std::string cmd;
         cmd += sstd::ssprintf("export CACHE_DIR=%s\n", CACHE_DIR.c_str());
         cmd += sstd::ssprintf("export BUILD_DIR=%s\n", build_pkg_dir.c_str());
-        cmd += sstd::ssprintf("export INST_PATH=%s\n", INST_PATH.c_str());
+        cmd += sstd::ssprintf("export INST_PATH=%s\n", INST_PATH_tmp.c_str());
         cmd += "\n";
         cmd += sstd::ssprintf("sh %s/%s/%s/install.sh\n", packages_dir.c_str(), p.name.c_str(), p.ver.c_str());
         
         sstd::system(cmd);
+        
+        if(TF_genArchive){
+            sstd::mkdir(archive_dir);
+            gen_archive(archive_dir+'/'+p.name+'-'+p.ver, INST_PATH_tmp);
+//            mv(INST_PATH_tmp, INST_PATH);
+//            sstd::rm(INST_PATH_tmp);
+        }
     }
     
     return;
@@ -192,6 +206,9 @@ int main(int argc, char *argv[]){
     std::string CACHE_DIR = call_path+"/env_cpm/cache";
     std::string BUILD_DIR = call_path+"/env_cpm/build"; // -t env_cpm/build
     std::string INST_PATH = call_path+"/env_cpm/local"; // -i env_cpm/local
+
+    bool TF_genArchive = false;
+    std::string archive_dir = call_path+"/env_cpm/archive";
     
     std::string packages_dir = call_path+"/cpm/packages";
     
@@ -201,6 +218,7 @@ int main(int argc, char *argv[]){
         if(s[0] == '-'){ c=s[1]; continue; }
         
         switch(c){
+        case 'a': { TF_genArchive = (sstd::strcmp(s,"true") ? true:false); break; }
         case 'i': { INST_PATH=s; break; }
         case 'p': { path_packages=s; break; }
         case 't': { BUILD_DIR=s; break; }
@@ -223,6 +241,9 @@ int main(int argc, char *argv[]){
     sstd::printn(BUILD_DIR);
     sstd::printn(INST_PATH);
 
+    sstd::printn(TF_genArchive);
+    sstd::printn(archive_dir);
+
     std::vector<struct pkg> v_pkg_requested; if(!read_packages_txt( v_pkg_requested, path_packages )){ return -1; }
 //    sstd::printn( v_pkg_requested );
     
@@ -240,7 +261,7 @@ int main(int argc, char *argv[]){
     sstd::printn(v_inst_pkg);
     
 //  return 0;
-    install_libs(CACHE_DIR, BUILD_DIR, INST_PATH, packages_dir, v_inst_pkg);
+    install_libs(CACHE_DIR, BUILD_DIR, INST_PATH, packages_dir, TF_genArchive, archive_dir, v_inst_pkg);
     
     printf("\n");
     sstd::measureTime_stop_print(timem);

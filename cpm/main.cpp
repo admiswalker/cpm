@@ -118,7 +118,7 @@ bool read_packages_dir(std::unordered_map<std::string,std::vector<struct pkg>>& 
         std::vector<std::string> v_ver_path; //, v_package_inst, v_package_deps;
 
         v_ver_path = sstd::glob(v_package[p]+"/*", "d");
-        sstd::print(v_ver_path);
+        sstd::printn(v_ver_path);
         if(v_ver_path.size()==0){ sstd::pdbg("ERROR: %s: number of installable package is 0.\n", v_package[p].c_str()); return false; }
         
         for(uint i=0; i<v_ver_path.size(); ++i){
@@ -197,7 +197,6 @@ void install_libs(const std::string& CACHE_DIR,
         cmd += "export INST_PATH=" + (TF_genArchive ? INST_PATH_acv:INST_PATH) + '\n';
         cmd += "\n";
         cmd += "sh " + packages_dir + '/' + p.name + '/' + p.ver + "/install.sh" + '\n';
-        sstd::printn(cmd);
         
         sstd::system(cmd);
         
@@ -251,7 +250,7 @@ int main(int argc, char *argv[]){
         default: { break; }
         }
     }
-
+    
     sstd::printn(path_packages);
     sstd::printn(call_path);
     sstd::printn(CACHE_DIR);
@@ -282,7 +281,6 @@ int main(int argc, char *argv[]){
     
     printf("\n");
     sstd::measureTime_stop_print(timem);
-    sstd::pauseIfWin32();
     return 0;
 }
 

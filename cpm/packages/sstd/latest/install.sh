@@ -3,7 +3,7 @@
 # Usage
 #   - Set values of `CACHE_DIR`, `BUILD_DIR` and `INST_PATH` using `export` before call this script.
 
-echo '--- begin: install sstd/1.0.0 --------------------------------------------------'
+echo '--- begin: install sstd/latest -------------------------------------------------'
 echo '--------------------------------------------------------------------------------'
 
 mkdir -p $CACHE_DIR
@@ -47,12 +47,14 @@ if [ ! -e $INST_PATH/lib/libsstd.a ]; then
     cd $BUILD_DIR/SubStandardLibrary-SSTD--master/sstd;
     
     make -j
-    
+
+    mkdir -p $INST_PATH/lib
+    mkdir -p $INST_PATH/include
     cp -r lib/* -t $INST_PATH/lib
     cp -r include/* -t $INST_PATH/include
 fi
 # ----------------------------------------------- installation: end ---
 
 echo '--------------------------------------------------------------------------------'
-echo '---------------------------------------------------- end: install sstd/1.0.0 ---'
+echo '--------------------------------------------------- end: install sstd/latest ---'
 

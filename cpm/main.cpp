@@ -155,8 +155,18 @@ bool solve_depends___dummy(std::vector<struct pkg>& v_pkg_ret,
     
     return true;
 }
+std::string return_set_env_cmd(){
+    return sstd::read("./cpm/set_env.sh");
+}
 void gen_archive(const std::string& save_name, const std::string& path){
-    sstd::system(sstd::ssprintf("cd %s; tar -Jcf %s.tar.xz *", path.c_str(), save_name.c_str(), path.c_str()));
+    //const char* ext = "tar.xz";
+    const char* ext = "zip";
+    //sstd::system(sstd::ssprintf("cd %s; tar -Jcf %s.tar.xz *", path.c_str(), save_name.c_str()));
+    sstd::system(sstd::ssprintf("cd %s; zip -rq %s.zip *", path.c_str(), save_name.c_str())); // test by zip to reduce excusion time.
+    uint64 size = std::stoull(sstd::system_stdout(sstd::ssprintf("ls -al %s.%s | cut -d ' ' -f 5", save_name.c_str(), ext)));
+    if(size >= 104857600){
+        sstd::system(sstd::ssprintf("split -d -b 100m %s.%s %s.%s-", save_name.c_str(), ext, save_name.c_str(), ext)); // test by zip to reduce excusion time.
+    }
     return;
 }
 void install_libs(const std::string& CACHE_DIR,
@@ -170,29 +180,36 @@ void install_libs(const std::string& CACHE_DIR,
     // sstd::mkdir(CACHE_DIR);
     // sstd::mkdir(BUILD_DIR);
     // sstd::mkdir(INST_PATH);
-    std::string INST_PATH_tmp = sstd::ssprintf("%s%s", INST_PATH.c_str(), (TF_genArchive ? "_archive":""));
-    sstd::mkdir(INST_PATH_tmp);
+    sstd::mkdir(INST_PATH);
+    std::string INST_PATH_acv = INST_PATH + "_archive";
+    if(TF_genArchive){ sstd::mkdir(INST_PATH_acv); }
     
     for(uint i=0; i<v_pkg.size(); ++i){
         struct pkg p = v_pkg[i];
 
-        std::string build_pkg_dir = sstd::ssprintf("%s/%s-%s", BUILD_DIR.c_str(), p.name.c_str(), p.ver.c_str());
-        sstd::system("mkdir -p "+build_pkg_dir);
+        std::string build_pkg_dir = BUILD_DIR + '/' + p.name + '-' + p.ver;
+        sstd::mkdir(build_pkg_dir);
         
         std::string cmd;
-        cmd += sstd::ssprintf("export CACHE_DIR=%s\n", CACHE_DIR.c_str());
-        cmd += sstd::ssprintf("export BUILD_DIR=%s\n", build_pkg_dir.c_str());
-        cmd += sstd::ssprintf("export INST_PATH=%s\n", INST_PATH_tmp.c_str());
+        if(p.name!="baseArchive"){ cmd += return_set_env_cmd(); }
+        cmd += "export CACHE_DIR=" + CACHE_DIR + '\n';
+        cmd += "export BUILD_DIR=" + build_pkg_dir + '\n';
+        cmd += "export INST_PATH=" + (TF_genArchive ? INST_PATH_acv:INST_PATH) + '\n';
         cmd += "\n";
-        cmd += sstd::ssprintf("sh %s/%s/%s/install.sh\n", packages_dir.c_str(), p.name.c_str(), p.ver.c_str());
+        cmd += "sh " + packages_dir + '/' + p.name + '/' + p.ver + "/install.sh" + '\n';
+        sstd::printn(cmd);
         
         sstd::system(cmd);
         
         if(TF_genArchive){
             sstd::mkdir(archive_dir);
-            gen_archive(archive_dir+'/'+p.name+'-'+p.ver, INST_PATH_tmp);
-//            mv(INST_PATH_tmp, INST_PATH);
-//            sstd::rm(INST_PATH_tmp);
+            gen_archive(archive_dir+'/'+p.name+'-'+p.ver, INST_PATH_acv);
+
+            sstd::cp(INST_PATH_acv+"/*", INST_PATH, "npu");
+//          sstd::mv(INST_PATH_arc+"/*", INST_PATH); // Not implimented yet
+            
+            sstd::rm(INST_PATH_acv);
+            sstd::mkdir(INST_PATH_acv);
         }
     }
     
@@ -200,6 +217,15 @@ void install_libs(const std::string& CACHE_DIR,
 }
 
 int main(int argc, char *argv[]){
+    printf("\n");
+    printf("+---------------------------------------------------+\n");
+    printf("|                                                   |\n");
+    printf("|      Welcome to Cpp Package Manager (CPM) !       |\n");
+    printf("|                                                   |\n");
+    printf("+---------------------------------------------------+\n");
+    printf("\n");
+    time_m timem; sstd::measureTime_start(timem);
+    
     std::string path_packages = "packages_cpm.txt"; // -p packages_cpm.txt
     
     std::string call_path = sstd::system_stdout("pwd"); call_path.pop_back(); // pop_back() delete '\n'.
@@ -226,15 +252,6 @@ int main(int argc, char *argv[]){
         }
     }
 
-    printf("\n");
-    printf("+---------------------------------------------------+\n");
-    printf("|                                                   |\n");
-    printf("|      Welcome to Cpp Package Manager (CPM) !       |\n");
-    printf("|                                                   |\n");
-    printf("+---------------------------------------------------+\n");
-    printf("\n");
-    time_m timem; sstd::measureTime_start(timem);
-    
     sstd::printn(path_packages);
     sstd::printn(call_path);
     sstd::printn(CACHE_DIR);

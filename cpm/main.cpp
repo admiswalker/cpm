@@ -229,7 +229,7 @@ int main(int argc, char *argv[]){
     
     std::string call_path = sstd::system_stdout("pwd"); call_path.pop_back(); // pop_back() delete '\n'.
     std::string CACHE_DIR = call_path+"/env_cpm/cache";
-    std::string BUILD_DIR = call_path+"/env_cpm/build"; // -t env_cpm/build
+    std::string BUILD_DIR = call_path+"/env_cpm/build"; // -b env_cpm/build
     std::string INST_PATH = call_path+"/env_cpm/local"; // -i env_cpm/local
 
     bool TF_genArchive = false;
@@ -244,9 +244,9 @@ int main(int argc, char *argv[]){
         
         switch(c){
         case 'a': { TF_genArchive = (sstd::strcmp(s,"true") ? true:false); break; }
+        case 'b': { BUILD_DIR=s; break; }
         case 'i': { INST_PATH=s; break; }
         case 'p': { path_packages=s; break; }
-        case 't': { BUILD_DIR=s; break; }
         default: { break; }
         }
     }

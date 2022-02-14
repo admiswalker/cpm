@@ -158,14 +158,16 @@ bool solve_depends___dummy(std::vector<struct pkg>& v_pkg_ret,
 std::string return_set_env_cmd(){
     return sstd::read("./cpm/set_env.sh");
 }
-void gen_archive(const std::string& save_name, const std::string& path){
-    //const char* ext = "tar.xz";
-    const char* ext = "zip";
-    //sstd::system(sstd::ssprintf("cd %s; tar -Jcf %s.tar.xz *", path.c_str(), save_name.c_str()));
-    sstd::system(sstd::ssprintf("cd %s; zip -rq %s.zip *", path.c_str(), save_name.c_str())); // test by zip to reduce excusion time.
-    uint64 size = std::stoull(sstd::system_stdout(sstd::ssprintf("ls -al %s.%s | cut -d ' ' -f 5", save_name.c_str(), ext)));
+void gen_archive(const std::string& save_name, const std::string& ext, const std::string& path){
+    
+    if      (ext=="tar.xz"){ sstd::system(sstd::ssprintf("cd %s; tar -Jcf %s.tar.xz *", path.c_str(), save_name.c_str()));
+    }else if(ext=="zip"   ){ sstd::system(sstd::ssprintf("cd %s; zip -rq %s.zip *", path.c_str(), save_name.c_str()));
+    }else                  { sstd::pdbg("Error: Unexpected extension.");
+    }
+    
+    uint64 size = std::stoull(sstd::system_stdout(sstd::ssprintf("ls -al %s.%s | cut -d ' ' -f 5", save_name.c_str(), ext.c_str())));
     if(size >= 104857600){
-        sstd::system(sstd::ssprintf("split -d -b 100m %s.%s %s.%s-", save_name.c_str(), ext, save_name.c_str(), ext)); // test by zip to reduce excusion time.
+        sstd::system(sstd::ssprintf("split -d -b 100m %s.%s %s.%s-", save_name.c_str(), ext.c_str(), save_name.c_str(), ext.c_str())); // test by zip to reduce excusion time.
     }
     return;
 }
@@ -184,9 +186,18 @@ void install_libs(const std::string& CACHE_DIR,
     std::string INST_PATH_acv = INST_PATH + "_archive";
     if(TF_genArchive){ sstd::mkdir(INST_PATH_acv); }
     
+    //const std::string ext = "tar.xz";
+    const std::string ext = "zip"; // test by zip to reduce excusion time.
+    
     for(uint i=0; i<v_pkg.size(); ++i){
         struct pkg p = v_pkg[i];
-
+        
+        std::string archive_path_to_save;
+        if(TF_genArchive){
+            archive_path_to_save = archive_dir+'/'+p.name+'-'+p.ver+'.'+ext;
+            if(sstd::fileExist(archive_path_to_save)){ continue; }
+        }
+        
         std::string build_pkg_dir = BUILD_DIR + '/' + p.name + '-' + p.ver;
         sstd::mkdir(build_pkg_dir);
         
@@ -202,7 +213,7 @@ void install_libs(const std::string& CACHE_DIR,
         
         if(TF_genArchive){
             sstd::mkdir(archive_dir);
-            gen_archive(archive_dir+'/'+p.name+'-'+p.ver, INST_PATH_acv);
+            gen_archive(archive_path_to_save, ext, INST_PATH_acv);
 
             sstd::cp(INST_PATH_acv+"/*", INST_PATH, "npu");
 //          sstd::mv(INST_PATH_arc+"/*", INST_PATH); // Not implimented yet

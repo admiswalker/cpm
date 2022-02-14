@@ -1,8 +1,8 @@
 
 baseArchive, amd64_gcc-8.4.0;
 
-//googletest, 1.11.0;
-sstd, latest;
+googletest, 1.11.0;
+//sstd, latest;
 //sstd, 1.0.0;
 
 

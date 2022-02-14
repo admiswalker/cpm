@@ -6,7 +6,7 @@ CPM is a toy package manager for C++.
 1. Set required packages to `packages_cpm.txt`
 2. Run installation commands
    ```
-   ./cpm/cpm.exe
+   ./cpm/exe
    ```
    options:
    - a: Set `true` or `false` to switch whether generagte packages archive or not. (Default is `false`)
@@ -32,10 +32,10 @@ CPM is a toy package manager for C++.
 | ----------------------------- | ------------------ |
 | cpm/                          | Files that make up CPM |
 | cpm/packages/                 | Installation scripts for CPM packages |
-| cpm/cpm.exe                   | Entry point of CPM. (Build from `cpm/main.cpp`) |
+| cpm/exe                       | Entry point of CPM. (Build from `cpm/main.cpp`) |
 | cpm/main.cpp                  | Entry point of CPM |
 | env_cpm/                      | Default destination path of CPM |
-| env_cpm/archive/              | Destination directory to archive package files of installation packages with running `./cpm/cpm.exe` using `a` option |
+| env_cpm/archive/              | Destination directory to archive package files of installation packages with running `./cpm/exe` using `a` option |
 | env_cpm/build/                | Temporary directory for build |
 | env_cpm/cache/                | Cache directory for installation files to download |
 | env_cpm/local/                | Destination directory for installation |
@@ -44,7 +44,7 @@ CPM is a toy package manager for C++.
 | .git/                         | git files          |
 | Makefile                      | Makefile to build `./cpm/main.cpp` |
 | READMD.md                     | This file          |
-| packages_cpm.txt              | Packages list to install by `./cpm/cpm.exe` |
+| packages_cpm.txt              | Packages list to install by `./cpm/exe` |
 | .gitignore                    | Ignoring list not to track files on git |
 
 

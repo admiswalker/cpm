@@ -3,7 +3,7 @@
 
 # source files
 SRC    = main.cpp
-TARGET = cpm.exe
+TARGET = exe
 
 # remove files
 RMs = *.stackdump __pycache__ tmpDir

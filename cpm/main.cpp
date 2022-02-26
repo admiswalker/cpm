@@ -221,13 +221,22 @@ void install_libs(const std::string& CACHE_DIR,
         std::string build_pkg_dir = BUILD_DIR + '/' + p.name + '-' + p.ver;
         sstd::mkdir(build_pkg_dir);
         
+        std::string pkg_shell_dir = packages_dir + '/' + p.name + '/' + p.ver;
+        
         std::string cmd;
         if(p.name!="baseArchive"){ cmd += return_set_env_cmd(); }
         cmd += "export CACHE_DIR=" + CACHE_DIR + '\n';
         cmd += "export BUILD_DIR=" + build_pkg_dir + '\n';
         cmd += "export INST_PATH=" + (TF_genArchive ? INST_PATH_acv:INST_PATH) + '\n';
         cmd += "\n";
-        cmd += "sh " + packages_dir + '/' + p.name + '/' + p.ver + "/install.sh" + '\n';
+        if(sstd::isFile(pkg_shell_dir + "/install_archive.sh")){
+            cmd += "sh " + pkg_shell_dir + "/download_archive.sh" + '\n';
+            cmd += "sh " + pkg_shell_dir + "/install_archive.sh" + '\n';
+        }else{
+            cmd += "sh " + pkg_shell_dir + "/download_src.sh" + '\n';
+            cmd += "sh " + pkg_shell_dir + "/build_src.sh" + '\n';
+            cmd += "sh " + pkg_shell_dir + "/install_src.sh" + '\n';
+        }
         
         sstd::system(cmd);
         

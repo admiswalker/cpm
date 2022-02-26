@@ -139,7 +139,6 @@ bool read_packages_dir(std::unordered_map<std::string,std::vector<struct pkg>>& 
         std::vector<std::string> v_ver_path; //, v_package_inst, v_package_deps;
 
         v_ver_path = sstd::glob(v_package[p]+"/*", "d");
-//        sstd::printn(v_ver_path);
         if(v_ver_path.size()==0){ sstd::pdbg("ERROR: %s: number of installable package is 0.\n", v_package[p].c_str()); return false; }
         
         for(uint i=0; i<v_ver_path.size(); ++i){
@@ -283,30 +282,12 @@ int main(int argc, char *argv[]){
         }
     }
     
-//    sstd::printn(path_packages);
-//    sstd::printn(call_path);
-//    sstd::printn(CACHE_DIR);
-//    sstd::printn(BUILD_DIR);
-//    sstd::printn(INST_PATH);
-
-//    sstd::printn(TF_genArchive);
-//    sstd::printn(archive_dir);
-
     std::string architect;
     std::vector<struct pkg> v_pkg_requested;
     if(!read_packages_txt( architect, v_pkg_requested, path_packages )){ return -1; }
     packages_dir += '/' + architect;
-//    sstd::printn( architect );
-//    sstd::printn( v_pkg_requested );
     
     std::unordered_map<std::string, std::vector<struct pkg>> table_vPkg; if(!read_packages_dir( table_vPkg, packages_dir )){ return -1; }
-    /*
-    for(auto itr=table_vPkg.begin(); itr!=table_vPkg.end(); ++itr) {
-        sstd::printn(itr->first);
-        sstd::printn(itr->second);
-        printf("\n");
-    }
-    */
     
     // Solveing the dependencies
     //   Not implimented yet.

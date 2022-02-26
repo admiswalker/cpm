@@ -98,10 +98,21 @@ bool str2struct_pkg(struct pkg& r, const std::string& name_in, const std::string
 //    return true;
 //}
 
-bool read_packages_txt(std::vector<struct pkg>& v_pkg_ret, const std::string& path_packages){
-    std::vector<std::string> v_line = sstd::getCommandList( path_packages );
+bool get_architecture(std::string& architecture_ret, std::vector<std::string>& v_line){
     uint len=v_line.size();
-    
+    for(uint i=0; i<len; ++i){
+        std::vector<std::string> v_cmd = sstd::splitByComma( v_line[i] ); if(v_cmd.size() != 2){ sstd::pdbg("ERROR: v_cmd.size() != 2.\n"); return false; }
+        
+        if(sstd::strcmp(v_cmd[0], "architecture")){
+            architecture_ret = v_cmd[1];
+            v_line.erase(v_line.begin() + i);
+            return true;
+        }
+    }
+    return false;
+}
+bool get_v_pkg(std::vector<struct pkg>& v_pkg_ret, const std::vector<std::string>& v_line){
+    uint len=v_line.size();
     for(uint i=0; i<len; ++i){
         std::vector<std::string> v_cmd = sstd::splitByComma( v_line[i] ); if(v_cmd.size() != 2){ sstd::pdbg("ERROR: v_cmd.size() != 2.\n"); return false; }
         
@@ -110,6 +121,16 @@ bool read_packages_txt(std::vector<struct pkg>& v_pkg_ret, const std::string& pa
     }
     return true;
 }
+bool read_packages_txt(std::string& architecture_ret, std::vector<struct pkg>& v_pkg_ret, const std::string& path_packages){
+    std::vector<std::string> v_line = sstd::getCommandList( path_packages );
+
+    bool ret;
+    ret = get_architecture(architecture_ret, v_line); if(!ret){ return false; }
+    ret = get_v_pkg(v_pkg_ret, v_line); if(!ret){ return false; }
+    
+    return true;
+}
+
 bool read_packages_dir(std::unordered_map<std::string,std::vector<struct pkg>>& table_vPkg_ret, const std::string& packages_dir){
     table_vPkg_ret.clear();
     std::vector<std::string> v_package = sstd::glob(packages_dir+"/*", "d");
@@ -118,7 +139,7 @@ bool read_packages_dir(std::unordered_map<std::string,std::vector<struct pkg>>& 
         std::vector<std::string> v_ver_path; //, v_package_inst, v_package_deps;
 
         v_ver_path = sstd::glob(v_package[p]+"/*", "d");
-        sstd::printn(v_ver_path);
+//        sstd::printn(v_ver_path);
         if(v_ver_path.size()==0){ sstd::pdbg("ERROR: %s: number of installable package is 0.\n", v_package[p].c_str()); return false; }
         
         for(uint i=0; i<v_ver_path.size(); ++i){
@@ -160,14 +181,14 @@ std::string return_set_env_cmd(){
 }
 void gen_archive(const std::string& save_name, const std::string& ext, const std::string& path){
     
-    if      (ext=="tar.xz"){ sstd::system(sstd::ssprintf("cd %s; tar -Jcf %s.tar.xz *", path.c_str(), save_name.c_str()));
-    }else if(ext=="zip"   ){ sstd::system(sstd::ssprintf("cd %s; zip -rq %s.zip *", path.c_str(), save_name.c_str()));
+    if      (ext=="tar.xz"){ sstd::system(sstd::ssprintf("cd %s; tar -Jcf %s *", path.c_str(), save_name.c_str()));
+    }else if(ext=="zip"   ){ sstd::system(sstd::ssprintf("cd %s; zip -rq %s *", path.c_str(), save_name.c_str()));
     }else                  { sstd::pdbg("Error: Unexpected extension.");
     }
     
-    uint64 size = std::stoull(sstd::system_stdout(sstd::ssprintf("ls -al %s.%s | cut -d ' ' -f 5", save_name.c_str(), ext.c_str())));
+    uint64 size = std::stoull(sstd::system_stdout(sstd::ssprintf("ls -al %s | cut -d ' ' -f 5", save_name.c_str())));
     if(size >= 104857600){
-        sstd::system(sstd::ssprintf("split -d -b 100m %s.%s %s.%s-", save_name.c_str(), ext.c_str(), save_name.c_str(), ext.c_str())); // test by zip to reduce excusion time.
+        sstd::system(sstd::ssprintf("split -d -b 100m %s %s-", save_name.c_str(), save_name.c_str())); // test by zip to reduce excusion time.
     }
     return;
 }
@@ -186,16 +207,16 @@ void install_libs(const std::string& CACHE_DIR,
     std::string INST_PATH_acv = INST_PATH + "_archive";
     if(TF_genArchive){ sstd::mkdir(INST_PATH_acv); }
     
-    //const std::string ext = "tar.xz";
-    const std::string ext = "zip"; // test by zip to reduce excusion time.
+    const std::string ext = "tar.xz";
+    //const std::string ext = "zip"; // test by zip to reduce excusion time.
     
     for(uint i=0; i<v_pkg.size(); ++i){
         struct pkg p = v_pkg[i];
         
-        std::string archive_path_to_save;
+        std::string archive_path;
         if(TF_genArchive){
-            archive_path_to_save = archive_dir+'/'+p.name+'-'+p.ver+'.'+ext;
-            if(sstd::fileExist(archive_path_to_save)){ continue; }
+            archive_path = archive_dir+'/'+p.name+'-'+p.ver+'.'+ext;
+            if(sstd::fileExist(archive_path)){ continue; }
         }
         
         std::string build_pkg_dir = BUILD_DIR + '/' + p.name + '-' + p.ver;
@@ -213,7 +234,7 @@ void install_libs(const std::string& CACHE_DIR,
         
         if(TF_genArchive){
             sstd::mkdir(archive_dir);
-            gen_archive(archive_path_to_save, ext, INST_PATH_acv);
+            gen_archive(archive_path, ext, INST_PATH_acv);
 
             sstd::cp(INST_PATH_acv+"/*", INST_PATH, "npu");
 //          sstd::mv(INST_PATH_arc+"/*", INST_PATH); // Not implimented yet
@@ -262,24 +283,30 @@ int main(int argc, char *argv[]){
         }
     }
     
-    sstd::printn(path_packages);
-    sstd::printn(call_path);
-    sstd::printn(CACHE_DIR);
-    sstd::printn(BUILD_DIR);
-    sstd::printn(INST_PATH);
+//    sstd::printn(path_packages);
+//    sstd::printn(call_path);
+//    sstd::printn(CACHE_DIR);
+//    sstd::printn(BUILD_DIR);
+//    sstd::printn(INST_PATH);
 
-    sstd::printn(TF_genArchive);
-    sstd::printn(archive_dir);
+//    sstd::printn(TF_genArchive);
+//    sstd::printn(archive_dir);
 
-    std::vector<struct pkg> v_pkg_requested; if(!read_packages_txt( v_pkg_requested, path_packages )){ return -1; }
+    std::string architect;
+    std::vector<struct pkg> v_pkg_requested;
+    if(!read_packages_txt( architect, v_pkg_requested, path_packages )){ return -1; }
+    packages_dir += '/' + architect;
+//    sstd::printn( architect );
 //    sstd::printn( v_pkg_requested );
     
     std::unordered_map<std::string, std::vector<struct pkg>> table_vPkg; if(!read_packages_dir( table_vPkg, packages_dir )){ return -1; }
+    /*
     for(auto itr=table_vPkg.begin(); itr!=table_vPkg.end(); ++itr) {
         sstd::printn(itr->first);
         sstd::printn(itr->second);
         printf("\n");
     }
+    */
     
     // Solveing the dependencies
     //   Not implimented yet.

@@ -157,8 +157,6 @@ bool read_packages_dir(std::unordered_map<std::string,std::vector<struct pkg>>& 
 bool solve_depends___dummy(std::vector<struct pkg>& v_pkg_ret,
                            const std::vector<struct pkg>& v_pkg_requested,
                            const std::unordered_map<std::string, std::vector<struct pkg>>& table_vPkg){
-    sstd::printn(v_pkg_requested);
-    
     for(uint ri=0; ri<v_pkg_requested.size(); ++ri){
         std::vector<struct pkg> v_pkg_exist = table_vPkg.at( v_pkg_requested[ri].name );
         
@@ -228,21 +226,26 @@ void install_libs(const std::string& CACHE_DIR,
         if(TF_genArchive){
             archive_pkg_dir = archive_dir + '/' + architecture + '-' + p.name + '-' + p.ver;
             archive_path = archive_pkg_dir + '/' + architecture + '-' + p.name + '-' + p.ver;
-            if(sstd::fileExist(archive_path)){ continue; }
+            if(sstd::fileExist(archive_path+'.'+ext)){ continue; }
         }
-        
-        std::string build_pkg_dir = BUILD_DIR + '/' + architecture + '-' + p.name + '-' + p.ver;
-        sstd::mkdir(build_pkg_dir);
-        
+
         std::string pkg_shell_dir = packages_dir + '/' + p.name + '/' + p.ver;
+        bool TF_useArchive = sstd::isFile(pkg_shell_dir + "/download_archive.sh");
+        
+        std::string cache_pkg_dir = CACHE_DIR + '/' + (TF_useArchive ? "archive":"src") + '/' + architecture + '-' + p.name + '-' + p.ver;
+        std::string build_pkg_dir = BUILD_DIR + '/' + architecture + '-' + p.name + '-' + p.ver;
+        sstd::mkdir(cache_pkg_dir);
+        if(!TF_useArchive){
+            sstd::mkdir(build_pkg_dir);
+        }
         
         std::string cmd;
         if(p.name!="baseArchive"){ cmd += return_set_env_cmd(); }
-        cmd += "export CACHE_DIR=" + CACHE_DIR + '\n';
+        cmd += "export CACHE_DIR=" + cache_pkg_dir + '\n';
         cmd += "export BUILD_DIR=" + build_pkg_dir + '\n';
         cmd += "export INST_PATH=" + (TF_genArchive ? INST_PATH_acv:INST_PATH) + '\n';
         cmd += "\n";
-        if(sstd::isFile(pkg_shell_dir + "/download_archive.sh")){
+        if(TF_useArchive){
             cmd += "sh " + pkg_shell_dir + "/download_archive.sh" + '\n';
             cmd += "sh " + pkg_shell_dir + "/install_archive.sh" + '\n';
         }else{
@@ -315,9 +318,7 @@ int main(int argc, char *argv[]){
     //   Not implimented yet.
 //  std::vector<struct pkg> v_inst_pkg = solve_depends(vv_packages, v_pkg);
     std::vector<struct pkg> v_inst_pkg; if(!solve_depends___dummy( v_inst_pkg, v_pkg_requested, table_vPkg )){ return -1; }
-    sstd::printn(v_inst_pkg);
     
-//  return 0;
     install_libs(CACHE_DIR, BUILD_DIR, INST_PATH, packages_dir, TF_genArchive, archive_dir, architecture, v_inst_pkg);
     
     printf("\n");

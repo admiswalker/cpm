@@ -13,11 +13,9 @@ fName='cmake-3.20.1.tar.gz'
 fName_base=${fName%.*.*} # cmake-3.20.1
 libName=${fName%-*}      # cmake
 
-CACHE_BASE=$CACHE_DIR/src/$fName_base
-
 # unpacking the archive file
 if [ ! -e $BUILD_DIR/$fName_base ]; then
-    tar -zxf $CACHE_BASE/$fName -C $BUILD_DIR # tar.xz
+    tar -zxf $CACHE_DIR/$fName -C $BUILD_DIR # tar.xz
 fi
 
 # installation

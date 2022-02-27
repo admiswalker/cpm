@@ -12,11 +12,9 @@ mkdir -p $INST_PATH
 fName='sstd-latest.tar.gz'
 fName_base='sstd-latest'
 
-CACHE_BASE=$CACHE_DIR/src/$fName_base
-
 # unpacking the archive file
 if [ ! -e $BUILD_DIR/SubStandardLibrary-SSTD--master ]; then
-    unzip -n $CACHE_BASE/$fName -d $BUILD_DIR # zip
+    unzip -n $CACHE_DIR/$fName -d $BUILD_DIR # zip
     #tar -zxf $CACHE_DIR/$libName/$fName -C $BUILD_DIR # tar.xz
 fi
 
@@ -28,6 +26,7 @@ if [ ! -e $INST_PATH/lib/libsstd.a ]; then
     
     mkdir -p $INST_PATH/lib
     mkdir -p $INST_PATH/include
+    
     cp -r lib/* -t $INST_PATH/lib
     cp -r include/* -t $INST_PATH/include
 fi

@@ -3,9 +3,9 @@ architecture, amd64;
 
 baseArchive, gcc-8.4.0;
 cmake, 3.20.1;
+googletest, 1.11.0;
+sstd, latest;
 
-//googletest, 1.11.0;
-//sstd, latest;
 //sstd, 1.0.0;
 
 

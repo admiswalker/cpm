@@ -191,11 +191,22 @@ void gen_archive(const std::string& save_name, const std::string& ext, const std
     }
     return;
 }
+void gen_hashFile(const std::string& archive_dir, const std::string& save_name, const std::string& ext){
+    std::string w_str;
+    
+    std::vector<std::string> vPath = sstd::glob(archive_dir+R"(/*)");
+    for(uint i=0; i<vPath.size(); ++i){
+        w_str += sstd::system_stdout("cd "+archive_dir+"; sha256sum "+&vPath[i][archive_dir.size()+1]) + '\n';
+        w_str.pop_back(); // pop_back() is removing '\n'.
+    }
+    sstd::write(save_name, w_str);
+    return;
+}
 void install_libs(const std::string& CACHE_DIR,
                   const std::string& BUILD_DIR,
                   const std::string& INST_PATH,
                   const std::string& packages_dir,
-                  const bool TF_genArchive, const std::string& archive_dir,
+                  const bool TF_genArchive, const std::string& archive_dir, const std::string& architecture,
                   const std::vector<struct pkg>& v_pkg){
     // mkdir in the install.sh
     // 
@@ -206,19 +217,21 @@ void install_libs(const std::string& CACHE_DIR,
     std::string INST_PATH_acv = INST_PATH + "_archive";
     if(TF_genArchive){ sstd::mkdir(INST_PATH_acv); }
     
-    const std::string ext = "tar.xz";
-    //const std::string ext = "zip"; // test by zip to reduce excusion time.
+    //const std::string ext = "tar.xz";
+    const std::string ext = "zip"; // test by zip to reduce excusion time.
     
     for(uint i=0; i<v_pkg.size(); ++i){
         struct pkg p = v_pkg[i];
         
+        std::string archive_pkg_dir;
         std::string archive_path;
         if(TF_genArchive){
-            archive_path = archive_dir+'/'+p.name+'-'+p.ver+'.'+ext;
+            archive_pkg_dir = archive_dir + '/' + architecture + '-' + p.name + '-' + p.ver;
+            archive_path = archive_pkg_dir + '/' + architecture + '-' + p.name + '-' + p.ver;
             if(sstd::fileExist(archive_path)){ continue; }
         }
         
-        std::string build_pkg_dir = BUILD_DIR + '/' + p.name + '-' + p.ver;
+        std::string build_pkg_dir = BUILD_DIR + '/' + architecture + '-' + p.name + '-' + p.ver;
         sstd::mkdir(build_pkg_dir);
         
         std::string pkg_shell_dir = packages_dir + '/' + p.name + '/' + p.ver;
@@ -229,21 +242,21 @@ void install_libs(const std::string& CACHE_DIR,
         cmd += "export BUILD_DIR=" + build_pkg_dir + '\n';
         cmd += "export INST_PATH=" + (TF_genArchive ? INST_PATH_acv:INST_PATH) + '\n';
         cmd += "\n";
-        if(sstd::isFile(pkg_shell_dir + "/install_archive.sh")){
+        if(sstd::isFile(pkg_shell_dir + "/download_archive.sh")){
             cmd += "sh " + pkg_shell_dir + "/download_archive.sh" + '\n';
             cmd += "sh " + pkg_shell_dir + "/install_archive.sh" + '\n';
         }else{
             cmd += "sh " + pkg_shell_dir + "/download_src.sh" + '\n';
-            cmd += "sh " + pkg_shell_dir + "/build_src.sh" + '\n';
             cmd += "sh " + pkg_shell_dir + "/install_src.sh" + '\n';
         }
         
         sstd::system(cmd);
         
         if(TF_genArchive){
-            sstd::mkdir(archive_dir);
-            gen_archive(archive_path, ext, INST_PATH_acv);
-
+            sstd::mkdir(archive_pkg_dir);
+            gen_archive(archive_path+'.'+ext, ext, INST_PATH_acv);
+            gen_hashFile(archive_pkg_dir, archive_path+"-sha256sum.txt", ext);
+            
             sstd::cp(INST_PATH_acv+"/*", INST_PATH, "npu");
 //          sstd::mv(INST_PATH_arc+"/*", INST_PATH); // Not implimented yet
             
@@ -291,10 +304,10 @@ int main(int argc, char *argv[]){
         }
     }
     
-    std::string architect;
+    std::string architecture;
     std::vector<struct pkg> v_pkg_requested;
-    if(!read_packages_txt( architect, v_pkg_requested, path_packages )){ return -1; }
-    packages_dir += '/' + architect;
+    if(!read_packages_txt( architecture, v_pkg_requested, path_packages )){ return -1; }
+    packages_dir += '/' + architecture;
     
     std::unordered_map<std::string, std::vector<struct pkg>> table_vPkg; if(!read_packages_dir( table_vPkg, packages_dir )){ return -1; }
     
@@ -305,7 +318,7 @@ int main(int argc, char *argv[]){
     sstd::printn(v_inst_pkg);
     
 //  return 0;
-    install_libs(CACHE_DIR, BUILD_DIR, INST_PATH, packages_dir, TF_genArchive, archive_dir, v_inst_pkg);
+    install_libs(CACHE_DIR, BUILD_DIR, INST_PATH, packages_dir, TF_genArchive, archive_dir, architecture, v_inst_pkg);
     
     printf("\n");
     sstd::measureTime_stop_print(timem);

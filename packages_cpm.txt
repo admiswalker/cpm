@@ -14,7 +14,8 @@ baseArchive, gcc-8.4.0;
 //gcc, 8.4.0;
 
 /*
-BUILD_ENV, LOAD_ENV, ./cpm/set_env.sh;
+BUILD_ENV, CPM_ENV, ./cpm/set_env.sh;
+//BUILD_ENV, LOAD_ENV, ./cpm/set_env.sh;
 cmake, 3.20.1;
 googletest, 1.11.0;
 sstd, latest;

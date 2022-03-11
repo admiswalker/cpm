@@ -181,12 +181,14 @@ void gen_hashFile(const std::string& archive_dir, const std::string& save_name, 
     sstd::write(save_name, w_str);
     return;
 }
-void install_libs(const std::string& CACHE_DIR,
+bool install_libs(const std::string& CACHE_DIR,
                   const std::string& BUILD_DIR,
                   const std::string& INST_PATH,
+                  const std::vector<std::string>& v_build_env,
+                  const std::string& architecture,
                   const std::string& packages_dir,
-                  const bool TF_genArchive, const std::string& archive_dir, const std::string& architecture,
-                  const std::vector<struct pkg>& v_pkg){
+                  const std::vector<struct pkg>& v_pkg,
+                  const bool TF_genArchive, const std::string& archive_dir){
     // mkdir in the install.sh
     // 
     // sstd::mkdir(CACHE_DIR);
@@ -222,7 +224,14 @@ void install_libs(const std::string& CACHE_DIR,
         }
         
         std::string cmd;
-        if(p.name!="baseArchive"){ cmd += return_set_env_cmd(); }
+        if(v_build_env.size()==0){ sstd::pdbg("ERROR: BUILD_ENV is not set.\n"); }
+        if      (v_build_env[0] == "CPM_ENV"   ){ cmd += return_set_env_cmd();
+        }else if(v_build_env[0] == "DOCKER_ENV"){ /* Not implemented */
+        }else if(v_build_env[0] == "SYSTEM_ENV"){ /* do nothing */
+        }else{
+            sstd::pdbg("ERROR: BUILD_ENV has invalid value: %s.\n", v_build_env[0].c_str());
+            return false;
+        }
         cmd += "export CACHE_DIR=" + cache_pkg_dir + '\n';
         cmd += "export BUILD_DIR=" + build_pkg_dir + '\n';
         cmd += "export INST_PATH=" + (TF_genArchive ? INST_PATH_acv:INST_PATH) + '\n';
@@ -249,7 +258,7 @@ void install_libs(const std::string& CACHE_DIR,
         }
     }
     
-    return;
+    return true;
 }
 sstd::vvec<std::string> read_path_packages(const std::string& path_packages){
     sstd::vec<std::string> vLine = sstd::getCommandList( path_packages );
@@ -318,9 +327,8 @@ int main(int argc, char *argv[]){
     }
 
     std::string architecture;
-    sstd::vec<std::string> v_build_env;
     std::unordered_map<std::string, std::vector<struct pkg>> table_vPkg;
-    
+    sstd::vec<std::string> v_build_env;
     #define cmd_ARCHITECTURE "ARCHITECTURE"
     #define cmd_BUILD_ENV    "BUILD_ENV"
     #define cmd_IMPORT       "IMPORT"
@@ -331,9 +339,9 @@ int main(int argc, char *argv[]){
             if(v_vvLine[n][l].size() == 0){ sstd::pdbg("ERROR: v_vvLine[n][i].size() == 0.\n"); return false; }
             sstd::vec<std::string> vCmd = v_vvLine[n][l];
             
-            if      (sstd::strcmp(vCmd[0], cmd_ARCHITECTURE)){ architecture = vCmd[1]; if(!read_packages_dir( table_vPkg, packages_dir+'/'+architecture)){ return -1; }
-            }else if(sstd::strcmp(vCmd[0], cmd_BUILD_ENV   )){ v_build_env  = vCmd && sstd::slice(1, sstd::end());
-            }else if(sstd::strcmp(vCmd[0], cmd_IMPORT      )){ /* Not implimented */
+            if      (vCmd[0] == cmd_ARCHITECTURE){ architecture = vCmd[1]; if(!read_packages_dir( table_vPkg, packages_dir+'/'+architecture)){ return -1; }
+            }else if(vCmd[0] == cmd_BUILD_ENV   ){ v_build_env  = vCmd && sstd::slice(1, sstd::end());
+            }else if(vCmd[0] == cmd_IMPORT      ){ /* Not implimented */
             }else{
                 sstd::printn(architecture);
                 sstd::vvec<std::string> vPkgList = v_vvLine[n] && sstd::slice(l, sstd::end());
@@ -341,13 +349,13 @@ int main(int argc, char *argv[]){
                 bool ret=true;
                 std::vector<struct pkg> v_pkg_requested = vPkgList2vPkg(ret, vPkgList); if(!ret){ return -1; }
                 std::vector<struct pkg> v_inst_pkg      = solve_depends___dummy(ret, v_pkg_requested, table_vPkg); if(!ret){ return -1; }
-                install_libs(CACHE_DIR, BUILD_DIR, INST_PATH, packages_dir+'/'+architecture, TF_genArchive, archive_dir, architecture, v_inst_pkg);
+                install_libs(CACHE_DIR, BUILD_DIR, INST_PATH, v_build_env, architecture, packages_dir+'/'+architecture, v_inst_pkg, TF_genArchive, archive_dir);
             }
         }
     }
-    #undef cmd_ARCHITECTURE
-    #undef cmd_BUILD_ENV
     #undef cmd_IMPORT
+    #undef cmd_BUILD_ENV
+    #undef cmd_ARCHITECTURE
     
     printf("\n");
     sstd::measureTime_stop_print(timem);

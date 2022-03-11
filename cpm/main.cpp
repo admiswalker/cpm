@@ -343,7 +343,6 @@ int main(int argc, char *argv[]){
             }else if(vCmd[0] == cmd_BUILD_ENV   ){ v_build_env  = vCmd && sstd::slice(1, sstd::end());
             }else if(vCmd[0] == cmd_IMPORT      ){ /* Not implimented */
             }else{
-                sstd::printn(architecture);
                 sstd::vvec<std::string> vPkgList = v_vvLine[n] && sstd::slice(l, sstd::end());
                 
                 bool ret=true;

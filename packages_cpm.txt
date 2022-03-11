@@ -1,14 +1,52 @@
-architecture, amd64;
+ARCHITECTURE, amd64;
 
+BUILD_ENV, SYSTEM_ENV;
 baseArchive, gcc-8.4.0;
+
+//IMPORT, libExample, https://github.com/xxxxxxx/download_install.sh;
+
+//BUILD_ENV, DOCKER_ENV, ./packages/amd64/dockerfile/ubuntu18.04_for_build_gcc/docker_run.sh;
+//m4, 1.4.15;
+//gmp, 6.1.0;
+//mpfr, 3.1.4;
+//mpc, 1.0.3;
+//isl, 0.18;
+//gcc, 8.4.0;
+
+/*
+BUILD_ENV, LOAD_ENV, ./cpm/set_env.sh;
 cmake, 3.20.1;
 googletest, 1.11.0;
 sstd, latest;
+libExample, 0.1.0;
+*/
 
+
+
+
+
+//------------------------
+
+/*
+BUILD_ENV(DOCKER_ENV, ./packages/amd64/dockerfile/ubuntu18.04_for_build_gcc/docker_run.sh){
+  m4, 1.4.15;
+  gmp, 6.1.0;
+  mpfr, 3.1.4;
+  mpc, 1.0.3;
+  isl, 0.18;
+  gcc, 8.4.0;
+}
+
+BUILD_ENV(LOAD_ENV, ./packages/amd64/dockerfile/ubuntu18.04_for_build_gcc/docker_run.sh){
+  baseArchive, gcc-8.4.0;
+  cmake, 3.20.1;
+  googletest, 1.11.0;
+  sstd, latest;
+}
+*/
 
 //sstd, 1.0.0;
 // nuexpected_package, 1.0.0;
-
 
 // memo
 // - package.json のチルダ(~) とキャレット(^), https://tver.jp/corner/f0095078

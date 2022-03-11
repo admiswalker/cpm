@@ -97,42 +97,6 @@ bool str2struct_pkg(struct pkg& r, const std::string& name_in, const std::string
 //bool struct_pkg2str(std::string& s, const struct pkg& ret){
 //    return true;
 //}
-/*
-// Not used implimentation
-
-bool get_architecture(std::string& architecture_ret, std::vector<std::string>& v_line){
-    uint len=v_line.size();
-    for(uint i=0; i<len; ++i){
-        std::vector<std::string> v_cmd = sstd::splitByComma( v_line[i] ); if(v_cmd.size() != 2){ sstd::pdbg("ERROR: v_cmd.size() != 2.\n"); return false; }
-        
-        if(sstd::strcmp(v_cmd[0], "ARCHITECTURE")){
-            architecture_ret = v_cmd[1];
-            v_line.erase(v_line.begin() + i);
-            return true;
-        }
-    }
-    return false;
-}
-bool get_v_pkg(std::vector<struct pkg>& v_pkg_ret, const std::vector<std::string>& v_line){
-    uint len=v_line.size();
-    for(uint i=0; i<len; ++i){
-        std::vector<std::string> v_cmd = sstd::splitByComma( v_line[i] ); if(v_cmd.size() != 2){ sstd::pdbg("ERROR: v_cmd.size() != 2.\n"); return false; }
-        
-        struct pkg r; if(!str2struct_pkg(r, v_cmd[0], v_cmd[1])){ return false; }
-        v_pkg_ret <<= r;
-    }
-    return true;
-}
-bool read_packages_txt(std::string& architecture_ret, std::vector<struct pkg>& v_pkg_ret, const std::string& path_packages){
-    std::vector<std::string> v_line = sstd::getCommandList( path_packages );
-
-    bool ret;
-    ret = get_architecture(architecture_ret, v_line); if(!ret){ return false; }
-    ret = get_v_pkg(v_pkg_ret, v_line); if(!ret){ return false; }
-    
-    return true;
-}
-*/
 std::vector<struct pkg> vPkgList2vPkg(bool& ret, const sstd::vvec<std::string>& vPkgList){
     ret=true;
     std::vector<struct pkg> v_pkg_ret;
@@ -385,21 +349,6 @@ int main(int argc, char *argv[]){
     #undef cmd_BUILD_ENV
     #undef cmd_IMPORT
     
-    return 0;
-    /*
-    std::vector<struct pkg> v_pkg_requested;
-    if(!read_packages_txt( architecture, v_pkg_requested, path_packages )){ return -1; }
-    packages_dir += '/' + architecture;
-    
-    std::unordered_map<std::string, std::vector<struct pkg>> table_vPkg; if(!read_packages_dir( table_vPkg, packages_dir )){ return -1; }
-    
-    // Solveing the dependencies
-    //   Not implimented yet.
-//  std::vector<struct pkg> v_inst_pkg = solve_depends(vv_packages, v_pkg);
-    std::vector<struct pkg> v_inst_pkg; if(!solve_depends___dummy( v_inst_pkg, v_pkg_requested, table_vPkg )){ return -1; }
-    
-    install_libs(CACHE_DIR, BUILD_DIR, INST_PATH, packages_dir, TF_genArchive, archive_dir, architecture, v_inst_pkg);
-    */
     printf("\n");
     sstd::measureTime_stop_print(timem);
     return 0;

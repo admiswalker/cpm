@@ -4,7 +4,7 @@ ARCHITECTURE, amd64;
 /*
 BUILD_ENV, SYSTEM_ENV;
 baseArchive, gcc-8.4.0;
-*/
+//*/
 
 //RUN_CMD, ./cpm/build_env/docker/ubuntu18.04_for_build_gcc/docker_build.sh;
 //BUILD_ENV, DOCKER_ENV, ./cpm/build_env/docker/ubuntu18.04_for_build_gcc/docker_run.sh;

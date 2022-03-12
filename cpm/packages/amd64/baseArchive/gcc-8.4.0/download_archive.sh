@@ -6,6 +6,8 @@
 #    '--------------------------------------------------------------------------------'
 echo '--- begin: download baseArchive/gcc-8.4.0 --------------------------------------'
 
+CALL_DIR=`pwd -P`
+CACHE_DIR=$CALL_DIR/$CACHE_DIR # When using Docker, the absolute path is determined at run time.
 mkdir -p $CACHE_DIR
 
 URL1=https://github.com/admiswalker/cpm_baseArchive/raw/main/base_archive/amd64/gcc/8.4.0/amd64-gcc-8.4.0.tar.xz-00

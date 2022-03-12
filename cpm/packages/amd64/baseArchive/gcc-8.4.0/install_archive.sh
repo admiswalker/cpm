@@ -6,6 +6,8 @@
 #    '--------------------------------------------------------------------------------'
 echo '--- begin: install baseArchive/gcc-8.4.0 ---------------------------------------'
 
+CALL_DIR=`pwd -P`
+INST_PATH=$CALL_DIR/$INST_PATH # When using Docker, the absolute path is determined at run time.
 mkdir -p $INST_PATH
 
 fName='amd64-gcc-8.4.0.tar.xz'

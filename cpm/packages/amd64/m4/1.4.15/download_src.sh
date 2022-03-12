@@ -1,4 +1,5 @@
 #!/bin/bash
+exit 0;
 
 # Usage
 #   - Set values of `CACHE_DIR`, `BUILD_DIR` and `INST_PATH` using `export` before call this script.
@@ -8,7 +9,6 @@ echo '--- begin: download m4/1.4.15 --------------------------------------------
 
 CALL_DIR=`pwd -P`
 CACHE_DIR=$CALL_DIR/$CACHE_DIR # When using Docker, the absolute path is determined at run time.
-
 mkdir -p $CACHE_DIR
 
 URL=http://ftp.gnu.org/gnu/m4/m4-1.4.15.tar.gz

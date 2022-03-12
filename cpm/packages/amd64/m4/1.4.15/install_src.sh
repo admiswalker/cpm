@@ -9,7 +9,6 @@ echo '--- begin: install m4/1.4.15 ---------------------------------------------
 CALL_DIR=`pwd -P`
 BUILD_DIR=$CALL_DIR/$BUILD_DIR # When using Docker, the absolute path is determined at run time.
 INST_PATH=$CALL_DIR/$INST_PATH # When using Docker, the absolute path is determined at run time.
-
 mkdir -p $BUILD_DIR
 mkdir -p $INST_PATH
 

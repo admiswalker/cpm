@@ -11,7 +11,7 @@ mkdir -p $INST_PATH
 
 fName='cmake-3.20.1.tar.gz'
 fName_base=${fName%.*.*} # cmake-3.20.1
-libName=${fName%-*}      # cmake
+#libName=${fName%-*}      # cmake
 
 # unpacking the archive file
 if [ ! -e $BUILD_DIR/$fName_base ]; then

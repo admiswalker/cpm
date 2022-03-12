@@ -224,10 +224,14 @@ bool install_libs(const std::string& CACHE_DIR,
         }
         
         std::string cmd;
+        std::string runner = "sh";
+        std::string options;
         if(v_build_env.size()==0){ sstd::pdbg("ERROR: BUILD_ENV is not set.\n"); }
         if      (v_build_env[0] == "CPM_ENV"   ){ cmd += return_set_env_cmd();
-        }else if(v_build_env[0] == "DOCKER_ENV"){ /* Not implemented */
-        }else if(v_build_env[0] == "SYSTEM_ENV"){ /* do nothing */
+        }else if(v_build_env[0] == "DOCKER_ENV"){ sstd::system(v_build_env[1]+"/docker_build.sh"); // build docker image
+                                                  runner = "sh " + v_build_env[1] + "/docker_run.sh";
+                                                  options = "--env CACHE_DIR --env BUILD_DIR --env INST_PATH";
+        }else if(v_build_env[0] == "SYSTEM_ENV"){ // do nothing
         }else{
             sstd::pdbg("ERROR: BUILD_ENV has invalid value: %s.\n", v_build_env[0].c_str());
             return false;
@@ -237,13 +241,13 @@ bool install_libs(const std::string& CACHE_DIR,
         cmd += "export INST_PATH=" + (TF_genArchive ? INST_PATH_acv:INST_PATH) + '\n';
         cmd += "\n";
         if(TF_useArchive){
-            cmd += "sh " + pkg_shell_dir + "/download_archive.sh" + '\n';
-            cmd += "sh " + pkg_shell_dir + "/install_archive.sh" + '\n';
+            cmd += runner + ' ' + pkg_shell_dir + "/download_archive.sh" + ' ' + options + '\n';
+            cmd += runner + ' ' + pkg_shell_dir + "/install_archive.sh" + ' ' + options + '\n';
         }else{
-            cmd += "sh " + pkg_shell_dir + "/download_src.sh" + '\n';
-            cmd += "sh " + pkg_shell_dir + "/install_src.sh" + '\n';
+            cmd += runner + ' ' + pkg_shell_dir + "/download_src.sh" + ' ' + options + '\n';
+            cmd += runner + ' ' + pkg_shell_dir + "/install_src.sh" + ' ' + options + '\n';
         }
-        
+        sstd::printn(cmd);
         sstd::system(cmd);
         
         if(TF_genArchive){
@@ -302,7 +306,8 @@ int main(int argc, char *argv[]){
     
     std::string path_packages = "packages_cpm.txt"; // -p packages_cpm.txt
     
-    std::string call_path = sstd::system_stdout("pwd"); call_path.pop_back(); // pop_back() delete '\n'.
+//  std::string call_path = sstd::system_stdout("pwd"); call_path.pop_back(); // pop_back() delete '\n'.
+    std::string call_path = ".";
     std::string CACHE_DIR = call_path+"/env_cpm/cache";
     std::string BUILD_DIR = call_path+"/env_cpm/build"; // -b env_cpm/build
     std::string INST_PATH = call_path+"/env_cpm/local"; // -i env_cpm/local

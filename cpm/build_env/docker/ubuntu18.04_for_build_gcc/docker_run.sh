@@ -1,12 +1,12 @@
 #!/bin/sh
 ALL_ARG=$@
 CALL_DIR=`pwd -P`
-#RELATIVE_PATH=.${1#$CALL_DIR}
-#DOCKER_OPTIONS=${ALL_ARG#$CALL_DIR*.sh}
-RELATIVE_PATH=$1
+#RELATIVE_PATH=.${1#$CALL_DIR}           # relative path
+#DOCKER_OPTIONS=${ALL_ARG#$CALL_DIR*.sh} # relative path
+RELATIVE_PATH=$1 # abs path
 echo RELATIVE_PATH
 echo $RELATIVE_PATH
-DOCKER_OPTIONS=${ALL_ARG#$RELATIVE_PATH}
+DOCKER_OPTIONS=${ALL_ARG#$RELATIVE_PATH} # abs path
 echo DOCKER_OPTIONS
 echo $DOCKER_OPTIONS
 docker run --rm -it --name run_cpm -v $PWD:/home -w /home -p 8000:8000 $DOCKER_OPTIONS docker_img_cpm_gen:latest sh $RELATIVE_PATH

@@ -158,15 +158,18 @@ std::string return_set_env_cmd(){
     return sstd::read("./cpm/set_env.sh");
 }
 void gen_archive(const std::string& save_name, const std::string& ext, const std::string& path){
+    std::string call_path = sstd::system_stdout("pwd"); call_path.pop_back(); // pop_back() delete '\n'.
+    std::string path_tmp      = call_path + '/' + path;      // When using Docker, the absolute path is determined at run time.
+    std::string save_name_tmp = call_path + '/' + save_name; // When using Docker, the absolute path is determined at run time.
     
-    if      (ext=="tar.xz"){ sstd::system(sstd::ssprintf("cd %s; tar -Jcf %s *", path.c_str(), save_name.c_str()));
-    }else if(ext=="zip"   ){ sstd::system(sstd::ssprintf("cd %s; zip -rq %s *", path.c_str(), save_name.c_str()));
+    if      (ext=="tar.xz"){ sstd::system(sstd::ssprintf("cd %s; tar -Jcf %s *", path_tmp.c_str(), save_name_tmp.c_str()));
+    }else if(ext=="zip"   ){ sstd::system(sstd::ssprintf("cd %s; zip -rq %s *", path_tmp.c_str(), save_name_tmp.c_str()));
     }else                  { sstd::pdbg("Error: Unexpected extension.");
     }
     
-    uint64 size = std::stoull(sstd::system_stdout(sstd::ssprintf("ls -al %s | cut -d ' ' -f 5", save_name.c_str())));
+    uint64 size = std::stoull(sstd::system_stdout(sstd::ssprintf("ls -al %s | cut -d ' ' -f 5", save_name_tmp.c_str())));
     if(size >= 104857600){
-        sstd::system(sstd::ssprintf("split -d -b 100m %s %s-", save_name.c_str(), save_name.c_str())); // test by zip to reduce excusion time.
+        sstd::system(sstd::ssprintf("split -d -b 100m %s %s-", save_name_tmp.c_str(), save_name_tmp.c_str())); // test by zip to reduce excusion time.
     }
     return;
 }
@@ -307,15 +310,20 @@ int main(int argc, char *argv[]){
     std::string path_packages = "packages_cpm.txt"; // -p packages_cpm.txt
     
 //  std::string call_path = sstd::system_stdout("pwd"); call_path.pop_back(); // pop_back() delete '\n'.
-    std::string call_path = ".";
-    std::string CACHE_DIR = call_path+"/env_cpm/cache";
-    std::string BUILD_DIR = call_path+"/env_cpm/build"; // -b env_cpm/build
-    std::string INST_PATH = call_path+"/env_cpm/local"; // -i env_cpm/local
+//  std::string CACHE_DIR = call_path+"/env_cpm/cache";
+//  std::string BUILD_DIR = call_path+"/env_cpm/build"; // -b env_cpm/build
+//  std::string INST_PATH = call_path+"/env_cpm/local"; // -i env_cpm/local
+//  std::string archive_dir = call_path+"/env_cpm/archive";
+//  std::string packages_dir = call_path+"/cpm/packages";
 
+    // Because of when using Docker, the absolute path is determined at run time.
+    // Use relative path internally and convert absolute path when immediately before running scripts and commands.
+    std::string CACHE_DIR = "env_cpm/cache";
+    std::string BUILD_DIR = "env_cpm/build"; // -b env_cpm/build
+    std::string INST_PATH = "env_cpm/local"; // -i env_cpm/local
     bool TF_genArchive = false;
-    std::string archive_dir = call_path+"/env_cpm/archive";
-    
-    std::string packages_dir = call_path+"/cpm/packages";
+    std::string archive_dir  = "env_cpm/archive";
+    std::string packages_dir = "cpm/packages";
     
     char c = ' ';
     for(int i=1; i<argc; ++i){
@@ -330,7 +338,7 @@ int main(int argc, char *argv[]){
         default: { break; }
         }
     }
-
+    
     std::string architecture;
     std::unordered_map<std::string, std::vector<struct pkg>> table_vPkg;
     sstd::vec<std::string> v_build_env;

@@ -6,6 +6,10 @@
 #    '--------------------------------------------------------------------------------'
 echo '--- begin: install m4/1.4.15 ---------------------------------------------------'
 
+CALL_DIR=`pwd -P`
+BUILD_DIR=$CALL_DIR/$BUILD_DIR
+INST_PATH=$CALL_DIR/$INST_PATH
+
 mkdir -p $BUILD_DIR
 mkdir -p $INST_PATH
 

@@ -1,15 +1,9 @@
 #!/bin/sh
 
-# Case1. get call path of docker
-#   ALL_ARG: pwd ./
-#       CMD: pwd
-#   CMD_ARG:      pwd
-#
-# Case2. run shell script on docker
-#   ALL_ARG: sh cpm/packages/amd64/m4/1.4.15/install_src.sh --env CACHE_DIR --env BUILD_DIR --env INST_PATH
-#       CMD: sh cpm/packages/amd64/m4/1.4.15/install_src.sh
-#   CMD_ARG:    cpm/packages/amd64/m4/1.4.15/install_src.sh
-#                                                           --env CACHE_DIR --env BUILD_DIR --env INST_PATH
+# Example of run shell script on docker
+#          ALL_ARG: cpm/packages/amd64/m4/1.4.15/install_src.sh --env CACHE_DIR --env BUILD_DIR --env INST_PATH
+#              CMD: cpm/packages/amd64/m4/1.4.15/install_src.sh
+#   DOCKER_OPTIONS:                                             --env CACHE_DIR --env BUILD_DIR --env INST_PATH
 
 ALL_ARG=$@
 CMD=$1

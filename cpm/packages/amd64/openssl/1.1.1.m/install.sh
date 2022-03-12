@@ -3,12 +3,14 @@
 # Usage
 #   - Set values of `CACHE_DIR`, `BUILD_DIR` and `INST_PATH` using `export` before call this script.
 
+CALL_DIR=`pwd -P`
+CACHE_DIR=$CALL_DIR/$CACHE_DIR; mkdir -p $CACHE_DIR # When using Docker, the absolute path is determined at run time.
+BUILD_DIR=$CALL_DIR/$BUILD_DIR; mkdir -p $BUILD_DIR # When using Docker, the absolute path is determined at run time.
+INST_PATH=$CALL_DIR/$INST_PATH; mkdir -p $INST_PATH # When using Docker, the absolute path is determined at run time.
+
+
 echo '--- begin: install openssl/1.1.1m ----------------------------------------------'
 echo '--------------------------------------------------------------------------------'
-
-mkdir -p $CACHE_DIR
-mkdir -p $BUILD_DIR
-mkdir -p $INST_PATH
 
 URL=https://www.openssl.org/source/openssl-1.1.1m.tar.gz
 fName=${URL##*/}         # openssl-1.1.1m.tar.gz

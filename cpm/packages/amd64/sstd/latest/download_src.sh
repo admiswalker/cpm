@@ -3,10 +3,12 @@
 # Usage
 #   - Set values of `CACHE_DIR`, `BUILD_DIR` and `INST_PATH` using `export` before call this script.
 
+CALL_DIR=`pwd -P`
+CACHE_DIR=$CALL_DIR/$CACHE_DIR; mkdir -p $CACHE_DIR # When using Docker, the absolute path is determined at run time.
+
+
 #    '--------------------------------------------------------------------------------'
 echo '--- begin: download sstd/latest ------------------------------------------------'
-
-mkdir -p $CACHE_DIR
 
 URL=https://github.com/admiswalker/SubStandardLibrary-SSTD-/archive/refs/heads/master.zip
 #fName=${URL##*/}         # master.zip

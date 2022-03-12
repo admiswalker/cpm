@@ -3,12 +3,12 @@
 # Usage
 #   - Set values of `CACHE_DIR`, `BUILD_DIR` and `INST_PATH` using `export` before call this script.
 
+CALL_DIR=`pwd -P`
+CACHE_DIR=$CALL_DIR/$CACHE_DIR; mkdir -p $CACHE_DIR # When using Docker, the absolute path is determined at run time.
+
+
 #    '--------------------------------------------------------------------------------'
 echo '--- begin: download baseArchive/gcc-8.4.0 --------------------------------------'
-
-CALL_DIR=`pwd -P`
-CACHE_DIR=$CALL_DIR/$CACHE_DIR # When using Docker, the absolute path is determined at run time.
-mkdir -p $CACHE_DIR
 
 URL1=https://github.com/admiswalker/cpm_baseArchive/raw/main/base_archive/amd64/gcc/8.4.0/amd64-gcc-8.4.0.tar.xz-00
 URL2=https://github.com/admiswalker/cpm_baseArchive/raw/main/base_archive/amd64/gcc/8.4.0/amd64-gcc-8.4.0.tar.xz-01

@@ -167,20 +167,6 @@ void gen_archive(const std::string& save_name, const std::string& ext, const std
     if(size >= 104857600){
         sstd::system(sstd::ssprintf("split -d -b 100m %s %s-", save_name.c_str(), save_name.c_str())); // test by zip to reduce excusion time.
     }
-    /*
-    std::string call_path = sstd::system_stdout("pwd"); call_path.pop_back(); // pop_back() delete '\n'.
-    std::string path_tmp      = call_path + '/' + path;      // When using Docker, the absolute path is determined at run time.
-    std::string save_name_tmp = call_path + '/' + save_name; // When using Docker, the absolute path is determined at run time.
-    
-    if      (ext=="tar.xz"){ sstd::system(sstd::ssprintf("cd %s; tar -Jcf %s *", path_tmp.c_str(), save_name_tmp.c_str()));
-    }else if(ext=="zip"   ){ sstd::system(sstd::ssprintf("cd %s; zip -rq %s *", path_tmp.c_str(), save_name_tmp.c_str()));
-    }else                  { sstd::pdbg("Error: Unexpected extension.");
-    }
-    
-    uint64 size = std::stoull(sstd::system_stdout(sstd::ssprintf("ls -al %s | cut -d ' ' -f 5", save_name_tmp.c_str())));
-    if(size >= 104857600){
-        sstd::system(sstd::ssprintf("split -d -b 100m %s %s-", save_name_tmp.c_str(), save_name_tmp.c_str())); // test by zip to reduce excusion time.
-    }*/
     return;
 }
 void gen_hashFile(const std::string& archive_dir, const std::string& save_name, const std::string& ext){
@@ -212,6 +198,7 @@ bool install_libs(const std::string& CACHE_DIR,
     
     //const std::string ext = "tar.xz";
     const std::string ext = "zip"; // test by zip to reduce excusion time.
+    std::string call_path = sstd::system_stdout("pwd"); call_path.pop_back(); // pop_back() delete '\n'.
     
     for(uint i=0; i<v_pkg.size(); ++i){
         struct pkg p = v_pkg[i];
@@ -239,31 +226,20 @@ bool install_libs(const std::string& CACHE_DIR,
         std::string cmd;
         std::string runner = "sh";
         std::string options;
-        std::string call_path = sstd::system_stdout("pwd"); call_path.pop_back(); // pop_back() delete '\n'.
-        sstd::printn(call_path);
         if(v_build_env.size()==0){ sstd::pdbg("ERROR: BUILD_ENV is not set.\n"); }
         if      (v_build_env[0] == "CPM_ENV"   ){ cmd += return_set_env_cmd();
         }else if(v_build_env[0] == "DOCKER_ENV"){ sstd::system(v_build_env[1]+"/docker_build.sh"); // build docker image
                                                   runner = "sh " + v_build_env[1] + "/docker_run.sh";
                                                   options = "--env CACHE_DIR --env BUILD_DIR --env INST_PATH";
-                                                  std::string runner_base = "sh " + v_build_env[1] + "/docker_run.sh";
-                                                  sstd::printn("imh001");
-                                                  sstd::printn(runner_base);
-                                                  //call_path = sstd::system_stdout(runner_base+" bash pwd"); call_path.pop_back(); // pop_back() delete '\n'.
-                                                  call_path = sstd::system_stdout("./cpm/build_env/docker/ubuntu18.04_for_build_gcc/docker_run.sh pwd"); call_path.pop_back(); // pop_back() delete '\n'.
-                                                  sstd::printn(call_path);
-                                                  sstd::printn("imh002");
         }else if(v_build_env[0] == "SYSTEM_ENV"){ // do nothing
         }else{
             sstd::pdbg("ERROR: BUILD_ENV has invalid value: %s.\n", v_build_env[0].c_str());
             return false;
         }
-        sstd::printn("imh002-2");
-        cmd += "export CACHE_DIR=" + call_path + '/' + cache_pkg_dir + '\n';
-        cmd += "export BUILD_DIR=" + call_path + '/' + build_pkg_dir + '\n';
-        cmd += "export INST_PATH=" + call_path + '/' + (TF_genArchive ? INST_PATH_acv:INST_PATH) + '\n';
+        cmd += "export CACHE_DIR=" + cache_pkg_dir + '\n';
+        cmd += "export BUILD_DIR=" + build_pkg_dir + '\n';
+        cmd += "export INST_PATH=" + (TF_genArchive ? INST_PATH_acv:INST_PATH) + '\n';
         cmd += "\n";
-        sstd::printn("imh003");
         if(TF_useArchive){
             cmd += runner + ' ' + pkg_shell_dir + "/download_archive.sh" + ' ' + options + '\n';
             cmd += runner + ' ' + pkg_shell_dir + "/install_archive.sh" + ' ' + options + '\n';
@@ -271,11 +247,7 @@ bool install_libs(const std::string& CACHE_DIR,
             cmd += runner + ' ' + pkg_shell_dir + "/download_src.sh" + ' ' + options + '\n';
             cmd += runner + ' ' + pkg_shell_dir + "/install_src.sh" + ' ' + options + '\n';
         }
-        sstd::printn("imh004");
-        sstd::printn(cmd);
-        sstd::printn("imh004-02");
         sstd::system(cmd);
-        sstd::printn("imh005");
         
         if(TF_genArchive){
             sstd::mkdir(archive_pkg_dir);

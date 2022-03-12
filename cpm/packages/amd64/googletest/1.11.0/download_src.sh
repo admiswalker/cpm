@@ -3,10 +3,12 @@
 # Usage
 #   - Set values of `CACHE_DIR`, `BUILD_DIR` and `INST_PATH` using `export` before call this script.
 
+CALL_DIR=`pwd -P`
+CACHE_DIR=$CALL_DIR/$CACHE_DIR; mkdir -p $CACHE_DIR # When using Docker, the absolute path is determined at run time.
+
+
 #    '--------------------------------------------------------------------------------'
 echo '--- begin: download googletest/1.11.0 ------------------------------------------'
-
-mkdir -p $CACHE_DIR
 
 URL=https://github.com/google/googletest/archive/refs/tags/release-1.11.0.tar.gz
 #fName=${URL##*/}         # release-1.11.0.tar.gz

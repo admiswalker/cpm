@@ -250,7 +250,6 @@ bool install_libs(const std::string& CACHE_DIR,
             cmd += runner + ' ' + pkg_shell_dir + "/download_src.sh" + ' ' + options + '\n';
             cmd += runner + ' ' + pkg_shell_dir + "/install_src.sh" + ' ' + options + '\n';
         }
-        sstd::printn(cmd);
         sstd::system(cmd);
         
         if(TF_genArchive){
@@ -309,13 +308,6 @@ int main(int argc, char *argv[]){
     
     std::string path_packages = "packages_cpm.txt"; // -p packages_cpm.txt
     
-//  std::string call_path = sstd::system_stdout("pwd"); call_path.pop_back(); // pop_back() delete '\n'.
-//  std::string CACHE_DIR = call_path+"/env_cpm/cache";
-//  std::string BUILD_DIR = call_path+"/env_cpm/build"; // -b env_cpm/build
-//  std::string INST_PATH = call_path+"/env_cpm/local"; // -i env_cpm/local
-//  std::string archive_dir = call_path+"/env_cpm/archive";
-//  std::string packages_dir = call_path+"/cpm/packages";
-
     // Because of when using Docker, the absolute path is determined at run time.
     // Use relative path internally and convert absolute path when immediately before running scripts and commands.
     std::string CACHE_DIR = "env_cpm/cache";

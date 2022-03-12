@@ -1,11 +1,4 @@
 #!/bin/bash
-echo CACHE_DIR
-echo $CACHE_DIR
-echo BUILD_DIR
-echo $BUILD_DIR
-echo INST_PATH
-echo $INST_PATH
-exit 0
 
 # Usage
 #   - Set values of `CACHE_DIR`, `BUILD_DIR` and `INST_PATH` using `export` before call this script.
@@ -14,7 +7,7 @@ exit 0
 echo '--- begin: download m4/1.4.15 --------------------------------------------------'
 
 CALL_DIR=`pwd -P`
-CACHE_DIR=$CALL_DIR/$CACHE_DIR
+CACHE_DIR=$CALL_DIR/$CACHE_DIR # When using Docker, the absolute path is determined at run time.
 
 mkdir -p $CACHE_DIR
 

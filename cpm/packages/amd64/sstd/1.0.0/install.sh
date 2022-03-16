@@ -35,7 +35,7 @@ fi
 #find $CACHE_DIR/$libName -name $fName_hash -type f -print0 | xargs -0 grep $(sha256sum $CACHE_DIR/$libName/$fName) >/dev/null 2>&1
 echo $(sha256sum $CACHE_DIR/$libName/$fName) | grep 'fd443523f98dadfb60d0bb85d3b4bd26aec68703655944fb96ab4a33b9de5084' >/dev/null 2>&1
 if [ ! $? = 0 ]; then
-    echo 'ERROR: cmake: hash value of downloaded file is not match.'
+    echo -e "\e[31mERROR: cmake: hash value of downloaded file is not match.\e[m"
     return -1
 fi
 

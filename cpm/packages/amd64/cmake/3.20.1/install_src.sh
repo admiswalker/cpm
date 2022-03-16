@@ -21,7 +21,7 @@ if [ ! -e $BUILD_DIR/$fName_base ]; then
 fi
 
 # installation
-if [ ! -e $INST_PATH/lib/libgtest_main.a ]; then
+if [ ! -e $INST_PATH/lib/libXXXXXXXXXXXXXXXXX ]; then
     cd $BUILD_DIR/$fName_base;
     ./configure --prefix=$INST_PATH -- -DCMAKE_USE_OPENSSL=OFF
     

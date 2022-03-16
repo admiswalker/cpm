@@ -158,6 +158,7 @@ std::string return_set_env_cmd(){
     return sstd::read("./cpm/set_env.sh");
 }
 void gen_archive(const std::string& save_name, const std::string& ext, const std::string& path){
+    
     if      (ext=="tar.xz"){ sstd::system(sstd::ssprintf("cd %s; tar -Jcf %s *", path.c_str(), save_name.c_str()));
     }else if(ext=="zip"   ){ sstd::system(sstd::ssprintf("cd %s; zip -rq %s *", path.c_str(), save_name.c_str()));
     }else                  { sstd::pdbg("Error: Unexpected extension.");
@@ -230,7 +231,7 @@ bool install_libs(const std::string& CACHE_DIR,
         if      (v_build_env[0] == "CPM_ENV"   ){ cmd += return_set_env_cmd();
         }else if(v_build_env[0] == "DOCKER_ENV"){ sstd::system(v_build_env[1]+"/docker_build.sh"); // build docker image
                                                   runner = "sh " + v_build_env[1] + "/docker_run.sh";
-                                                  options = "--env CACHE_DIR --env BUILD_DIR --env INST_PATH";
+                                                  options = "--env CACHE_DIR --env BUILD_DIR --env INST_PATH --env INed_PATH";
         }else if(v_build_env[0] == "SYSTEM_ENV"){ // do nothing
         }else{
             sstd::pdbg("ERROR: BUILD_ENV has invalid value: %s.\n", v_build_env[0].c_str());
@@ -239,6 +240,7 @@ bool install_libs(const std::string& CACHE_DIR,
         cmd += "export CACHE_DIR=" + cache_pkg_dir + '\n';
         cmd += "export BUILD_DIR=" + build_pkg_dir + '\n';
         cmd += "export INST_PATH=" + (TF_genArchive ? INST_PATH_acv:INST_PATH) + '\n';
+        cmd += "export INed_PATH=" + INST_PATH + '\n';
         cmd += "\n";
         if(TF_useArchive){
             cmd += runner + ' ' + pkg_shell_dir + "/download_archive.sh" + ' ' + options + '\n';
@@ -256,6 +258,12 @@ bool install_libs(const std::string& CACHE_DIR,
             
             sstd::cp(INST_PATH_acv+"/*", INST_PATH, "npu");
 //          sstd::mv(INST_PATH_arc+"/*", INST_PATH); // Not implimented yet
+
+            // replace INST_PATH_acv to INST_PATH on `*.la` file
+            std::string cmd_r;
+            cmd_r += "cd " + INST_PATH + ';';
+            cmd_r += "find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!" + INST_PATH_acv + '!' + INST_PATH + "!g'"; // $ find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!env_cpm/local_archive!env_cpm/local!g'
+            sstd::system(cmd_r);
             
             sstd::rm(INST_PATH_acv);
         }

@@ -28,7 +28,7 @@ fi
 # check hash
 find $CACHE_DIR -name $fName_hash -type f -print0 | xargs -0 grep $(sha256sum $CACHE_DIR/$fName) >/dev/null 2>&1
 if [ ! $? = 0 ]; then
-    echo 'ERROR: cmake: hash value of downloaded file is not match.'
+    echo -e "\e[31mERROR: cmake: hash value of downloaded file is not match.\e[m"
     return -1
 fi
 

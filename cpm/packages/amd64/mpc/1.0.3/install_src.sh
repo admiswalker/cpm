@@ -8,28 +8,24 @@ source ./cpm/set_env.sh
 
 
 #    '--------------------------------------------------------------------------------'
-echo '--- begin: install m4/1.4.15 ---------------------------------------------------'
+echo '--- begin: install mpc/1.0.3 ---------------------------------------------------'
 
-fName='m4-1.4.15.tar.gz'
-fName_base=${fName%.*.*} # m4-1.4.15
+fName='mpc-1.0.3.tar.gz'
+fName_base=${fName%.*.*} # mpc-1.0.3.tar.gz
+libName=${fName%-*}      # mpc
 
 # unpacking the archive file
 if [ ! -e $BUILD_DIR/$fName_base ]; then
     #unzip -n $CACHE_DIR/$libName/$fName -d $BUILD_DIR
     tar -zxf $CACHE_DIR/$fName -C $BUILD_DIR # tar.xz
+    #tar -xvf $CACHE_DIR/$fName -C $BUILD_DIR # tar.bz2
 fi
 
 # installation
-if [ ! -e $INST_PATH/bin/m4 ]; then
-    cd $BUILD_DIR/$fName_base;
-
-    # fix installation error
-    # - ref: http://programcode.blog.fc2.com/blog-entry-16.html
-    cd lib
-    sed -i -e '/gets is a security/d' ./stdio.in.h
-    cd ..
-
-    ./configure --prefix=$INST_PATH --enable-cxx
+if [ ! -e $INST_PATH/lib/lib$libName.a ]; then
+    cd $BUILD_DIR/$fName_base
+    
+    ./configure --prefix=$INST_PATH --with-gmp=$INed_PATH --with-mpfr=$INed_PATH
     make -j
     make check
     make install
@@ -38,5 +34,5 @@ if [ ! -e $INST_PATH/bin/m4 ]; then
 fi
 
 #    '--------------------------------------------------------------------------------'
-echo '----------------------------------------------------- end: install m4/1.4.15 ---'
+echo '----------------------------------------------------- end: install mpc/1.0.3 ---'
 

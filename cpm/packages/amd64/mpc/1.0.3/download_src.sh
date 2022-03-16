@@ -7,15 +7,15 @@ source ./cpm/init_path_and_dir.sh
 
 
 #    '--------------------------------------------------------------------------------'
-echo '--- begin: download m4/1.4.15 --------------------------------------------------'
+echo '--- begin: download mpc/1.0.3 --------------------------------------------------'
 
-URL=http://ftp.gnu.org/gnu/m4/m4-1.4.15.tar.gz
-fName=${URL##*/}         # m4-1.4.15.tar.gz
-fName_base=${fName%.*.*} # m4-1.4.15
+URL=https://ftp.gnu.org/gnu/mpc/mpc-1.0.3.tar.gz
+fName=${URL##*/}         # mpc-1.0.3.tar.gz
+fName_base=${fName%.*.*} # mpc-1.0.3
 
 #URL_hash=''
 #fName_hash=${URL_hash##*/} # xxx-x.x.x-sha256sum.txt
-fName_hash='m4-1.4.15-sha256sum.txt' # xxx-x.x.x-sha256sum.txt
+fName_hash='mpc-1.0.3-sha256sum.txt' # xxx-x.x.x-sha256sum.txt
 
 # downloading source file
 echo $CACHE_DIR
@@ -25,16 +25,16 @@ if [ ! -e $CACHE_DIR/$fName ]; then
 fi
 if [ ! -e $CACHE_DIR/$fName_hash ]; then
 #    wget -P $CACHE_DIR $URL_hash
-    echo '3d66dfeb609007062265a67b9a2c08d3686a74068830bacae60a6d58413c9367  m4-1.4.15.tar.gz' > $CACHE_DIR/$fName_hash
+    echo '617decc6ea09889fb08ede330917a00b16809b8db88c29c31bfbb49cbf88ecc3  mpc-1.0.3.tar.gz' > $CACHE_DIR/$fName_hash
 fi
 
 # check hash
 find $CACHE_DIR -name $fName_hash -type f -print0 | xargs -0 grep $(sha256sum $CACHE_DIR/$fName) >/dev/null 2>&1
 if [ ! $? = 0 ]; then
-    echo 'ERROR: cmake: hash value of downloaded file is not match.'
-    return -1
+    echo -e "\e[31mERROR: cmake: hash value of downloaded file is not match.\e[m"
+    exit -1
 fi
 
 #    '--------------------------------------------------------------------------------'
-echo '---------------------------------------------------- end: download m4/1.4.15 ---'
+echo '---------------------------------------------------- end: download mpc/1.0.3 ---'
 

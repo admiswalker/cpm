@@ -8,35 +8,35 @@ source ./cpm/set_env.sh
 
 
 #    '--------------------------------------------------------------------------------'
-echo '--- begin: install m4/1.4.15 ---------------------------------------------------'
+echo '--- begin: install gmp/6.1.0 ---------------------------------------------------'
 
-fName='m4-1.4.15.tar.gz'
+fName='gmp-6.1.0.tar.bz2'
 fName_base=${fName%.*.*} # m4-1.4.15
 
 # unpacking the archive file
 if [ ! -e $BUILD_DIR/$fName_base ]; then
     #unzip -n $CACHE_DIR/$libName/$fName -d $BUILD_DIR
-    tar -zxf $CACHE_DIR/$fName -C $BUILD_DIR # tar.xz
+    #tar -zxf $CACHE_DIR/$fName -C $BUILD_DIR # tar.xz
+    tar -xvf $CACHE_DIR/$fName -C $BUILD_DIR # tar.bz2
 fi
 
 # installation
-if [ ! -e $INST_PATH/bin/m4 ]; then
-    cd $BUILD_DIR/$fName_base;
-
-    # fix installation error
-    # - ref: http://programcode.blog.fc2.com/blog-entry-16.html
-    cd lib
-    sed -i -e '/gets is a security/d' ./stdio.in.h
-    cd ..
-
+if [ ! -e $INST_PATH/lib/libgmp.a ]; then
+    cd $BUILD_DIR/$fName_base
+    
+    PATH=$PATH:$INed_PATH/bin
+    
     ./configure --prefix=$INST_PATH --enable-cxx
     make -j
     make check
     make install
 
+    # gen `replacement_path_for_cpm_archive.txt`
+    echo $INST_PATH > replacement_path_for_cpm_archive.txt
+
     cd $CALL_DIR
 fi
 
 #    '--------------------------------------------------------------------------------'
-echo '----------------------------------------------------- end: install m4/1.4.15 ---'
+echo '----------------------------------------------------- end: install gmp/6.1.0 ---'
 

@@ -32,7 +32,7 @@ if [ ! -e $INST_PATH/lib/libgmp.a ]; then
     make install
 
     # gen `replacement_path_for_cpm_archive.txt`
-    echo $INST_PATH > replacement_path_for_cpm_archive.txt
+    echo $INST_PATH > $INST_PATH/replacement_path_for_cpm_archive.txt
 
     cd $CALL_DIR
 fi

@@ -157,11 +157,11 @@ std::vector<struct pkg> solve_depends___dummy(bool& ret,
 std::string return_set_env_cmd(){
     return sstd::read("./cpm/set_env.sh");
 }
-void gen_archive(const std::string& save_name, const std::string& ext, const std::string& path){
+void gen_archive(const std::string& save_name, const std::string& archive_ext, const std::string& path){
     
-    if      (ext=="tar.xz"){ sstd::system(sstd::ssprintf("cd %s; tar -Jcf %s *", path.c_str(), save_name.c_str()));
-    }else if(ext=="zip"   ){ sstd::system(sstd::ssprintf("cd %s; zip -rq %s *", path.c_str(), save_name.c_str()));
-    }else                  { sstd::pdbg("Error: Unexpected extension.");
+    if      (archive_ext=="tar.xz"){ sstd::system(sstd::ssprintf("cd %s; tar -Jcf %s *", path.c_str(), save_name.c_str()));
+    }else if(archive_ext=="zip"   ){ sstd::system(sstd::ssprintf("cd %s; zip -rq %s *", path.c_str(), save_name.c_str()));
+    }else                          { sstd::pdbg("Error: Unexpected extension.");
     }
     
     uint64 size = std::stoull(sstd::system_stdout(sstd::ssprintf("ls -al %s | cut -d ' ' -f 5", save_name.c_str())));
@@ -170,7 +170,7 @@ void gen_archive(const std::string& save_name, const std::string& ext, const std
     }
     return;
 }
-void gen_hashFile(const std::string& archive_dir, const std::string& save_name, const std::string& ext){
+void gen_hashFile(const std::string& archive_dir, const std::string& save_name){
     std::string w_str;
     
     std::vector<std::string> vPath = sstd::glob(archive_dir+R"(/*)");
@@ -188,7 +188,7 @@ bool install_libs(const std::string& CACHE_DIR,
                   const std::string& architecture,
                   const std::string& packages_dir,
                   const std::vector<struct pkg>& v_pkg,
-                  const bool TF_genArchive, const std::string& archive_dir){
+                  const bool TF_genArchive, const std::string& archive_dir, const std::string& archive_ext){
     // mkdir in the install.sh
     // 
     // sstd::mkdir(CACHE_DIR);
@@ -197,8 +197,6 @@ bool install_libs(const std::string& CACHE_DIR,
     sstd::mkdir(INST_PATH);
     std::string INST_PATH_acv = INST_PATH + "_archive";
     
-    //const std::string ext = "tar.xz";
-    const std::string ext = "zip"; // test by zip to reduce excusion time.
     std::string call_path = sstd::system_stdout("pwd"); call_path.pop_back(); // pop_back() delete '\n'.
     
     for(uint i=0; i<v_pkg.size(); ++i){
@@ -211,7 +209,7 @@ bool install_libs(const std::string& CACHE_DIR,
             
             archive_pkg_dir = archive_dir + '/' + architecture + '-' + p.name + '-' + p.ver;
             archive_path = archive_pkg_dir + '/' + architecture + '-' + p.name + '-' + p.ver;
-            if(sstd::fileExist(archive_path+'.'+ext)){ continue; }
+            if(sstd::fileExist(archive_path+'.'+archive_ext)){ continue; }
         }
 
         std::string pkg_shell_dir = packages_dir + '/' + p.name + '/' + p.ver;
@@ -250,20 +248,32 @@ bool install_libs(const std::string& CACHE_DIR,
             cmd += runner + ' ' + pkg_shell_dir + "/install_src.sh" + ' ' + options + '\n';
         }
         sstd::system(cmd);
+        /*
+        if(TF_useArchive){
+            // read replace ment txt
+            //replace_file();
+        }
+        */
         
         if(TF_genArchive){
             sstd::mkdir(archive_pkg_dir);
-            gen_archive(call_path+'/'+archive_path+'.'+ext, ext, call_path+'/'+INST_PATH_acv);
-            gen_hashFile(archive_pkg_dir, archive_path+"-sha256sum.txt", ext);
+            gen_archive(call_path+'/'+archive_path+'.'+archive_ext, archive_ext, call_path+'/'+INST_PATH_acv);
+            gen_hashFile(archive_pkg_dir, archive_path+"-sha256sum.txt");
             
             sstd::cp(INST_PATH_acv+"/*", INST_PATH, "npu");
 //          sstd::mv(INST_PATH_arc+"/*", INST_PATH); // Not implimented yet
 
+            /*
             // replace INST_PATH_acv to INST_PATH on `*.la` file
             std::string cmd_r;
             cmd_r += "cd " + INST_PATH + ';';
             cmd_r += "find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!" + INST_PATH_acv + '!' + INST_PATH + "!g'"; // $ find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!env_cpm/local_archive!env_cpm/local!g'
             sstd::system(cmd_r);
+            */
+            /*
+              // read replace ment txt
+              replace_file();
+             */
             
             sstd::rm(INST_PATH_acv);
         }
@@ -320,6 +330,8 @@ int main(int argc, char *argv[]){
     std::string INST_PATH = "env_cpm/local"; // -i env_cpm/local
     bool TF_genArchive = false;
     std::string archive_dir  = "env_cpm/archive";
+    std::string archive_ext = "tar.xz";
+    //std::string archive_ext = "zip"; // test by zip to reduce excusion time.
     std::string packages_dir = "cpm/packages";
     
     char c = ' ';
@@ -358,7 +370,7 @@ int main(int argc, char *argv[]){
                 bool ret=true;
                 std::vector<struct pkg> v_pkg_requested = vPkgList2vPkg(ret, vPkgList); if(!ret){ return -1; }
                 std::vector<struct pkg> v_inst_pkg      = solve_depends___dummy(ret, v_pkg_requested, table_vPkg); if(!ret){ return -1; }
-                install_libs(CACHE_DIR, BUILD_DIR, INST_PATH, v_build_env, architecture, packages_dir+'/'+architecture, v_inst_pkg, TF_genArchive, archive_dir);
+                install_libs(CACHE_DIR, BUILD_DIR, INST_PATH, v_build_env, architecture, packages_dir+'/'+architecture, v_inst_pkg, TF_genArchive, archive_dir, archive_ext);
             }
         }
     }

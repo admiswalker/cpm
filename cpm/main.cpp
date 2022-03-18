@@ -255,18 +255,27 @@ bool install_libs(const std::string& CACHE_DIR,
             cmd += runner + ' ' + pkg_shell_dir + "/download_src.sh" + ' ' + options + '\n';
             cmd += runner + ' ' + pkg_shell_dir + "/install_src.sh" + ' ' + options + '\n';
         }
-        sstd::system(cmd);
-        std::vector<std::string> vPath = sstd::glob(INST_WDIR+"/*", "df");
-        if(vPath.size()!=0){ sstd::cp(INST_WDIR+"/*", INST_PATH, "npu");
-        }       else       { sstd::pdbg("ERROR: CPM_INST_WDIR is empty."); return false; }
+        sstd::system(cmd); // installation
         
-//      sstd::mv(WORK_PATH+"/*", INST_PATH); // Not implimented yet
-        /*
-        if(TF_useArchive){
-            // read replace ment txt
-            //replace_file();
+        // replace path on "*la" file
+        std::string rtxt_path = INST_WDIR + "/replacement_path_for_cpm_archive.txt";
+        if(sstd::fileExist(rtxt_path)){
+            std::string INST_PATH_from_file = sstd::read(rtxt_path); INST_PATH_from_file.pop_back();
+            std::string cmd_r;
+            cmd_r += "cd " + INST_WDIR + ';';
+            cmd_r += "find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!" + INST_PATH_from_file + '!' + INST_PATH + "!g'"; // $ find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!env_cpm/local_archive!env_cpm/local!g'
+            sstd::system(cmd_r);
         }
-        */
+        
+        // copy file
+        std::vector<std::string> vPath = sstd::glob(INST_WDIR+"/*", "df");
+        if(vPath.size()!=0){
+            sstd::cp(INST_WDIR+"/*", INST_PATH, "npu");
+//          sstd::mv(WORK_PATH+"/*", INST_PATH); // Not implimented yet
+        }else{
+            sstd::pdbg("ERROR: CPM_INST_WDIR is empty.");
+            return false;
+        }
         
         if(TF_genArchive){
             sstd::mkdir(archive_pkg_dir);
@@ -276,23 +285,6 @@ bool install_libs(const std::string& CACHE_DIR,
             sstd::cp(INST_WDIR+"/*", INST_PATH, "npu");
 //          sstd::mv(INST_WDIR+"/*", INST_PATH); // Not implimented yet
 
-            /*
-            // replace INST_PATH_acv to INST_PATH on `*.la` file
-            std::string cmd_r;
-            cmd_r += "cd " + INST_PATH + ';';
-            cmd_r += "find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!" + INST_PATH_acv + '!' + INST_PATH + "!g'"; // $ find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!env_cpm/local_archive!env_cpm/local!g'
-            sstd::system(cmd_r);
-            */
-            /*
-            // read replace ment txt
-            std::string INST_PATH_acv_from_file = sstd::read(INST_PATH_acv + "/replacement_path_for_cpm_archive.txt");
-            sstd::printn(INST_PATH_acv_from_file);
-            std::string cmd_r;
-            cmd_r += "cd " + INST_PATH + ';';
-            cmd_r += "find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!" + INST_PATH_acv_from_file + '!' + INST_PATH + "!g'"; // $ find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!env_cpm/local_archive!env_cpm/local!g'
-            sstd::system(cmd_r);
-            */
-            
             sstd::rm(INST_WDIR);
         }
     }

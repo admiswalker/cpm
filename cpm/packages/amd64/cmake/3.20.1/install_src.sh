@@ -21,7 +21,7 @@ if [ ! -e $BUILD_DIR/$fName_base ]; then
 fi
 
 # installation
-if [ ! -e $INST_PATH/lib/libXXXXXXXXXXXXXXXXX ]; then
+if [ ! -e $INST_PATH/bin/cmake ]; then
     cd $BUILD_DIR/$fName_base;
     ./configure --prefix=$INST_PATH -- -DCMAKE_USE_OPENSSL=OFF
     

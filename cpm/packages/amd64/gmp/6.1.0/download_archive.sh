@@ -9,23 +9,19 @@ source ./cpm/init_path_and_dir.sh
 #    '--------------------------------------------------------------------------------'
 echo '--- begin: download gmp/6.1.0 --------------------------------------------------'
 
-URL=https://ftp.gnu.org/gnu/gmp/gmp-6.1.0.tar.bz2
-fName=${URL##*/}         # gmp-6.1.0.tar.bz2
-fName_base=${fName%.*.*} # gmp-6.1.0
+URL=https://github.com/admiswalker/cpm_archive/raw/main/archive/amd64/gmp/6.1.0/amd64-gmp-6.1.0.tar.xz
+fName=${URL##*/}         # amd64-gmp-6.1.0.tar.xz
+fName_base=${fName%.*.*} # amd64-gmp-6.1.0.tar.xz
 
-#URL_hash=''
-#fName_hash=${URL_hash##*/} # xxx-x.x.x-sha256sum.txt
-fName_hash='gmp-6.1.0-sha256sum.txt' # xxx-x.x.x-sha256sum.txt
+URL_hash=https://github.com/admiswalker/cpm_archive/raw/main/archive/amd64/gmp/6.1.0/amd64-gmp-6.1.0-sha256sum.txt
+fName_hash=${URL_hash##*/} # amd64-gmp-6.1.0.tar.xz
 
 # downloading source file
-echo $CPM_CACHE_DIR
 if [ ! -e $CPM_CACHE_DIR/$fName ]; then
-    mkdir -p $CPM_CACHE_DIR
-    cd $CPM_CACHE_DIR; wget -O $fName $URL
+    wget -P $CPM_CACHE_DIR $URL
 fi
 if [ ! -e $CPM_CACHE_DIR/$fName_hash ]; then
-#    wget -P $CACHE_DIR $URL_hash
-    echo '498449a994efeba527885c10405993427995d3f86b8768d8cdf8d9dd7c6b73e8  gmp-6.1.0.tar.bz2' > $CPM_CACHE_DIR/$fName_hash
+    wget -P $CPM_CACHE_DIR $URL_hash
 fi
 
 # check hash
@@ -37,4 +33,3 @@ fi
 
 #    '--------------------------------------------------------------------------------'
 echo '---------------------------------------------------- end: download gmp/6.1.0 ---'
-

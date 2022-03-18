@@ -14,14 +14,14 @@ fName='m4-1.4.15.tar.gz'
 fName_base=${fName%.*.*} # m4-1.4.15
 
 # unpacking the archive file
-if [ ! -e $BUILD_DIR/$fName_base ]; then
+if [ ! -e $CPM_BUILD_DIR/$fName_base ]; then
     #unzip -n $CACHE_DIR/$libName/$fName -d $BUILD_DIR
-    tar -zxf $CACHE_DIR/$fName -C $BUILD_DIR # tar.xz
+    tar -zxf $CPM_CACHE_DIR/$fName -C $CPM_BUILD_DIR # tar.xz
 fi
 
 # installation
-if [ ! -e $INST_PATH/bin/m4 ]; then
-    cd $BUILD_DIR/$fName_base;
+if [ ! -e $CPM_INST_PATH/bin/m4 ]; then
+    cd $CPM_BUILD_DIR/$fName_base;
 
     # fix installation error
     # - ref: http://programcode.blog.fc2.com/blog-entry-16.html
@@ -29,12 +29,12 @@ if [ ! -e $INST_PATH/bin/m4 ]; then
     sed -i -e '/gets is a security/d' ./stdio.in.h
     cd ..
 
-    ./configure --prefix=$INST_PATH --enable-cxx
+    ./configure --prefix=$CPM_INST_WDIR --enable-cxx
     make -j
     make check
     make install
 
-    cd $CALL_DIR
+    cd $CPM_CALL_DIR
 fi
 
 #    '--------------------------------------------------------------------------------'

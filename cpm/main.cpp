@@ -195,7 +195,8 @@ bool install_libs(const std::string& CACHE_DIR,
     // sstd::mkdir(BUILD_DIR);
     // sstd::mkdir(INST_PATH);
     sstd::mkdir(INST_PATH);
-    std::string INST_PATH_acv = INST_PATH + "_archive";
+//  std::string INST_PATH_acv = INST_PATH + "_archive";
+    std::string INST_WDIR = INST_PATH + "_work";
     
     std::string call_path = sstd::system_stdout("pwd"); call_path.pop_back(); // pop_back() delete '\n'.
     
@@ -205,7 +206,7 @@ bool install_libs(const std::string& CACHE_DIR,
         std::string archive_pkg_dir;
         std::string archive_path;
         if(TF_genArchive){
-            sstd::mkdir(INST_PATH_acv);
+            sstd::mkdir(INST_WDIR);
             
             archive_pkg_dir = archive_dir + '/' + architecture + '-' + p.name + '-' + p.ver;
             archive_path = archive_pkg_dir + '/' + architecture + '-' + p.name + '-' + p.ver;
@@ -229,16 +230,23 @@ bool install_libs(const std::string& CACHE_DIR,
         if      (v_build_env[0] == "CPM_ENV"   ){ cmd += return_set_env_cmd();
         }else if(v_build_env[0] == "DOCKER_ENV"){ sstd::system(v_build_env[1]+"/docker_build.sh"); // build docker image
                                                   runner = "sh " + v_build_env[1] + "/docker_run.sh";
-                                                  options = "--env CACHE_DIR --env BUILD_DIR --env INST_PATH --env INed_PATH";
+//                                                options = "--env CACHE_DIR --env BUILD_DIR --env INST_PATH --env INed_PATH";
+                                                  options = "--env CPM_CACHE_DIR --env CPM_BUILD_DIR --env CPM_DLIB_PATH --env CPM_INST_WDIR --env CPM_INST_PATH";
         }else if(v_build_env[0] == "SYSTEM_ENV"){ // do nothing
         }else{
             sstd::pdbg("ERROR: BUILD_ENV has invalid value: %s.\n", v_build_env[0].c_str());
             return false;
         }
-        cmd += "export CACHE_DIR=" + cache_pkg_dir + '\n';
-        cmd += "export BUILD_DIR=" + build_pkg_dir + '\n';
-        cmd += "export INST_PATH=" + (TF_genArchive ? INST_PATH_acv:INST_PATH) + '\n';
-        cmd += "export INed_PATH=" + INST_PATH + '\n';
+//      cmd += "export CACHE_DIR=" + cache_pkg_dir + '\n';
+//      cmd += "export BUILD_DIR=" + build_pkg_dir + '\n';
+//      cmd += "export INST_PATH=" + (TF_genArchive ? INST_PATH_acv:INST_PATH) + '\n';
+//      cmd += "export INed_PATH=" + INST_PATH + '\n';
+        
+        cmd += "export CPM_CACHE_DIR=" + cache_pkg_dir + '\n';
+        cmd += "export CPM_BUILD_DIR=" + build_pkg_dir + '\n';
+        cmd += "export CPM_DLIB_PATH=" + INST_PATH + '\n'; // dependent library
+        cmd += "export CPM_INST_WDIR=" + INST_WDIR + '\n'; // working dir
+        cmd += "export CPM_INST_PATH=" + INST_PATH + '\n';
         cmd += "\n";
         if(TF_useArchive){
             cmd += runner + ' ' + pkg_shell_dir + "/download_archive.sh" + ' ' + options + '\n';
@@ -248,6 +256,11 @@ bool install_libs(const std::string& CACHE_DIR,
             cmd += runner + ' ' + pkg_shell_dir + "/install_src.sh" + ' ' + options + '\n';
         }
         sstd::system(cmd);
+        std::vector<std::string> vPath = sstd::glob(INST_WDIR+"/*", "df");
+        if(vPath.size()!=0){ sstd::cp(INST_WDIR+"/*", INST_PATH, "npu");
+        }       else       { sstd::pdbg("ERROR: CPM_INST_WDIR is empty."); return false; }
+        
+//      sstd::mv(WORK_PATH+"/*", INST_PATH); // Not implimented yet
         /*
         if(TF_useArchive){
             // read replace ment txt
@@ -257,11 +270,11 @@ bool install_libs(const std::string& CACHE_DIR,
         
         if(TF_genArchive){
             sstd::mkdir(archive_pkg_dir);
-            gen_archive(call_path+'/'+archive_path+'.'+archive_ext, archive_ext, call_path+'/'+INST_PATH_acv);
+            gen_archive(call_path+'/'+archive_path+'.'+archive_ext, archive_ext, call_path+'/'+INST_WDIR);
             gen_hashFile(archive_pkg_dir, archive_path+"-sha256sum.txt");
             
-            sstd::cp(INST_PATH_acv+"/*", INST_PATH, "npu");
-//          sstd::mv(INST_PATH_arc+"/*", INST_PATH); // Not implimented yet
+            sstd::cp(INST_WDIR+"/*", INST_PATH, "npu");
+//          sstd::mv(INST_WDIR+"/*", INST_PATH); // Not implimented yet
 
             /*
             // replace INST_PATH_acv to INST_PATH on `*.la` file
@@ -271,11 +284,16 @@ bool install_libs(const std::string& CACHE_DIR,
             sstd::system(cmd_r);
             */
             /*
-              // read replace ment txt
-              replace_file();
-             */
+            // read replace ment txt
+            std::string INST_PATH_acv_from_file = sstd::read(INST_PATH_acv + "/replacement_path_for_cpm_archive.txt");
+            sstd::printn(INST_PATH_acv_from_file);
+            std::string cmd_r;
+            cmd_r += "cd " + INST_PATH + ';';
+            cmd_r += "find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!" + INST_PATH_acv_from_file + '!' + INST_PATH + "!g'"; // $ find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!env_cpm/local_archive!env_cpm/local!g'
+            sstd::system(cmd_r);
+            */
             
-            sstd::rm(INST_PATH_acv);
+            sstd::rm(INST_WDIR);
         }
     }
     

@@ -277,7 +277,12 @@ bool install_libs(const std::string& CACHE_DIR,
             return false;
         }
         
-        if(TF_genArchive){
+        if(TF_genArchive && !TF_useArchive){
+            if(sstd::glob(INST_WDIR+"/*.la", "fr").size()!=0 && sstd::fileExist(rtxt_path)==false){
+                sstd::pdbg("ERROR: replacement_path_for_cpm_archive.txt is not found.");
+                return false;
+            }
+            
             sstd::mkdir(archive_pkg_dir);
             gen_archive(call_path+'/'+archive_path+'.'+archive_ext, archive_ext, call_path+'/'+INST_WDIR);
             gen_hashFile(archive_pkg_dir, archive_path+"-sha256sum.txt");
@@ -375,7 +380,7 @@ int main(int argc, char *argv[]){
             }else if(vCmd[0] == cmd_BUILD_ENV   ){ v_build_env  = vCmd && sstd::slice(1, sstd::end());
             }else if(vCmd[0] == cmd_IMPORT      ){ /* Not implimented */
             }else{
-                sstd::vvec<std::string> vPkgList = v_vvLine[n] && sstd::slice(l, sstd::end());
+                sstd::vvec<std::string> vPkgList = v_vvLine[n] && sstd::slice(l, sstd::end()); l=v_vvLine[n].size();
                 
                 bool ret=true;
                 std::vector<struct pkg> v_pkg_requested = vPkgList2vPkg(ret, vPkgList); if(!ret){ return -1; }

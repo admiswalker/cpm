@@ -195,8 +195,8 @@ bool install_libs(const std::string& CACHE_DIR,
     // sstd::mkdir(BUILD_DIR);
     // sstd::mkdir(INST_PATH);
     sstd::mkdir(INST_PATH);
-//  std::string INST_PATH_acv = INST_PATH + "_archive";
     std::string INST_WDIR = INST_PATH + "_work";
+    sstd::mkdir(INST_WDIR);
     
     std::string call_path = sstd::system_stdout("pwd"); call_path.pop_back(); // pop_back() delete '\n'.
     
@@ -206,8 +206,6 @@ bool install_libs(const std::string& CACHE_DIR,
         std::string archive_pkg_dir;
         std::string archive_path;
         if(TF_genArchive){
-            sstd::mkdir(INST_WDIR);
-            
             archive_pkg_dir = archive_dir + '/' + architecture + '-' + p.name + '-' + p.ver;
             archive_path = archive_pkg_dir + '/' + architecture + '-' + p.name + '-' + p.ver;
             if(sstd::fileExist(archive_path+'.'+archive_ext)){ continue; }
@@ -237,11 +235,6 @@ bool install_libs(const std::string& CACHE_DIR,
             sstd::pdbg("ERROR: BUILD_ENV has invalid value: %s.\n", v_build_env[0].c_str());
             return false;
         }
-//      cmd += "export CACHE_DIR=" + cache_pkg_dir + '\n';
-//      cmd += "export BUILD_DIR=" + build_pkg_dir + '\n';
-//      cmd += "export INST_PATH=" + (TF_genArchive ? INST_PATH_acv:INST_PATH) + '\n';
-//      cmd += "export INed_PATH=" + INST_PATH + '\n';
-        
         cmd += "export CPM_CACHE_DIR=" + cache_pkg_dir + '\n';
         cmd += "export CPM_BUILD_DIR=" + build_pkg_dir + '\n';
         cmd += "export CPM_DLIB_PATH=" + INST_PATH + '\n'; // dependent library
@@ -289,9 +282,8 @@ bool install_libs(const std::string& CACHE_DIR,
             
             sstd::cp(INST_WDIR+"/*", INST_PATH, "npu");
 //          sstd::mv(INST_WDIR+"/*", INST_PATH); // Not implimented yet
-
-            sstd::rm(INST_WDIR);
         }
+        sstd::rm(INST_WDIR);
     }
     
     return true;

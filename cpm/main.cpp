@@ -189,14 +189,14 @@ bool install_libs(const std::string& CACHE_DIR,
                   const std::string& packages_dir,
                   const std::vector<struct pkg>& v_pkg,
                   const bool TF_genArchive, const std::string& archive_dir, const std::string& archive_ext){
-    // mkdir in the install.sh
+    // mkdir in the init_path_and_dir.sh
     // 
     // sstd::mkdir(CACHE_DIR);
     // sstd::mkdir(BUILD_DIR);
     // sstd::mkdir(INST_PATH);
-    sstd::mkdir(INST_PATH);
+    // sstd::mkdir(INST_PATH);
+    // sstd::mkdir(INST_WDIR);
     std::string INST_WDIR = INST_PATH + "_work";
-    sstd::mkdir(INST_WDIR);
     
     std::string call_path = sstd::system_stdout("pwd"); call_path.pop_back(); // pop_back() delete '\n'.
     
@@ -221,34 +221,38 @@ bool install_libs(const std::string& CACHE_DIR,
             sstd::mkdir(build_pkg_dir);
         }
         
-        std::string cmd;
-        std::string runner = "sh";
+        std::string cmd_env;
+        std::string runner = ""; // "sh"
         std::string options;
         if(v_build_env.size()==0){ sstd::pdbg("ERROR: BUILD_ENV is not set.\n"); }
-        if      (v_build_env[0] == "CPM_ENV"   ){ cmd += return_set_env_cmd();
+        if      (v_build_env[0] == "CPM_ENV"   ){ cmd_env += return_set_env_cmd();
         }else if(v_build_env[0] == "DOCKER_ENV"){ sstd::system(v_build_env[1]+"/docker_build.sh"); // build docker image
                                                   runner = "sh " + v_build_env[1] + "/docker_run.sh";
-//                                                options = "--env CACHE_DIR --env BUILD_DIR --env INST_PATH --env INed_PATH";
                                                   options = "--env CPM_CACHE_DIR --env CPM_BUILD_DIR --env CPM_DLIB_PATH --env CPM_INST_WDIR --env CPM_INST_PATH";
         }else if(v_build_env[0] == "SYSTEM_ENV"){ // do nothing
         }else{
             sstd::pdbg("ERROR: BUILD_ENV has invalid value: %s.\n", v_build_env[0].c_str());
             return false;
         }
-        cmd += "export CPM_CACHE_DIR=" + cache_pkg_dir + '\n';
-        cmd += "export CPM_BUILD_DIR=" + build_pkg_dir + '\n';
-        cmd += "export CPM_DLIB_PATH=" + INST_PATH + '\n'; // dependent library
-        cmd += "export CPM_INST_WDIR=" + INST_WDIR + '\n'; // working dir
-        cmd += "export CPM_INST_PATH=" + INST_PATH + '\n';
-        cmd += "\n";
+        cmd_env += "export CPM_CACHE_DIR=" + cache_pkg_dir + '\n';
+        cmd_env += "export CPM_BUILD_DIR=" + build_pkg_dir + '\n';
+        cmd_env += "export CPM_DLIB_PATH=" + INST_PATH + '\n'; // dependent library
+        cmd_env += "export CPM_INST_WDIR=" + INST_WDIR + '\n'; // working dir
+        cmd_env += "export CPM_INST_PATH=" + INST_PATH + '\n';
+        cmd_env += "\n";
+        std::string cmd_run;
         if(TF_useArchive){
-            cmd += runner + ' ' + pkg_shell_dir + "/download_archive.sh" + ' ' + options + '\n';
-            cmd += runner + ' ' + pkg_shell_dir + "/install_archive.sh" + ' ' + options + '\n';
+            cmd_run += runner + ' ' + pkg_shell_dir + "/download_archive.sh" + ' ' + options + '\n';
+            cmd_run += runner + ' ' + pkg_shell_dir + "/install_archive.sh" + ' ' + options + '\n';
         }else{
-            cmd += runner + ' ' + pkg_shell_dir + "/download_src.sh" + ' ' + options + '\n';
-            cmd += runner + ' ' + pkg_shell_dir + "/install_src.sh" + ' ' + options + '\n';
+            cmd_run += runner + ' ' + pkg_shell_dir + "/download_src.sh" + ' ' + options + '\n';
+            cmd_run += runner + ' ' + pkg_shell_dir + "/install_src.sh" + ' ' + options + '\n';
         }
-        sstd::system(cmd); // installation
+        //std::string str_isInstalled = sstd::system_stdout_stderr(cmd_env+runner+' '+pkg_shell_dir+"/is_installed.sh"+' '+options+'\n');
+        std::string str_isInstalled = sstd::system_stdout_stderr(cmd_env+pkg_shell_dir+"/is_installed.sh");
+        bool TF_isInstalled = sstd::strIn("true", str_isInstalled);
+        if(TF_isInstalled){ continue; }
+        sstd::system(cmd_env + cmd_run); // installation
         
         // replace path on "*la" file
         std::string rtxt_path = INST_WDIR + "/replacement_path_for_cpm_archive.txt";

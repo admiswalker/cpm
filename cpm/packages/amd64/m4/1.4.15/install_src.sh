@@ -1,26 +1,27 @@
 #!/bin/bash
 
-# Usage
-#   - Set values of `CACHE_DIR`, `BUILD_DIR` and `INST_PATH` using `export` before call this script.
+CPM_CALL_DIR=`pwd -P`
+. $CPM_CALL_DIR/cpm/init_path_and_dir.sh
+. $CPM_OWN_DIR/common_fn.sh
+. $CPM_CALL_DIR/cpm/set_env.sh
 
-source ./cpm/init_path_and_dir.sh
-source ./cpm/set_env.sh
 
+libName='m4'
+ver='1.4.15'
+cfn_echo_install_begin $libName $ver
 
-#    '--------------------------------------------------------------------------------'
-echo '--- begin: install m4/1.4.15 ---------------------------------------------------'
 
 fName='m4-1.4.15.tar.gz'
 fName_base=${fName%.*.*} # m4-1.4.15
 
-# unpacking the archive file
+# unpacking the src file
 if [ ! -e $CPM_BUILD_DIR/$fName_base ]; then
     #unzip -n $CACHE_DIR/$libName/$fName -d $BUILD_DIR
     tar -zxf $CPM_CACHE_DIR/$fName -C $CPM_BUILD_DIR # tar.xz
 fi
 
 # installation
-if [ ! -e $CPM_INST_PATH/bin/m4 ]; then
+if [ `cfn_isInstalled` = 'false' ]; then
     cd $CPM_BUILD_DIR/$fName_base;
 
     # fix installation error
@@ -37,6 +38,5 @@ if [ ! -e $CPM_INST_PATH/bin/m4 ]; then
     cd $CPM_CALL_DIR
 fi
 
-#    '--------------------------------------------------------------------------------'
-echo '----------------------------------------------------- end: install m4/1.4.15 ---'
 
+cfn_echo_install_end $libName $ver

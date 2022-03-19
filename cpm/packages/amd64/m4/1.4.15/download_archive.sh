@@ -28,7 +28,6 @@ fi
 if [ ! -e $CPM_CACHE_DIR/$fName_hash ]; then
     wget -P $CPM_CACHE_DIR $URL_hash
 fi
-
 cfn_check_hash_value
 
 

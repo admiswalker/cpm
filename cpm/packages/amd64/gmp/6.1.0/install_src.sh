@@ -1,14 +1,15 @@
 #!/bin/bash
 
-# Usage
-#   - Set values of `CACHE_DIR`, `BUILD_DIR` and `INST_PATH` using `export` before call this script.
+CPM_CALL_DIR=`pwd -P`
+. $CPM_CALL_DIR/cpm/init_path_and_dir.sh
+. $CPM_OWN_DIR/common_fn.sh
+. $CPM_CALL_DIR/cpm/set_env.sh
 
-source ./cpm/init_path_and_dir.sh
-source ./cpm/set_env.sh
 
+libName='gmp'
+ver='6.1.0'
+cfn_echo_install_begin $libName $ver
 
-#    '--------------------------------------------------------------------------------'
-echo '--- begin: install gmp/6.1.0 ---------------------------------------------------'
 
 fName='gmp-6.1.0.tar.bz2'
 fName_base=${fName%.*.*} # gmp-6.1.0
@@ -21,7 +22,7 @@ if [ ! -e $CPM_BUILD_DIR/$fName_base ]; then
 fi
 
 # installation
-if [ ! -e $CPM_INST_PATH/lib/libgmp.a ]; then
+if [ `cfn_isInstalled` = 'false' ]; then
     cd $CPM_BUILD_DIR/$fName_base
     
     PATH=$PATH:$CPM_DLIB_PATH/bin
@@ -37,5 +38,5 @@ if [ ! -e $CPM_INST_PATH/lib/libgmp.a ]; then
     cd $CPM_CALL_DIR
 fi
 
-#    '--------------------------------------------------------------------------------'
-echo '----------------------------------------------------- end: install gmp/6.1.0 ---'
+
+cfn_echo_install_end $libName $ver

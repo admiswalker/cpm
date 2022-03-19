@@ -53,6 +53,14 @@ void sstd::for_printn(const struct pkg& rhs){ printf(" = "); sstd::print(rhs); }
 #include <sstd/sstd.hpp> // include after "sstd::print_for_vT"
 #include <unordered_map>
 
+#define cmd_ARCHITECTURE "ARCHITECTURE"
+#define cmd_BUILD_ENV    "BUILD_ENV"
+#define cmd_IMPORT       "IMPORT"
+
+#define cmd_CPM_ENV    "CPM_ENV"
+#define cmd_DOCKER_ENV "DOCKER_ENV"
+#define cmd_SYSTEM_ENV "SYSTEM_ENV"
+
 
 bool isSameVer(const struct pkg& lhs, const struct pkg& rhs){
     return ((lhs.ver100==rhs.ver100) && (lhs.ver010==rhs.ver010) && (lhs.ver001==rhs.ver001) && (lhs.ver==rhs.ver));
@@ -225,11 +233,10 @@ bool install_libs(const std::string& CACHE_DIR,
         std::string runner = ""; // "sh"
         std::string options;
         if(v_build_env.size()==0){ sstd::pdbg("ERROR: BUILD_ENV is not set.\n"); }
-        if      (v_build_env[0] == "CPM_ENV"   ){ cmd_env += return_set_env_cmd();
-        }else if(v_build_env[0] == "DOCKER_ENV"){ sstd::system(v_build_env[1]+"/docker_build.sh"); // build docker image
-                                                  runner = "sh " + v_build_env[1] + "/docker_run.sh";
-                                                  options = "--env CPM_CACHE_DIR --env CPM_BUILD_DIR --env CPM_DLIB_PATH --env CPM_INST_WDIR --env CPM_INST_PATH";
-        }else if(v_build_env[0] == "SYSTEM_ENV"){ // do nothing
+        if      (v_build_env[0] == cmd_CPM_ENV   ){ cmd_env += return_set_env_cmd();
+        }else if(v_build_env[0] == cmd_DOCKER_ENV){ runner = "sh " + v_build_env[1] + "/docker_run.sh";
+                                                    options = "--env CPM_CACHE_DIR --env CPM_BUILD_DIR --env CPM_DLIB_PATH --env CPM_INST_WDIR --env CPM_INST_PATH";
+        }else if(v_build_env[0] == cmd_SYSTEM_ENV){ // do nothing
         }else{
             sstd::pdbg("ERROR: BUILD_ENV has invalid value: %s.\n", v_build_env[0].c_str());
             return false;
@@ -362,9 +369,6 @@ int main(int argc, char *argv[]){
     std::string architecture;
     std::unordered_map<std::string, std::vector<struct pkg>> table_vPkg;
     sstd::vec<std::string> v_build_env;
-    #define cmd_ARCHITECTURE "ARCHITECTURE"
-    #define cmd_BUILD_ENV    "BUILD_ENV"
-    #define cmd_IMPORT       "IMPORT"
     sstd::vvec<std::string> vvLine = read_path_packages( path_packages );
     sstd::vec<sstd::vvec<std::string>> v_vvLine = split_pksList_by_scope(vvLine, {cmd_ARCHITECTURE, cmd_BUILD_ENV, cmd_IMPORT});
     for(uint n=0; n<v_vvLine.size(); ++n){
@@ -374,6 +378,7 @@ int main(int argc, char *argv[]){
             
             if      (vCmd[0] == cmd_ARCHITECTURE){ architecture = vCmd[1]; if(!read_packages_dir( table_vPkg, packages_dir+'/'+architecture)){ return -1; }
             }else if(vCmd[0] == cmd_BUILD_ENV   ){ v_build_env  = vCmd && sstd::slice(1, sstd::end());
+                                                   if(v_build_env[0]==cmd_DOCKER_ENV){ sstd::system(v_build_env[1]+"/docker_build.sh"); }
             }else if(vCmd[0] == cmd_IMPORT      ){ /* Not implimented */
             }else{
                 sstd::vvec<std::string> vPkgList = v_vvLine[n] && sstd::slice(l, sstd::end()); l=v_vvLine[n].size();
@@ -385,12 +390,16 @@ int main(int argc, char *argv[]){
             }
         }
     }
-    #undef cmd_IMPORT
-    #undef cmd_BUILD_ENV
-    #undef cmd_ARCHITECTURE
     
     printf("\n");
     sstd::measureTime_stop_print(timem);
     return 0;
 }
 
+#undef cmd_SYSTEM_ENV
+#undef cmd_DOCKER_ENV
+#undef cmd_CPM_ENV
+
+#undef cmd_IMPORT
+#undef cmd_BUILD_ENV
+#undef cmd_ARCHITECTURE

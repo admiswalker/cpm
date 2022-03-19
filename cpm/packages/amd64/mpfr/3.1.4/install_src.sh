@@ -1,14 +1,15 @@
 #!/bin/bash
 
-# Usage
-#   - Set values of `CACHE_DIR`, `BUILD_DIR` and `INST_PATH` using `export` before call this script.
+CPM_CALL_DIR=`pwd -P`
+. $CPM_CALL_DIR/cpm/init_path_and_dir.sh
+. $CPM_OWN_DIR/common_fn.sh
+. $CPM_CALL_DIR/cpm/set_env.sh
 
-source ./cpm/init_path_and_dir.sh
-source ./cpm/set_env.sh
 
+libName='mpfr'
+ver='3.1.4'
+cfn_echo_install_begin $libName $ver
 
-#    '--------------------------------------------------------------------------------'
-echo '--- begin: install mpfr/3.1.4 --------------------------------------------------'
 
 fName='mpfr-3.1.4.tar.bz2'
 fName_base=${fName%.*.*} # mpfr-3.1.4
@@ -21,7 +22,7 @@ if [ ! -e $CPM_BUILD_DIR/$fName_base ]; then
 fi
 
 # installation
-if [ ! -e $CPM_INST_PATH/lib/lib$libName.a ]; then
+if [ `cfn_isInstalled` = 'false' ]; then
     cd $CPM_BUILD_DIR/$fName_base/
 
     ./configure --prefix=$CPM_INST_WDIR --with-gmp=$CPM_DLIB_PATH
@@ -35,6 +36,5 @@ if [ ! -e $CPM_INST_PATH/lib/lib$libName.a ]; then
     cd $CPM_CALL_DIR
 fi
 
-#    '--------------------------------------------------------------------------------'
-echo '---------------------------------------------------- end: install mpfr/3.1.4 ---'
 
+cfn_echo_install_end $libName $ver

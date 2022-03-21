@@ -8,6 +8,8 @@ CPM_CALL_DIR=`pwd -P`
 URL=https://ftp.gnu.org/gnu/gmp/gmp-6.1.0.tar.bz2
 fName=${URL##*/}         # gmp-6.1.0.tar.bz2
 fName_base=${fName%.*.*} # gmp-6.1.0
+libName='gmp'
+ver='6.1.0'
 
 
 #URL_hash=''
@@ -19,7 +21,6 @@ cfn_echo_download_begin $libName $ver
 
 
 # downloading source file
-echo $CPM_CACHE_DIR
 if [ ! -e $CPM_CACHE_DIR/$fName ]; then
     mkdir -p $CPM_CACHE_DIR
     cd $CPM_CACHE_DIR; wget -O $fName $URL

@@ -1,38 +1,40 @@
 #!/bin/bash
 
-# Usage
-#   - Set values of `CACHE_DIR`, `BUILD_DIR` and `INST_PATH` using `export` before call this script.
+CPM_CALL_DIR=`pwd -P`
+. $CPM_CALL_DIR/cpm/init_path_and_dir.sh
+. $CPM_CALL_DIR/cpm/set_env.sh
+. $CPM_OWN_DIR/common_fn.sh
 
-source ./cpm/init_path_and_dir.sh
-source ./cpm/set_env.sh
 
+libName='mpc'
+ver='1.0.3'
+cfn_echo_install_begin $libName $ver
 
-#    '--------------------------------------------------------------------------------'
-echo '--- begin: install mpc/1.0.3 ---------------------------------------------------'
 
 fName='mpc-1.0.3.tar.gz'
 fName_base=${fName%.*.*} # mpc-1.0.3.tar.gz
-libName=${fName%-*}      # mpc
 
 # unpacking the archive file
-if [ ! -e $BUILD_DIR/$fName_base ]; then
-    #unzip -n $CACHE_DIR/$libName/$fName -d $BUILD_DIR
-    tar -zxf $CACHE_DIR/$fName -C $BUILD_DIR # tar.xz
-    #tar -xvf $CACHE_DIR/$fName -C $BUILD_DIR # tar.bz2
+if [ ! -e $CPM_BUILD_DIR/$fName_base ]; then
+    #unzip -n $CPM_CACHE_DIR/$libName/$fName -d $CPM_BUILD_DIR
+    tar -zxf $CPM_CACHE_DIR/$fName -C $CPM_BUILD_DIR # tar.xz
+    #tar -xvf $CPM_CACHE_DIR/$fName -C $CPM_BUILD_DIR # tar.bz2
 fi
 
 # installation
-if [ ! -e $INST_PATH/lib/lib$libName.a ]; then
-    cd $BUILD_DIR/$fName_base
+if [ `cfn_isInstalled` = 'false' ]; then
+    cd $CPM_BUILD_DIR/$fName_base
     
-    ./configure --prefix=$INST_PATH --with-gmp=$INed_PATH --with-mpfr=$INed_PATH
+    ./configure --prefix=$CPM_INST_WDIR --with-gmp=$CPM_DLIB_PATH --with-mpfr=$CPM_DLIB_PATH
     make -j
     make check
     make install
 
-    cd $CALL_DIR
+    # gen `replacement_path_for_cpm_archive.txt`
+    echo $CPM_INST_WDIR > $CPM_INST_WDIR/replacement_path_for_cpm_archive.txt
+
+    cd $CPM_CALL_DIR
 fi
 
-#    '--------------------------------------------------------------------------------'
-echo '----------------------------------------------------- end: install mpc/1.0.3 ---'
 
+cfn_echo_install_end $libName $ver

@@ -21,7 +21,6 @@ cfn_echo_download_begin $libName $ver
 
 
 # downloading source file
-echo $CPM_CACHE_DIR
 if [ ! -e $CPM_CACHE_DIR/$fName ]; then
     mkdir -p $CPM_CACHE_DIR
     cd $CPM_CACHE_DIR; wget -O $fName $URL

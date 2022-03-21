@@ -2,8 +2,8 @@
 
 CPM_CALL_DIR=`pwd -P`
 . $CPM_CALL_DIR/cpm/init_path_and_dir.sh
-. $CPM_OWN_DIR/common_fn.sh
 . $CPM_CALL_DIR/cpm/set_env.sh
+. $CPM_OWN_DIR/common_fn.sh
 
 
 libName='gmp'

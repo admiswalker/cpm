@@ -62,6 +62,34 @@ void sstd::for_printn(const struct pkg& rhs){ printf(" = "); sstd::print(rhs); }
 #define cmd_SYSTEM_ENV "SYSTEM_ENV"
 
 
+std::string sstd__stripRN(const std::string& in){
+    std::string out;
+    return out;
+}
+void sstd__stripRN_ow(std::string& io){
+    if(io.size()==0){ return; }
+    
+    int i_end=io.size()-1;
+    while(io[i_end]=='\r' || io[i_end]=='\n'){ io.pop_back(); --i_end; }
+    
+    for(uint n=0; n<io.size(); ++n){
+        if(io[n]!='\r' && io[n]=='\n'){ continue; }
+
+        {
+            std::string buf(io.size(), '0'); buf.clear();
+//            ret += io.substr(0, n);
+//            for(uint i=n; i<io.size(); ++i){
+            for(uint i=0; i<io.size(); ++i){
+                if(io[i]=='\r' || io[i]=='\n'){ continue; }
+                buf += io[i];
+            }
+            std::swap(buf, io);
+            break;
+        }
+    }
+    return;
+}
+
 bool isSameVer(const struct pkg& lhs, const struct pkg& rhs){
     return ((lhs.ver100==rhs.ver100) && (lhs.ver010==rhs.ver010) && (lhs.ver001==rhs.ver001) && (lhs.ver==rhs.ver));
 }
@@ -184,7 +212,7 @@ void gen_hashFile(const std::string& archive_dir, const std::string& save_name){
     std::vector<std::string> vPath = sstd::glob(archive_dir+R"(/*)");
     for(uint i=0; i<vPath.size(); ++i){
         w_str += sstd::system_stdout("cd "+archive_dir+"; sha256sum "+&vPath[i][archive_dir.size()+1]) + '\n';
-        w_str.pop_back(); // pop_back() is removing '\n'.
+        sstd__stripRN_ow(w_str);
     }
     sstd::write(save_name, w_str);
     return;
@@ -206,7 +234,7 @@ bool install_libs(const std::string& CACHE_DIR,
     // sstd::mkdir(INST_WDIR);
     std::string INST_WDIR = INST_PATH + "_work";
     
-    std::string call_path = sstd::system_stdout("pwd"); call_path.pop_back(); // pop_back() delete '\n'.
+    std::string call_path = sstd::system_stdout("pwd"); sstd__stripRN_ow(call_path);
     
     for(uint i=0; i<v_pkg.size(); ++i){
         struct pkg p = v_pkg[i];
@@ -232,6 +260,7 @@ bool install_libs(const std::string& CACHE_DIR,
         std::string cmd_env;
         std::string runner = ""; // "sh"
         std::string options;
+        std::string docker_dir;
         if(v_build_env.size()==0){ sstd::pdbg("ERROR: BUILD_ENV is not set.\n"); }
         if      (v_build_env[0] == cmd_CPM_ENV   ){ cmd_env += return_set_env_cmd();
         }else if(v_build_env[0] == cmd_DOCKER_ENV){ runner = "sh " + v_build_env[1] + "/docker_run.sh";
@@ -259,19 +288,28 @@ bool install_libs(const std::string& CACHE_DIR,
         std::string str_isInstalled = sstd::system_stdout_stderr(cmd_env+pkg_shell_dir+"/is_installed.sh");
         bool TF_isInstalled = sstd::strIn("true", str_isInstalled);
         if(TF_isInstalled){ continue; }
-        sstd::system(cmd_env + cmd_run); // installation
+        sstd::system(cmd_env + cmd_run); // install to INST_WDIR
         
-        // replace path on "*la" file
         std::string rtxt_path = INST_WDIR + "/replacement_path_for_cpm_archive.txt";
+        
+        // replace path on '*la' and 'replacement_path_for_cpm_archive.txt' file (preproc to install on INST_PATH)
         if(sstd::fileExist(rtxt_path)){
-            std::string INST_PATH_from_file = sstd::read(rtxt_path); INST_PATH_from_file.pop_back();
             std::string cmd_r;
+            
+            // replace path on '*.la' file.
+            std::string SRC_PATH = sstd::read(rtxt_path                             ); sstd__stripRN_ow(SRC_PATH);
+            std::string DST_PATH = sstd::read(v_build_env[1]+"/docker_base_path.txt"); sstd__stripRN_ow(DST_PATH); DST_PATH += '/' + INST_PATH;
             cmd_r += "cd " + INST_WDIR + ';';
-            cmd_r += "find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!" + INST_PATH_from_file + '!' + INST_PATH + "!g'"; // $ find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!env_cpm/local_archive!env_cpm/local!g'
+            cmd_r += "find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!" + SRC_PATH + '!' + DST_PATH + "!g'"; // $ find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!env_cpm/local_archive!env_cpm/local!g'
+            sstd::system(cmd_r);
+            
+            // replace path on 'replacement_path_for_cpm_archive.txt' file.
+            cmd_r.clear();
+            cmd_r += "echo " + DST_PATH + " > " + rtxt_path;
             sstd::system(cmd_r);
         }
         
-        // copy file
+        // copy file (move INST_WDIR to INST_PATH)
         std::vector<std::string> vPath = sstd::glob(INST_WDIR+"/*", "df");
         if(vPath.size()!=0){
             sstd::cp(INST_WDIR+"/*", INST_PATH, "npu");

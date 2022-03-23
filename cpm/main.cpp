@@ -211,8 +211,7 @@ void gen_hashFile(const std::string& archive_dir, const std::string& save_name){
     
     std::vector<std::string> vPath = sstd::glob(archive_dir+R"(/*)");
     for(uint i=0; i<vPath.size(); ++i){
-        w_str += sstd::system_stdout("cd "+archive_dir+"; sha256sum "+&vPath[i][archive_dir.size()+1]) + '\n';
-        sstd__stripRN_ow(w_str);
+        w_str += sstd::system_stdout("cd "+archive_dir+"; sha256sum "+&vPath[i][archive_dir.size()+1]);
     }
     sstd::write(save_name, w_str);
     return;

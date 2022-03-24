@@ -165,6 +165,13 @@ std::vector<struct pkg> solve_depends___dummy(bool& ret,
 std::string return_set_env_cmd(){
     return sstd::read("./cpm/set_env.sh");
 }
+void replace_PATH_in_laFile(const std::string& la_file_path, const std::string& SRC_PATH, const std::string& DST_PATH){
+    // replace path in the '*.la' file.
+    std::string cmd_r;
+    cmd_r += "cd " + la_file_path + ';';
+    cmd_r += "find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!" + SRC_PATH + '!' + DST_PATH + "!g'"; // $ find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!env_cpm/local_archive!env_cpm/local!g'
+    sstd::system(cmd_r);
+}
 void gen_archive(const std::string& save_name, const std::string& archive_ext, const std::string& path){
     
     if      (archive_ext=="tar.xz"){ sstd::system(sstd::ssprintf("cd %s; tar -Jcf %s *", path.c_str(), save_name.c_str()));
@@ -191,6 +198,7 @@ void gen_hashFile(const std::string& archive_dir, const std::string& save_name){
 bool install_libs(const std::string& CACHE_DIR,
                   const std::string& BUILD_DIR,
                   const std::string& INST_PATH,
+                  const std::string& INST_WDIR,
                   const std::vector<std::string>& v_build_env,
                   const std::string& architecture,
                   const std::string& packages_dir,
@@ -203,7 +211,6 @@ bool install_libs(const std::string& CACHE_DIR,
     // sstd::mkdir(INST_PATH);
     // sstd::mkdir(INST_PATH);
     // sstd::mkdir(INST_WDIR);
-    std::string INST_WDIR = INST_PATH + "_work";
     
     std::string call_path = sstd::system_stdout("pwd"); sstd::stripAll_ow(call_path, "\r\n");
     
@@ -231,7 +238,6 @@ bool install_libs(const std::string& CACHE_DIR,
         std::string cmd_env;
         std::string runner = ""; // "sh"
         std::string options;
-        std::string docker_dir;
         if(v_build_env.size()==0){ sstd::pdbg("ERROR: BUILD_ENV is not set.\n"); }
         if      (v_build_env[0] == cmd_CPM_ENV   ){ cmd_env += return_set_env_cmd();
         }else if(v_build_env[0] == cmd_DOCKER_ENV){ runner = "sh " + v_build_env[1] + "/docker_run.sh";
@@ -267,6 +273,12 @@ bool install_libs(const std::string& CACHE_DIR,
         if(sstd::fileExist(rtxt_path)){
             std::string cmd_r;
             
+            std::string SRC_PATH = sstd::read(rtxt_path                             ); sstd::stripAll_ow(SRC_PATH, "\r\n");
+            std::string DST_PATH = sstd::read(v_build_env[1]+"/docker_base_path.txt"); sstd::stripAll_ow(DST_PATH, "\r\n"); DST_PATH += '/' + INST_PATH;
+            replace_PATH_in_laFile(INST_WDIR, SRC_PATH, DST_PATH); 
+            //replace_PATH_in_laFile(INST_WDIR+"/*.la", SRC_PATH, DST_PATH); 
+            sstd::write(rtxt_path, DST_PATH);
+            /*
             // replace path on '*.la' file.
             std::string SRC_PATH = sstd::read(rtxt_path                             ); sstd::stripAll_ow(SRC_PATH, "\r\n");
             std::string DST_PATH = sstd::read(v_build_env[1]+"/docker_base_path.txt"); sstd::stripAll_ow(DST_PATH, "\r\n"); DST_PATH += '/' + INST_PATH;
@@ -278,6 +290,7 @@ bool install_libs(const std::string& CACHE_DIR,
             cmd_r.clear();
             cmd_r += "echo " + DST_PATH + " > " + rtxt_path;
             sstd::system(cmd_r);
+            */
         }
         
         // copy file (move INST_WDIR to INST_PATH)
@@ -355,6 +368,7 @@ int main(int argc, char *argv[]){
     std::string CACHE_DIR = "env_cpm/cache";
     std::string BUILD_DIR = "env_cpm/build"; // -b env_cpm/build
     std::string INST_PATH = "env_cpm/local"; // -i env_cpm/local
+    std::string INST_WDIR = INST_PATH + "_work";
     bool TF_genArchive = false;
     std::string archive_dir  = "env_cpm/archive";
     std::string archive_ext = "tar.xz";
@@ -385,19 +399,48 @@ int main(int argc, char *argv[]){
             if(v_vvLine[n][l].size() == 0){ sstd::pdbg("ERROR: v_vvLine[n][i].size() == 0.\n"); return false; }
             sstd::vec<std::string> vCmd = v_vvLine[n][l];
             
-            if      (vCmd[0] == cmd_ARCHITECTURE){ architecture = vCmd[1]; if(!read_packages_dir( table_vPkg, packages_dir+'/'+architecture)){ return -1; }
-            }else if(vCmd[0] == cmd_BUILD_ENV   ){ v_build_env  = vCmd && sstd::slice(1, sstd::end());
-                                                   if(v_build_env[0]==cmd_DOCKER_ENV){ sstd::system(v_build_env[1]+"/docker_build.sh"); }
-//                                                   rewrite_PATH_of_installedLibs(INST_PATH);
-//                                                   DST_PATH = sstd::read(v_build_env[1]+"/docker_base_path.txt");
-            }else if(vCmd[0] == cmd_IMPORT      ){ /* Not implimented */
+            if(vCmd[0]==cmd_ARCHITECTURE){
+                architecture = vCmd[1]; if(!read_packages_dir( table_vPkg, packages_dir+'/'+architecture)){ return -1; }
+                
+            }else if(vCmd[0]==cmd_BUILD_ENV){
+                v_build_env = vCmd && sstd::slice(1, sstd::end());
+                std::string rtxt_path = INST_PATH + "/replacement_path_for_cpm_archive.txt";
+                std::string SRC_PATH = sstd::read(rtxt_path); sstd::stripAll_ow(SRC_PATH, "\r\n");
+                
+                if(v_build_env[0]==cmd_CPM_ENV){
+                    if(sstd::fileExist(rtxt_path)){
+                        std::string DST_PATH = sstd::system_stdout_stderr("pwd -P"); sstd::stripAll_ow(DST_PATH, "\r\n"); DST_PATH+='/'+INST_PATH;
+                        replace_PATH_in_laFile(INST_PATH, SRC_PATH, DST_PATH);
+                        sstd::write(rtxt_path, DST_PATH);
+                    }
+                    
+                }else if(v_build_env[0]==cmd_DOCKER_ENV){
+                    sstd::system(v_build_env[1]+"/docker_build.sh");
+                    
+                    std::string dtxt_path = v_build_env[1] + "/docker_base_path.txt";
+                    if(sstd::fileExist(rtxt_path)){
+                        std::string DST_PATH = sstd::read(dtxt_path); sstd::stripAll_ow(DST_PATH, "\r\n"); DST_PATH+='/'+INST_PATH;
+                        replace_PATH_in_laFile(INST_PATH, SRC_PATH, DST_PATH);
+                        sstd::write(rtxt_path, DST_PATH);
+                    }
+                    
+                }else if(v_build_env[0]==cmd_SYSTEM_ENV){
+                    // Nothing to do
+                    
+                }else{
+                    sstd::pdbg("ERROR: Unexpected BUILD_ENV option.");
+                }
+                
+            }else if(vCmd[0]==cmd_IMPORT){
+                // Not implimented
+                
             }else{
                 sstd::vvec<std::string> vPkgList = v_vvLine[n] && sstd::slice(l, sstd::end()); l=v_vvLine[n].size();
                 
                 bool ret=true;
                 std::vector<struct pkg> v_pkg_requested = vPkgList2vPkg(ret, vPkgList); if(!ret){ return -1; }
                 std::vector<struct pkg> v_inst_pkg      = solve_depends___dummy(ret, v_pkg_requested, table_vPkg); if(!ret){ return -1; }
-                install_libs(CACHE_DIR, BUILD_DIR, INST_PATH, v_build_env, architecture, packages_dir+'/'+architecture, v_inst_pkg, TF_genArchive, archive_dir, archive_ext);
+                install_libs(CACHE_DIR, BUILD_DIR, INST_PATH, INST_WDIR, v_build_env, architecture, packages_dir+'/'+architecture, v_inst_pkg, TF_genArchive, archive_dir, archive_ext);
             }
         }
     }

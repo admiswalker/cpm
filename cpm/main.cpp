@@ -62,34 +62,6 @@ void sstd::for_printn(const struct pkg& rhs){ printf(" = "); sstd::print(rhs); }
 #define cmd_SYSTEM_ENV "SYSTEM_ENV"
 
 
-std::string sstd__stripRN(const std::string& in){
-    std::string out;
-    return out;
-}
-void sstd__stripRN_ow(std::string& io){
-    if(io.size()==0){ return; }
-    
-    int i_end=io.size()-1;
-    while(io[i_end]=='\r' || io[i_end]=='\n'){ io.pop_back(); --i_end; }
-    
-    for(uint n=0; n<io.size(); ++n){
-        if(io[n]!='\r' && io[n]=='\n'){ continue; }
-
-        {
-            std::string buf(io.size(), '0'); buf.clear();
-//            ret += io.substr(0, n);
-//            for(uint i=n; i<io.size(); ++i){
-            for(uint i=0; i<io.size(); ++i){
-                if(io[i]=='\r' || io[i]=='\n'){ continue; }
-                buf += io[i];
-            }
-            std::swap(buf, io);
-            break;
-        }
-    }
-    return;
-}
-
 bool isSameVer(const struct pkg& lhs, const struct pkg& rhs){
     return ((lhs.ver100==rhs.ver100) && (lhs.ver010==rhs.ver010) && (lhs.ver001==rhs.ver001) && (lhs.ver==rhs.ver));
 }
@@ -233,7 +205,7 @@ bool install_libs(const std::string& CACHE_DIR,
     // sstd::mkdir(INST_WDIR);
     std::string INST_WDIR = INST_PATH + "_work";
     
-    std::string call_path = sstd::system_stdout("pwd"); sstd__stripRN_ow(call_path);
+    std::string call_path = sstd::system_stdout("pwd"); sstd::stripAll_ow(call_path, "\r\n");
     
     for(uint i=0; i<v_pkg.size(); ++i){
         struct pkg p = v_pkg[i];
@@ -296,8 +268,8 @@ bool install_libs(const std::string& CACHE_DIR,
             std::string cmd_r;
             
             // replace path on '*.la' file.
-            std::string SRC_PATH = sstd::read(rtxt_path                             ); sstd__stripRN_ow(SRC_PATH);
-            std::string DST_PATH = sstd::read(v_build_env[1]+"/docker_base_path.txt"); sstd__stripRN_ow(DST_PATH); DST_PATH += '/' + INST_PATH;
+            std::string SRC_PATH = sstd::read(rtxt_path                             ); sstd::stripAll_ow(SRC_PATH, "\r\n");
+            std::string DST_PATH = sstd::read(v_build_env[1]+"/docker_base_path.txt"); sstd::stripAll_ow(DST_PATH, "\r\n"); DST_PATH += '/' + INST_PATH;
             cmd_r += "cd " + INST_WDIR + ';';
             cmd_r += "find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!" + SRC_PATH + '!' + DST_PATH + "!g'"; // $ find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!env_cpm/local_archive!env_cpm/local!g'
             sstd::system(cmd_r);
@@ -416,6 +388,8 @@ int main(int argc, char *argv[]){
             if      (vCmd[0] == cmd_ARCHITECTURE){ architecture = vCmd[1]; if(!read_packages_dir( table_vPkg, packages_dir+'/'+architecture)){ return -1; }
             }else if(vCmd[0] == cmd_BUILD_ENV   ){ v_build_env  = vCmd && sstd::slice(1, sstd::end());
                                                    if(v_build_env[0]==cmd_DOCKER_ENV){ sstd::system(v_build_env[1]+"/docker_build.sh"); }
+//                                                   rewrite_PATH_of_installedLibs(INST_PATH);
+//                                                   DST_PATH = sstd::read(v_build_env[1]+"/docker_base_path.txt");
             }else if(vCmd[0] == cmd_IMPORT      ){ /* Not implimented */
             }else{
                 sstd::vvec<std::string> vPkgList = v_vvLine[n] && sstd::slice(l, sstd::end()); l=v_vvLine[n].size();

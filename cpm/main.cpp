@@ -163,7 +163,7 @@ std::vector<struct pkg> solve_depends___dummy(bool& ret,
     return v_pkg_ret;
 }
 std::string return_set_env_cmd(){
-    return sstd::read("./cpm/set_env.sh");
+    return sstd::read("cpm/set_env.sh");
 }
 void replace_PATH_in_laFile(const std::string& la_file_path, const std::string& SRC_PATH, const std::string& DST_PATH){
     // replace path in the '*.la' file.
@@ -203,15 +203,8 @@ bool install_libs(const std::string& CACHE_DIR,
                   const std::string& architecture,
                   const std::string& packages_dir,
                   const std::vector<struct pkg>& v_pkg,
-                  const bool TF_genArchive, const std::string& archive_dir, const std::string& archive_ext){
-    // mkdir in the init_path_and_dir.sh
-    // 
-    // sstd::mkdir(CACHE_DIR);
-    // sstd::mkdir(BUILD_DIR);
-    // sstd::mkdir(INST_PATH);
-    // sstd::mkdir(INST_PATH);
-    // sstd::mkdir(INST_WDIR);
-    
+                  const bool TF_genArchive, const std::string& archive_dir, const std::string& archive_ext)
+{
     std::string call_path = sstd::system_stdout("pwd"); sstd::stripAll_ow(call_path, "\r\n");
     
     for(uint i=0; i<v_pkg.size(); ++i){
@@ -265,6 +258,7 @@ bool install_libs(const std::string& CACHE_DIR,
         std::string str_isInstalled = sstd::system_stdout_stderr(cmd_env+pkg_shell_dir+"/is_installed.sh");
         bool TF_isInstalled = sstd::strIn("true", str_isInstalled);
         if(TF_isInstalled){ continue; }
+        sstd::mkdir(INST_WDIR);
         sstd::system(cmd_env + cmd_run); // install to INST_WDIR
         
         std::string rtxt_path = INST_WDIR + "/replacement_path_for_cpm_archive.txt";
@@ -275,7 +269,7 @@ bool install_libs(const std::string& CACHE_DIR,
             
             std::string SRC_PATH = sstd::read(rtxt_path                             ); sstd::stripAll_ow(SRC_PATH, "\r\n");
             std::string DST_PATH = sstd::read(v_build_env[1]+"/docker_base_path.txt"); sstd::stripAll_ow(DST_PATH, "\r\n"); DST_PATH += '/' + INST_PATH;
-            replace_PATH_in_laFile(INST_WDIR, SRC_PATH, DST_PATH); 
+            replace_PATH_in_laFile(INST_WDIR, SRC_PATH, DST_PATH);
             //replace_PATH_in_laFile(INST_WDIR+"/*.la", SRC_PATH, DST_PATH); 
             sstd::write(rtxt_path, DST_PATH);
             /*
@@ -375,6 +369,12 @@ int main(int argc, char *argv[]){
     //std::string archive_ext = "zip"; // test by zip to reduce excusion time.
     std::string packages_dir = "cpm/packages";
     
+    sstd::mkdir(CACHE_DIR);
+    sstd::mkdir(BUILD_DIR);
+    sstd::mkdir(INST_WDIR);
+    sstd::mkdir(INST_PATH);
+    sstd::cp("cpm/init.sh", INST_PATH);
+    
     char c = ' ';
     for(int i=1; i<argc; ++i){
         std::string s = argv[i]; if(s.size() < 2){ sstd::pdbg("ERROR: Unexpectec input: %s.\n", s.c_str()); return -1; }
@@ -405,10 +405,10 @@ int main(int argc, char *argv[]){
         }else if(vCmd[0]==cmd_BUILD_ENV){
             v_build_env = vCmd && sstd::slice(1, sstd::end());
             std::string rtxt_path = INST_PATH + "/replacement_path_for_cpm_archive.txt";
-            std::string SRC_PATH = sstd::read(rtxt_path); sstd::stripAll_ow(SRC_PATH, "\r\n");
             
             if(v_build_env[0]==cmd_CPM_ENV){
                 if(sstd::fileExist(rtxt_path)){
+                    std::string SRC_PATH = sstd::read(rtxt_path); sstd::stripAll_ow(SRC_PATH, "\r\n");
                     std::string DST_PATH = sstd::system_stdout_stderr("pwd -P"); sstd::stripAll_ow(DST_PATH, "\r\n"); DST_PATH+='/'+INST_PATH;
                     replace_PATH_in_laFile(INST_PATH, SRC_PATH, DST_PATH);
                     sstd::write(rtxt_path, DST_PATH);
@@ -416,9 +416,10 @@ int main(int argc, char *argv[]){
                 
             }else if(v_build_env[0]==cmd_DOCKER_ENV){
                 sstd::system(v_build_env[1]+"/docker_build.sh");
-                    
+                
                 std::string dtxt_path = v_build_env[1] + "/docker_base_path.txt";
                 if(sstd::fileExist(rtxt_path)){
+                    std::string SRC_PATH = sstd::read(rtxt_path); sstd::stripAll_ow(SRC_PATH, "\r\n");
                     std::string DST_PATH = sstd::read(dtxt_path); sstd::stripAll_ow(DST_PATH, "\r\n"); DST_PATH+='/'+INST_PATH;
                     replace_PATH_in_laFile(INST_PATH, SRC_PATH, DST_PATH);
                     sstd::write(rtxt_path, DST_PATH);

@@ -408,15 +408,23 @@ int main(int argc, char *argv[]){
             
             if(v_build_env[0]==cmd_CPM_ENV){
                 if(sstd::fileExist(rtxt_path)){
+                    sstd::system(INST_PATH+"/init.sh");
+                }
+                /*
+                if(sstd::fileExist(rtxt_path)){
                     std::string SRC_PATH = sstd::read(rtxt_path); sstd::stripAll_ow(SRC_PATH, "\r\n");
                     std::string DST_PATH = sstd::system_stdout_stderr("pwd -P"); sstd::stripAll_ow(DST_PATH, "\r\n"); DST_PATH+='/'+INST_PATH;
                     replace_PATH_in_laFile(INST_PATH, SRC_PATH, DST_PATH);
                     sstd::write(rtxt_path, DST_PATH);
                 }
-                
+                */
             }else if(v_build_env[0]==cmd_DOCKER_ENV){
                 sstd::system(v_build_env[1]+"/docker_build.sh");
                 
+                if(sstd::fileExist(rtxt_path)){
+                    sstd::system("sh "+v_build_env[1]+"/docker_run.sh "+INST_PATH+"/init.sh");
+                }
+                /*
                 std::string dtxt_path = v_build_env[1] + "/docker_base_path.txt";
                 if(sstd::fileExist(rtxt_path)){
                     std::string SRC_PATH = sstd::read(rtxt_path); sstd::stripAll_ow(SRC_PATH, "\r\n");
@@ -424,7 +432,7 @@ int main(int argc, char *argv[]){
                     replace_PATH_in_laFile(INST_PATH, SRC_PATH, DST_PATH);
                     sstd::write(rtxt_path, DST_PATH);
                 }
-                
+                */
             }else if(v_build_env[0]==cmd_SYSTEM_ENV){
                 // Nothing to do
                 

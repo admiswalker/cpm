@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Example of run shell script on docker
 #          ALL_ARG: cpm/packages/amd64/m4/1.4.15/install_src.sh --env CACHE_DIR --env BUILD_DIR --env INST_PATH

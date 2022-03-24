@@ -1,3 +1,4 @@
+#!/bin/bash
 CPM_CALL_DIR=`pwd -P`
 SCRIPT_DIR=`cd $(dirname ${0}) && pwd`
 

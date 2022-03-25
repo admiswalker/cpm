@@ -272,19 +272,6 @@ bool install_libs(const std::string& CACHE_DIR,
             replace_PATH_in_laFile(INST_WDIR, SRC_PATH, DST_PATH);
             //replace_PATH_in_laFile(INST_WDIR+"/*.la", SRC_PATH, DST_PATH); 
             sstd::write(rtxt_path, DST_PATH);
-            /*
-            // replace path on '*.la' file.
-            std::string SRC_PATH = sstd::read(rtxt_path                             ); sstd::stripAll_ow(SRC_PATH, "\r\n");
-            std::string DST_PATH = sstd::read(v_build_env[1]+"/docker_base_path.txt"); sstd::stripAll_ow(DST_PATH, "\r\n"); DST_PATH += '/' + INST_PATH;
-            cmd_r += "cd " + INST_WDIR + ';';
-            cmd_r += "find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!" + SRC_PATH + '!' + DST_PATH + "!g'"; // $ find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!env_cpm/local_archive!env_cpm/local!g'
-            sstd::system(cmd_r);
-            
-            // replace path on 'replacement_path_for_cpm_archive.txt' file.
-            cmd_r.clear();
-            cmd_r += "echo " + DST_PATH + " > " + rtxt_path;
-            sstd::system(cmd_r);
-            */
         }
         
         // copy file (move INST_WDIR to INST_PATH)
@@ -407,32 +394,12 @@ int main(int argc, char *argv[]){
             std::string rtxt_path = INST_PATH + "/replacement_path_for_cpm_archive.txt";
             
             if(v_build_env[0]==cmd_CPM_ENV){
-                if(sstd::fileExist(rtxt_path)){
-                    sstd::system(INST_PATH+"/init.sh");
-                }
-                /*
-                if(sstd::fileExist(rtxt_path)){
-                    std::string SRC_PATH = sstd::read(rtxt_path); sstd::stripAll_ow(SRC_PATH, "\r\n");
-                    std::string DST_PATH = sstd::system_stdout_stderr("pwd -P"); sstd::stripAll_ow(DST_PATH, "\r\n"); DST_PATH+='/'+INST_PATH;
-                    replace_PATH_in_laFile(INST_PATH, SRC_PATH, DST_PATH);
-                    sstd::write(rtxt_path, DST_PATH);
-                }
-                */
+                if(sstd::fileExist(rtxt_path)){ sstd::system(INST_PATH+"/init.sh"); }
+                
             }else if(v_build_env[0]==cmd_DOCKER_ENV){
                 sstd::system(v_build_env[1]+"/docker_build.sh");
+                if(sstd::fileExist(rtxt_path)){ sstd::system("sh "+v_build_env[1]+"/docker_run.sh "+INST_PATH+"/init.sh"); }
                 
-                if(sstd::fileExist(rtxt_path)){
-                    sstd::system("sh "+v_build_env[1]+"/docker_run.sh "+INST_PATH+"/init.sh");
-                }
-                /*
-                std::string dtxt_path = v_build_env[1] + "/docker_base_path.txt";
-                if(sstd::fileExist(rtxt_path)){
-                    std::string SRC_PATH = sstd::read(rtxt_path); sstd::stripAll_ow(SRC_PATH, "\r\n");
-                    std::string DST_PATH = sstd::read(dtxt_path); sstd::stripAll_ow(DST_PATH, "\r\n"); DST_PATH+='/'+INST_PATH;
-                    replace_PATH_in_laFile(INST_PATH, SRC_PATH, DST_PATH);
-                    sstd::write(rtxt_path, DST_PATH);
-                }
-                */
             }else if(v_build_env[0]==cmd_SYSTEM_ENV){
                 // Nothing to do
                 

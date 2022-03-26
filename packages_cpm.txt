@@ -1,6 +1,5 @@
 ARCHITECTURE, amd64;
-//IMPORT, sstd, latest, https://github.com/xxxxxxx/download_install_shells.sh;
-//IMPORT, libExample, https://github.com/xxxxxxx/download_install.sh;
+//IMPORT, CPM_libExample_to_IMPORT, 0.1.0, https://github.com/xxxxxxx/download_install.sh;
 
 /*
 BUILD_ENV, SYSTEM_ENV;
@@ -22,9 +21,9 @@ BUILD_ENV, CPM_ENV;
 //cmake, 3.20.1;
 //googletest, 1.11.0;
 //sstd, 1.0.0;
-sstd, 2.0.0;
-//sstd, latest;
-//libExample, 0.1.0;
+//sstd, 2.0.0;
+sstd, latest;
+//CPM_libExample_to_IMPORT, 0.1.0;
 //*/
 
 

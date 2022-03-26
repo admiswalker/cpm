@@ -16,7 +16,7 @@ fName_base='sstd-latest'
 
 # unpacking the archive file
 if [ ! -e $CPM_BUILD_DIR/SubStandardLibrary-SSTD--master ]; then
-    unzip -n $CPM_CACHE_DIR/$fName -d $CPM_BUILD_DIR # zip
+    unzip -nq $CPM_CACHE_DIR/$fName -d $CPM_BUILD_DIR # zip
     #tar -zxf $CPM_CACHE_DIR/$libName/$fName -C $CPM_BUILD_DIR # tar.xz
 fi
 

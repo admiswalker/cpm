@@ -16,9 +16,10 @@ fName_base=${fName%.*.*} # m4-1.4.15
 
 # unpacking the src file
 if [ ! -e $CPM_BUILD_DIR/$fName_base ]; then
-    #unzip -n $CACHE_DIR/$libName/$fName -d $BUILD_DIR
+    #unzip -nq $CACHE_DIR/$fName -d $BUILD_DIR
     tar -zxf $CPM_CACHE_DIR/$fName -C $CPM_BUILD_DIR # tar.xz
     #tar -xvf $CPM_CACHE_DIR/$fName -C $CPM_BUILD_DIR # tar.bz2
+    #tar -zxvf $CPM_CACHE_DIR/$fName -C $CPM_BUILD_DIR # tar.gz
 fi
 
 # installation

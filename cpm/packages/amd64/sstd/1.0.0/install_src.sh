@@ -6,29 +6,32 @@ CPM_CALL_DIR=`pwd -P`
 . $CPM_CALL_DIR/cpm/set_env.sh
 
 
-libName='cmake'
-ver='3.20.1'
+libName='sstd'
+ver='1.0.0'
 cfn_echo_install_begin $libName $ver
 
 
-fName='cmake-3.20.1.tar.gz'
-fName_base=${fName%.*.*} # cmake-3.20.1
+fName='sstd-1.0.0.zip'
+fName_base=${fName%.*.*} # mpfr-3.1.4
 
 # unpacking the archive file
 if [ ! -e $CPM_BUILD_DIR/$fName_base ]; then
-    #unzip -nq $CPM_CACHE_DIR/$fName -d $CPM_BUILD_DIR
-    tar -zxf $CPM_CACHE_DIR/$fName -C $CPM_BUILD_DIR # tar.xz
+    unzip -nq $CPM_CACHE_DIR/$fName -d $CPM_BUILD_DIR
+    #tar -zxf $CPM_CACHE_DIR/$fName -C $CPM_BUILD_DIR # tar.xz
     #tar -xvf $CPM_CACHE_DIR/$fName -C $CPM_BUILD_DIR # tar.bz2
     #tar -zxvf $CPM_CACHE_DIR/$fName -C $CPM_BUILD_DIR # tar.gz
 fi
 
 # installation
 if [ `cfn_isInstalled` = 'false' ]; then
-    cd $CPM_BUILD_DIR/$fName_base;
-    ./configure --prefix=$CPM_INST_WDIR -- -DCMAKE_USE_OPENSSL=OFF
+    cd $CPM_BUILD_DIR/SubStandardLibrary-SSTD--1.0.0/sstd;
     
     make -j
-    make install
+
+    mkdir -p $CPM_INST_WDIR/lib
+    mkdir -p $CPM_INST_WDIR/include
+    cp -r lib/* -t $CPM_INST_WDIR/lib
+    cp -r include/* -t $CPM_INST_WDIR/include
 fi
 
 

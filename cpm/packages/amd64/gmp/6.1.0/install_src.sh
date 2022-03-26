@@ -16,9 +16,10 @@ fName_base=${fName%.*.*} # gmp-6.1.0
 
 # unpacking the archive file
 if [ ! -e $CPM_BUILD_DIR/$fName_base ]; then
-    #unzip -n $CPM_CACHE_DIR/$libName/$fName -d $CPM_BUILD_DIR
+    #unzip -nq $CPM_CACHE_DIR/$fName -d $CPM_BUILD_DIR
     #tar -zxf $CPM_CACHE_DIR/$fName -C $CPM_BUILD_DIR # tar.xz
     tar -xvf $CPM_CACHE_DIR/$fName -C $CPM_BUILD_DIR # tar.bz2
+    #tar -zxvf $CPM_CACHE_DIR/$fName -C $CPM_BUILD_DIR # tar.gz
 fi
 
 # installation

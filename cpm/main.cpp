@@ -213,7 +213,7 @@ bool install_libs(const std::string& CACHE_DIR,
         std::string archive_pkg_dir;
         std::string archive_path;
         if(TF_genArchive){
-            archive_pkg_dir = archive_dir + '/' + architecture + '-' + p.name + '-' + p.ver;
+            archive_pkg_dir = archive_dir + '/' + architecture + '/' + p.name + '/' + p.ver;
             archive_path = archive_pkg_dir + '/' + architecture + '-' + p.name + '-' + p.ver;
             if(sstd::fileExist(archive_path+'.'+archive_ext)){ continue; }
         }
@@ -268,7 +268,9 @@ bool install_libs(const std::string& CACHE_DIR,
             std::string cmd_r;
             
             std::string SRC_PATH = sstd::read(rtxt_path                             ); sstd::stripAll_ow(SRC_PATH, "\r\n");
-            std::string DST_PATH = sstd::read(v_build_env[1]+"/docker_base_path.txt"); sstd::stripAll_ow(DST_PATH, "\r\n"); DST_PATH += '/' + INST_PATH;
+            std::string DST_PATH = call_path + '/' + INST_PATH;
+            if(v_build_env[0] == cmd_DOCKER_ENV){ DST_PATH = sstd::read(v_build_env[1]+"/docker_base_path.txt"); sstd::stripAll_ow(DST_PATH, "\r\n"); DST_PATH += '/' + INST_PATH; }
+            
             replace_PATH_in_laFile(INST_WDIR, SRC_PATH, DST_PATH);
             //replace_PATH_in_laFile(INST_WDIR+"/*.la", SRC_PATH, DST_PATH); 
             sstd::write(rtxt_path, DST_PATH);
@@ -354,13 +356,17 @@ int main(int argc, char *argv[]){
     std::string archive_dir  = "env_cpm/archive";
     std::string archive_ext = "tar.xz";
     //std::string archive_ext = "zip"; // test by zip to reduce excusion time.
-    std::string packages_dir = "cpm/packages";
+    std::string buildin_packages_dir = "cpm/packages";
+    std::string packages_dir = "env_cpm/packages";
     
     sstd::mkdir(CACHE_DIR);
     sstd::mkdir(BUILD_DIR);
     sstd::mkdir(INST_WDIR);
     sstd::mkdir(INST_PATH);
     sstd::cp("cpm/init.sh", INST_PATH);
+    sstd::mkdir(INST_PATH);
+    sstd::mkdir(packages_dir);
+    sstd::cp(buildin_packages_dir+"/*", packages_dir);
     
     char c = ' ';
     for(int i=1; i<argc; ++i){

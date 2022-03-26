@@ -1,4 +1,4 @@
 exe
-env_cpm/*
-tmp_cpm/*
+cpm_env/*
+cpm_tmp/*
 cpm/sstd/*

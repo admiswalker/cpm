@@ -169,7 +169,7 @@ void replace_PATH_in_laFile(const std::string& la_file_path, const std::string& 
     // replace path in the '*.la' file.
     std::string cmd_r;
     cmd_r += "cd " + la_file_path + ';';
-    cmd_r += "find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!" + SRC_PATH + '!' + DST_PATH + "!g'"; // $ find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!env_cpm/local_archive!env_cpm/local!g'
+    cmd_r += "find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!" + SRC_PATH + '!' + DST_PATH + "!g'"; // $ find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!cpm_env/local_archive!cpm_env/local!g'
     sstd::system(cmd_r);
 }
 void gen_archive(const std::string& save_name, const std::string& archive_ext, const std::string& path){
@@ -348,16 +348,16 @@ int main(int argc, char *argv[]){
     
     // Because of when using Docker, the absolute path is determined at run time.
     // Use relative path internally and convert absolute path when immediately before running scripts and commands.
-    std::string CACHE_DIR = "env_cpm/cache";
-    std::string BUILD_DIR = "env_cpm/build"; // -b env_cpm/build
-    std::string INST_PATH = "env_cpm/local"; // -i env_cpm/local
+    std::string CACHE_DIR = "cpm_env/cache";
+    std::string BUILD_DIR = "cpm_env/build"; // -b cpm_env/build
+    std::string INST_PATH = "cpm_env/local"; // -i cpm_env/local
     std::string INST_WDIR = INST_PATH + "_work";
     bool TF_genArchive = false;
-    std::string archive_dir  = "env_cpm/archive";
+    std::string archive_dir  = "cpm_env/archive";
     std::string archive_ext = "tar.xz";
     //std::string archive_ext = "zip"; // test by zip to reduce excusion time.
     std::string buildin_packages_dir = "cpm/packages";
-    std::string packages_dir = "env_cpm/packages";
+    std::string packages_dir = "cpm_env/packages";
     
     sstd::mkdir(CACHE_DIR);
     sstd::mkdir(BUILD_DIR);

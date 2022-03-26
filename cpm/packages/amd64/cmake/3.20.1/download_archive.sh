@@ -1,37 +1,38 @@
 #!/bin/bash
 
-# Usage
-#   - Set values of `CACHE_DIR`, `BUILD_DIR` and `INST_PATH` using `export` before call this script.
+CPM_CALL_DIR=`pwd -P`
+. $CPM_CALL_DIR/cpm/init_path_and_dir.sh
+. $CPM_OWN_DIR/common_fn.sh
 
-CALL_DIR=`pwd -P`
-CACHE_DIR=$CALL_DIR/$CACHE_DIR; mkdir -p $CACHE_DIR # When using Docker, the absolute path is determined at run time.
-
-
-#    '--------------------------------------------------------------------------------'
-echo '--- begin: download cmake/3.20.1 -----------------------------------------------'
 
 URL=https://github.com/admiswalker/cpm_archive/raw/main/archive/amd64/cmake/3.20.1/amd64-cmake-3.20.1.tar.xz
-fName=${URL##*/}         # amd64-cmake-3.20.1.tar.xz
-fName_base=${fName%.*.*} # amd64-cmake-3.20.1
+fName=${URL##*/}          # <architecture>-<libName>-<version>.tar.xz
+fName_base=${fName%.*.*}  # <architecture>-<libName>-<version>
+tmp=${fName%-*}           # <architecture>-<libName>
+arcName=${tmp%-*}         # <architecture>
+libName=${tmp#*-}         # <libName>
+ver=${fName_base#*-*-}    # <version>
+
 
 URL_hash=https://github.com/admiswalker/cpm_archive/raw/main/archive/amd64/cmake/3.20.1/amd64-cmake-3.20.1-sha256sum.txt
-fName_hash=${URL_hash##*/} # amd64_cmake-3.20.1-sha256sum.txt
+fName_hash=${URL_hash##*/} # amd64-m4-1.4.15-sha256sum.txt
+
+
+cfn_echo_download_begin $libName $ver
+
 
 # downloading source file
-if [ ! -e $CACHE_DIR/$fName ]; then
-    wget -P $CACHE_DIR $URL
+if [ ! -e $CPM_CACHE_DIR/$fName ]; then
+    wget -P $CPM_CACHE_DIR $URL
 fi
-if [ ! -e $CACHE_DIR/$fName_hash ]; then
-    wget -P $CACHE_DIR $URL_hash
+if [ ! -e $CPM_CACHE_DIR/$fName_hash ]; then
+    wget -P $CPM_CACHE_DIR $URL_hash
 fi
+cfn_check_hash_value
 
-# check hash
-find $CACHE_DIR -name $fName_hash -type f -print0 | xargs -0 grep $(sha256sum $CACHE_DIR/$fName) >/dev/null 2>&1
-if [ ! $? = 0 ]; then
-    echo -e "\e[31mERROR: cmake: hash value of downloaded file is not match.\e[m"
-    return -1
-fi
 
-#    '--------------------------------------------------------------------------------'
-echo '------------------------------------------------- end: download cmake/3.20.1 ---'
+cfn_echo_download_end $libName $ver
 
+
+fName=${URL##*/}         # amd64-cmake-3.20.1.tar.xz
+fName_base=${fName%.*.*} # amd64-cmake-3.20.1

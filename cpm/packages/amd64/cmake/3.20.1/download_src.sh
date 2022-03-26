@@ -1,37 +1,32 @@
 #!/bin/bash
 
-# Usage
-#   - Set values of `CACHE_DIR`, `BUILD_DIR` and `INST_PATH` using `export` before call this script.
+CPM_CALL_DIR=`pwd -P`
+. $CPM_CALL_DIR/cpm/init_path_and_dir.sh
+. $CPM_OWN_DIR/common_fn.sh
 
-CALL_DIR=`pwd -P`
-CACHE_DIR=$CALL_DIR/$CACHE_DIR; mkdir -p $CACHE_DIR # When using Docker, the absolute path is determined at run time.
-
-
-#    '--------------------------------------------------------------------------------'
-echo '--- begin: download cmake/3.20.1 -----------------------------------------------'
 
 URL=https://github.com/Kitware/CMake/releases/download/v3.20.1/cmake-3.20.1.tar.gz
-fName=${URL##*/}         # cmake-3.20.1.tar.gz
-fName_base=${fName%.*.*} # cmake-3.20.1
+fName=${URL##*/}         # isl-0.18.tar.bz2
+fName_base=${fName%.*.*} # isl-0.18.tar.bz2
+libName='cmake'
+ver='3.20.1'
+
 
 URL_hash=https://github.com/Kitware/CMake/releases/download/v3.20.1/cmake-3.20.1-SHA-256.txt
-fName_hash=${URL_hash##*/} # cmake-3.20.1-SHA-256.txt
+fName_hash=${URL_hash##*/} # xxx-x.x.x-sha256sum.txt
+
+
+cfn_echo_download_begin $libName $ver
+
 
 # downloading source file
-if [ ! -e $CACHE_DIR/$fName ]; then
-    wget -P $CACHE_DIR $URL
+if [ ! -e $CPM_CACHE_DIR/$fName ]; then
+    wget -P $CPM_CACHE_DIR $URL
 fi
-if [ ! -e $CACHE_DIR/$fName_hash ]; then
-    wget -P $CACHE_DIR $URL_hash
+if [ ! -e $CPM_CACHE_DIR/$fName_hash ]; then
+    wget -P $CPM_CACHE_DIR $URL_hash
 fi
+cfn_check_hash_value
 
-# check hash
-find $CACHE_DIR -name $fName_hash -type f -print0 | xargs -0 grep $(sha256sum $CACHE_DIR/$fName) >/dev/null 2>&1
-if [ ! $? = 0 ]; then
-    echo -e "\e[31mERROR: cmake: hash value of downloaded file is not match.\e[m"
-    return -1
-fi
 
-#    '--------------------------------------------------------------------------------'
-echo '------------------------------------------------- end: download cmake/3.20.1 ---'
-
+cfn_echo_download_end $libName $ver

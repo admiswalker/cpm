@@ -1,34 +1,32 @@
 #!/bin/bash
 
-# Usage
-#   - Set values of `CACHE_DIR`, `BUILD_DIR` and `INST_PATH` using `export` before call this script.
-
-CALL_DIR=`pwd -P`
-BUILD_DIR=$CALL_DIR/$BUILD_DIR; mkdir -p $BUILD_DIR # When using Docker, the absolute path is determined at run time.
-INST_PATH=$CALL_DIR/$INST_PATH; mkdir -p $INST_PATH # When using Docker, the absolute path is determined at run time.
+CPM_CALL_DIR=`pwd -P`
+. $CPM_CALL_DIR/cpm/init_path_and_dir.sh
+. $CPM_OWN_DIR/common_fn.sh
+. $CPM_CALL_DIR/cpm/set_env.sh
 
 
-#    '--------------------------------------------------------------------------------'
-echo '--- begin: install cmake/3.20.1 ------------------------------------------------'
+libName='cmake'
+ver='3.20.1'
+cfn_echo_install_begin $libName $ver
+
 
 fName='cmake-3.20.1.tar.gz'
 fName_base=${fName%.*.*} # cmake-3.20.1
-#libName=${fName%-*}      # cmake
 
 # unpacking the archive file
-if [ ! -e $BUILD_DIR/$fName_base ]; then
-    tar -zxf $CACHE_DIR/$fName -C $BUILD_DIR # tar.xz
+if [ ! -e $CPM_BUILD_DIR/$fName_base ]; then
+    tar -zxf $CPM_CACHE_DIR/$fName -C $CPM_BUILD_DIR # tar.xz
 fi
 
 # installation
-if [ ! -e $INST_PATH/bin/cmake ]; then
-    cd $BUILD_DIR/$fName_base;
-    ./configure --prefix=$INST_PATH -- -DCMAKE_USE_OPENSSL=OFF
+if [ `cfn_isInstalled` = 'false' ]; then
+    cd $CPM_BUILD_DIR/$fName_base;
+    ./configure --prefix=$CPM_INST_WDIR -- -DCMAKE_USE_OPENSSL=OFF
     
     make -j
     make install
 fi
 
-#    '--------------------------------------------------------------------------------'
-echo '-------------------------------------------------- end: install cmake/3.20.1 ---'
 
+cfn_echo_install_end $libName $ver

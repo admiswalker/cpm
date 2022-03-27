@@ -1,5 +1,5 @@
 ARCHITECTURE, amd64;
-//IMPORT, CPM_libExample_to_IMPORT, 0.1.0, https://github.com/xxxxxxx/download_install.sh;
+IMPORT, CPM_libExample_to_IMPORT, 0.1.0, "https://github.com/admiswalker/CPM_libExample_to_IMPORT/raw/main/cpm_import/script/download_v0.1.0_installation_scripts.sh";
 
 /*
 BUILD_ENV, SYSTEM_ENV;
@@ -22,8 +22,9 @@ BUILD_ENV, CPM_ENV;
 //googletest, 1.11.0;
 //sstd, 1.0.0;
 //sstd, 2.0.0;
-sstd, latest;
-//CPM_libExample_to_IMPORT, 0.1.0;
+//sstd, latest;
+CPM_libExample_to_IMPORT, 0.1.0;
+//cpmex, 0.1.0;
 //*/
 
 

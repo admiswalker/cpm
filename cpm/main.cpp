@@ -117,9 +117,9 @@ std::vector<struct pkg> vPkgList2vPkg(bool& ret, const sstd::vvec<std::string>& 
     }
     return v_pkg_ret;
 }
-bool read_packages_dir(std::unordered_map<std::string,std::vector<struct pkg>>& table_vPkg_ret, const std::string& packages_dir){
+bool read_packages_dir(std::unordered_map<std::string,std::vector<struct pkg>>& table_vPkg_ret, const std::string& PACKS_DIR){
     table_vPkg_ret.clear();
-    std::vector<std::string> v_package = sstd::glob(packages_dir+"/*", "d");
+    std::vector<std::string> v_package = sstd::glob(PACKS_DIR+"/*", "d");
 
     for(uint p=0; p<v_package.size(); ++p){
         std::vector<std::string> v_ver_path; //, v_package_inst, v_package_deps;
@@ -201,7 +201,7 @@ bool install_libs(const std::string& CACHE_DIR,
                   const std::string& INST_WDIR,
                   const std::vector<std::string>& v_build_env,
                   const std::string& architecture,
-                  const std::string& packages_dir,
+                  const std::string& PACKS_DIR,
                   const std::vector<struct pkg>& v_pkg,
                   const bool TF_genArchive, const std::string& archive_dir, const std::string& archive_ext)
 {
@@ -218,7 +218,7 @@ bool install_libs(const std::string& CACHE_DIR,
             if(sstd::fileExist(archive_path+'.'+archive_ext)){ continue; }
         }
 
-        std::string pkg_shell_dir = packages_dir + '/' + p.name + '/' + p.ver;
+        std::string pkg_shell_dir = PACKS_DIR + '/' + p.name + '/' + p.ver;
         bool TF_useArchive = sstd::isFile(pkg_shell_dir + "/download_archive.sh");
         
         std::string cache_pkg_dir = CACHE_DIR + '/' + (TF_useArchive ? "archive":"src") + '/' + architecture + '-' + p.name + '-' + p.ver;
@@ -357,7 +357,7 @@ int main(int argc, char *argv[]){
     std::string archive_ext = "tar.xz";
     //std::string archive_ext = "zip"; // test by zip to reduce excusion time.
     std::string buildin_packages_dir = "cpm/packages";
-    std::string packages_dir = "cpm_env/packages";
+    std::string PACKS_DIR = "cpm_env/packages";
     
     sstd::mkdir(CACHE_DIR);
     sstd::mkdir(BUILD_DIR);
@@ -365,8 +365,8 @@ int main(int argc, char *argv[]){
     sstd::mkdir(INST_PATH);
     sstd::cp("cpm/init.sh", INST_PATH);
     sstd::mkdir(INST_PATH);
-    sstd::mkdir(packages_dir);
-    sstd::cp(buildin_packages_dir+"/*", packages_dir);
+    sstd::mkdir(PACKS_DIR);
+    sstd::cp(buildin_packages_dir+"/*", PACKS_DIR);
     
     char c = ' ';
     for(int i=1; i<argc; ++i){
@@ -393,7 +393,7 @@ int main(int argc, char *argv[]){
         
         ++l;
         if(vCmd[0]==cmd_ARCHITECTURE){
-            architecture = vCmd[1]; if(!read_packages_dir( table_vPkg, packages_dir+'/'+architecture)){ return -1; }
+            architecture = vCmd[1]; if(!read_packages_dir( table_vPkg, PACKS_DIR+'/'+architecture)){ return -1; }
             
         }else if(vCmd[0]==cmd_BUILD_ENV){
             v_build_env = vCmd && sstd::slice(1, sstd::end());
@@ -414,7 +414,29 @@ int main(int argc, char *argv[]){
             }
             
         }else if(vCmd[0]==cmd_IMPORT){
-            // Not implimented
+            std::string libName = vCmd[1];
+            std::string ver     = vCmd[2];
+            std::string URL     = sstd::stripAll(vCmd[3], "\"");
+            std::string dl_script_cache_path = CACHE_DIR+"/import/"+libName+'/'+ver;
+            std::string cache_pkg_dir        = CACHE_DIR+"/packages/"+libName+'/'+ver;
+            std::string pkg_shell_dir        = PACKS_DIR + '/' + architecture + '/' + libName + '/' + ver;
+            sstd::mkdir(dl_script_cache_path);
+            sstd::mkdir(cache_pkg_dir);
+            sstd::mkdir(pkg_shell_dir);
+            std::string dl_script = dl_script_cache_path + '/' + sstd::getFileName( URL.c_str() );
+            if(!sstd::fileExist(dl_script)){
+                sstd::system("wget -P "+dl_script_cache_path+' '+URL);
+            }
+            
+            std::string cmd;
+            cmd += "export CPM_CACHE_DIR=" + cache_pkg_dir + '\n';
+            cmd += "./" + dl_script;
+            sstd::system(cmd);
+            sstd::cp(cache_pkg_dir+"/*", pkg_shell_dir, "npu");
+            
+            // add pkg to table_vPkg
+            struct pkg r; if(!str2struct_pkg(r, libName, ver)){ return false; }
+            table_vPkg[ r.name ] <<= r;
         }else{
             --l;
         }
@@ -424,7 +446,7 @@ int main(int argc, char *argv[]){
         bool ret=true;
         std::vector<struct pkg> v_pkg_requested = vPkgList2vPkg(ret, vPkgList); if(!ret){ return -1; }
         std::vector<struct pkg> v_inst_pkg      = solve_depends___dummy(ret, v_pkg_requested, table_vPkg); if(!ret){ return -1; }
-        install_libs(CACHE_DIR, BUILD_DIR, INST_PATH, INST_WDIR, v_build_env, architecture, packages_dir+'/'+architecture, v_inst_pkg, TF_genArchive, archive_dir, archive_ext);
+        install_libs(CACHE_DIR, BUILD_DIR, INST_PATH, INST_WDIR, v_build_env, architecture, PACKS_DIR+'/'+architecture, v_inst_pkg, TF_genArchive, archive_dir, archive_ext);
     }
     
     printf("\n");

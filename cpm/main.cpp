@@ -432,7 +432,7 @@ int main(int argc, char *argv[]){
             cmd += "export CPM_CACHE_DIR=" + cache_pkg_dir + '\n';
             cmd += "./" + dl_script;
             sstd::system(cmd);
-            sstd::cp(cache_pkg_dir+"/*", pkg_shell_dir, "npu");
+            sstd::cp(cache_pkg_dir+"/*", pkg_shell_dir, "pu");
             
             // add pkg to table_vPkg
             struct pkg r; if(!str2struct_pkg(r, libName, ver)){ return false; }

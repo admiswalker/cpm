@@ -5,18 +5,16 @@ CPM_CALL_DIR=`pwd -P`
 . $CPM_OWN_DIR/common_fn.sh
 
 
-URL=https://github.com/admiswalker/SubStandardLibrary-SSTD-/archive/refs/tags/v2.0.0.zip
-#fName=${URL##*/}         # mpfr-3.1.4.tar.bz2
-#fName_base=${fName%.*.*} # mpfr-3.1.4.tar.bz2
-fName='sstd-2.0.0.zip'
-fName_base='sstd-2.0.0'
-libName='sstd'
-ver='2.0.0'
+URL=https://github.com/admiswalker/SubStandardLibrary-SSTD-/archive/refs/tags/sstd-2.0.0.tar.gz
+fName=${URL##*/}         # <libName>-<version>.tar.gz
+fName_base=${fName%.*.*} # <libName>-<version>
+libName=${fName_base%-*} # <libName>
+ver=${fName_base#*-}     # <version>
 
 
 #URL_hash=''
-#fName_hash=${URL_hash##*/} # xxx-x.x.x-sha256sum.txt
-fName_hash='sstd-2.0.0-sha256sum.txt' # xxx-x.x.x-sha256sum.txt
+#fName_hash=${URL_hash##*/} # <libName>-<version>-sha256sum.txt
+fName_hash=$libName-$ver-sha256sum.txt # <libName>-<version>-sha256sum.txt
 
 
 cfn_echo_download_begin $libName $ver
@@ -29,7 +27,7 @@ if [ ! -e $CPM_CACHE_DIR/$fName ]; then
 fi
 if [ ! -e $CPM_CACHE_DIR/$fName_hash ]; then
 #    wget -P $CPM_CACHE_DIR $URL_hash
-    echo '4cfdc202eb04a28d4a3bea76dc01dee6ffea6b2617162db28391ae3ae79351cf  sstd-2.0.0.zip' > $CPM_CACHE_DIR/$fName_hash
+    echo 'c33dbe0a1dabb40eeab5488ddcbbad6353a22a0b7d4d964cb3199ba5672539b5  sstd-2.0.0.tar.gz' > $CPM_CACHE_DIR/$fName_hash
 fi
 cfn_check_hash_value
 

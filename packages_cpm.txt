@@ -21,10 +21,9 @@ BUILD_ENV, CPM_ENV;
 //cmake, 3.20.1;
 //googletest, 1.11.0;
 //sstd, 1.0.0;
-//sstd, 2.0.0;
+sstd, 2.0.0;
 //sstd, latest;
-CPM_libExample_to_IMPORT, 0.1.0;
-//cpmex, 0.1.0;
+//CPM_libExample_to_IMPORT, 0.1.0;
 //*/
 
 

@@ -58,6 +58,7 @@ clean:
 	-rm -rf tmp
 	-rm -rf *.exe
 	-rm -rf out.md
+	-rm -rf $(TARGET)
 
 
 .PHONY: test

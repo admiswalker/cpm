@@ -218,15 +218,15 @@ bool install_libs(const std::string& CACHE_DIR,
             archive_path = archive_pkg_dir + '/' + architecture + '-' + p.name + '-' + p.ver;
             if(sstd::fileExist(archive_path+'.'+archive_ext)){ continue; }
         }
-
+        
         std::string pkg_shell_dir = PACKS_DIR + '/' + p.name + '/' + p.ver;
         bool TF_useArchive = sstd::isFile(pkg_shell_dir + "/download_archive.sh");
         
-        std::string cache_pkg_dir = CACHE_DIR + '/' + (TF_useArchive ? "archive":"src") + '/' + architecture + '-' + p.name + '-' + p.ver;
-        std::string build_pkg_dir = BUILD_DIR + '/' + architecture + '-' + p.name + '-' + p.ver;
-        sstd::mkdir(cache_pkg_dir);
+        std::string cacheDir_pkg = CACHE_DIR + '/' + (TF_useArchive ? "archive":"src") + '/' + architecture + '-' + p.name + '-' + p.ver;
+        std::string buildDir_pkg = BUILD_DIR + '/' + architecture + '-' + p.name + '-' + p.ver;
+        sstd::mkdir(cacheDir_pkg);
         if(!TF_useArchive){
-            sstd::mkdir(build_pkg_dir);
+            sstd::mkdir(buildDir_pkg);
         }
         
         std::string cmd_env;
@@ -241,17 +241,27 @@ bool install_libs(const std::string& CACHE_DIR,
             sstd::pdbg("ERROR: BUILD_ENV has invalid value: %s.\n", v_build_env[0].c_str());
             return false;
         }
-        cmd_env += "export CPM_CACHE_DIR=" + cache_pkg_dir + '\n';
-        cmd_env += "export CPM_BUILD_DIR=" + build_pkg_dir + '\n';
+        if(!TF_dl_dps2cache_only){
+            cmd_env += "export CPM_CACHE_DIR=" + cacheDir_pkg + '\n';
+        }
+        cmd_env += "export CPM_BUILD_DIR=" + buildDir_pkg + '\n';
         cmd_env += "export CPM_DLIB_PATH=" + INST_PATH + '\n'; // dependent library
         cmd_env += "export CPM_INST_WDIR=" + INST_WDIR + '\n'; // working dir
         cmd_env += "export CPM_INST_PATH=" + INST_PATH + '\n';
         cmd_env += "\n";
         std::string cmd_run;
         if(TF_dl_dps2cache_only){
-            cmd_run += runner + ' ' + pkg_shell_dir + "/download_archive.sh" + ' ' + options + '\n';
-            cmd_run += runner + ' ' + pkg_shell_dir + "/download_src.sh" + ' ' + options + '\n';
-        }else if(TF_useArchive){
+            std::string cacheDir_acv = CACHE_DIR + "/archive/" + architecture + '-' + p.name + '-' + p.ver;
+            std::string cacheDir_src = CACHE_DIR + "/src/"     + architecture + '-' + p.name + '-' + p.ver;
+            std::string cmd_env4acv = cmd_env + "export CPM_CACHE_DIR=" + cacheDir_acv + '\n';
+            std::string cmd_env4src = cmd_env + "export CPM_CACHE_DIR=" + cacheDir_src + '\n';
+            std::string cmd_run4acv = runner + ' ' + pkg_shell_dir + "/download_archive.sh" + ' ' + options + '\n';
+            std::string cmd_run4src = runner + ' ' + pkg_shell_dir + "/download_src.sh" + ' ' + options + '\n';
+            sstd::system(cmd_env4acv + cmd_run4acv); // download archive files
+            sstd::system(cmd_env4src + cmd_run4src); // download src files
+            continue;
+        }
+        if(TF_useArchive){
             cmd_run += runner + ' ' + pkg_shell_dir + "/download_archive.sh" + ' ' + options + '\n';
             cmd_run += runner + ' ' + pkg_shell_dir + "/install_archive.sh" + ' ' + options + '\n';
         }else{
@@ -261,10 +271,9 @@ bool install_libs(const std::string& CACHE_DIR,
         //std::string str_isInstalled = sstd::system_stdout_stderr(cmd_env+runner+' '+pkg_shell_dir+"/is_installed.sh"+' '+options+'\n');
         std::string str_isInstalled = sstd::system_stdout_stderr(cmd_env+pkg_shell_dir+"/is_installed.sh");
         bool TF_isInstalled = sstd::strIn("true", str_isInstalled);
-        if(TF_isInstalled && !TF_dl_dps2cache_only){ continue; }
+        if(TF_isInstalled){ continue; }
         sstd::mkdir(INST_WDIR);
         sstd::system(cmd_env + cmd_run); // install to INST_WDIR
-        if(TF_dl_dps2cache_only){ continue; }
         
         std::string rtxt_path = INST_WDIR + "/replacement_path_for_cpm_archive.txt";
         

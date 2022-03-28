@@ -5,6 +5,6 @@ FORCE_TO_MAKE:
 
 
 clean:
-	@rm exe
-#	@rm -r cpm_env
+	@rm -f exe
+	@rm -fr cpm_env
 

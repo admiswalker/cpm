@@ -2,7 +2,7 @@
 
 
 echo '-- set CPM environment ---'
-. cpm/set_env.sh
+. cpm_env/local/set_env.sh
 
 echo '-- check compiler version ---'
 gcc --version

@@ -1,6 +1,6 @@
 #!/bin/bash
 CPM_CALL_DIR=`pwd -P`
-SCRIPT_DIR=`cd $(dirname ${0}) && pwd`
+SCRIPT_DIR=`cd $(dirname ${BASH_SOURCE:-$0}); pwd`
 
 SRC_PATH=`cat $SCRIPT_DIR/replacement_path_for_cpm_archive.txt | tr -d '\r' | tr -d '\n'`
 DST_PATH=$SCRIPT_DIR

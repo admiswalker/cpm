@@ -1,16 +1,17 @@
 #!/bin/bash
 
-CALL_DIR=`pwd -P`
+#CALL_DIR=`pwd -P`
+SCRIPT_DIR=`cd $(dirname ${BASH_SOURCE:-$0}); pwd`
 
-export PATH=$CALL_DIR/cpm_env/local/bin:$PATH
-export LD_LIBRARY_PATH=$CALL_DIR/cpm_env/local/lib:$LD_LIBRARY_PATH
-export LD_LIBRARY_PATH=$CALL_DIR/cpm_env/local/lib64:$LD_LIBRARY_PATH
-export LIBRARY_PATH=$CALL_DIR/cpm_env/local/lib:$LIBRARY_PATH
-export LIBRARY_PATH=$CALL_DIR/cpm_env/local/lib64:$LIBRARY_PATH
+export PATH=$SCRIPT_DIR/bin:$PATH
+export LD_LIBRARY_PATH=$SCRIPT_DIR/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$SCRIPT_DIR/lib64:$LD_LIBRARY_PATH
+export LIBRARY_PATH=$SCRIPT_DIR/lib:$LIBRARY_PATH
+export LIBRARY_PATH=$SCRIPT_DIR/lib64:$LIBRARY_PATH
 
-export LD_RUN_PATH=$CALL_DIR/cpm_env/local/lib:$LD_RUN_PATH
-export C_INCLUDE_PATH=$CALL_DIR/cpm_env/local/include:$C_INCLUDE_PATH
-export CPLUS_INCLUDE_PATH=$CALL_DIR/cpm_env/local/include:$CPLUS_INCLUDE_PATH
-export MAN_PATH=$CALL_DIR/cpm_env/local/share/man:$MAN_PATH
-export OPENSSL_ROOT_DIR=$CALL_DIR/cpm_env/local/bin
+export LD_RUN_PATH=$SCRIPT_DIR/lib:$LD_RUN_PATH
+export C_INCLUDE_PATH=$SCRIPT_DIR/include:$C_INCLUDE_PATH
+export CPLUS_INCLUDE_PATH=$SCRIPT_DIR/include:$CPLUS_INCLUDE_PATH
+export MAN_PATH=$SCRIPT_DIR/share/man:$MAN_PATH
+export OPENSSL_ROOT_DIR=$SCRIPT_DIR/bin
 

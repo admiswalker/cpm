@@ -162,8 +162,8 @@ std::vector<struct pkg> solve_depends___dummy(bool& ret,
     
     return v_pkg_ret;
 }
-std::string return_set_env_cmd(){
-    return sstd::read("cpm/set_env.sh");
+std::string return_set_env_cmd(const std::string& INST_PATH){
+    return sstd::read(INST_PATH+"/set_env.sh");
 }
 void replace_PATH_in_laFile(const std::string& la_file_path, const std::string& SRC_PATH, const std::string& DST_PATH){
     // replace path in the '*.la' file.
@@ -232,7 +232,7 @@ bool install_libs(const std::string& CACHE_DIR,
         std::string runner = ""; // "sh"
         std::string options;
         if(v_build_env.size()==0){ sstd::pdbg("ERROR: BUILD_ENV is not set.\n"); }
-        if      (v_build_env[0] == cmd_CPM_ENV   ){ cmd_env += return_set_env_cmd();
+        if      (v_build_env[0] == cmd_CPM_ENV   ){ cmd_env += return_set_env_cmd(INST_PATH);
         }else if(v_build_env[0] == cmd_DOCKER_ENV){ runner = "sh " + v_build_env[1] + "/docker_run.sh";
                                                     options = "--env CPM_CACHE_DIR --env CPM_BUILD_DIR --env CPM_DLIB_PATH --env CPM_INST_WDIR --env CPM_INST_PATH";
         }else if(v_build_env[0] == cmd_SYSTEM_ENV){ // do nothing
@@ -279,7 +279,7 @@ bool install_libs(const std::string& CACHE_DIR,
         // copy file (move INST_WDIR to INST_PATH)
         std::vector<std::string> vPath = sstd::glob(INST_WDIR+"/*", "df");
         if(vPath.size()!=0){
-            sstd::cp(INST_WDIR+"/*", INST_PATH, "npu");
+            sstd::cp(INST_WDIR+"/*", INST_PATH, "pu");
 //          sstd::mv(WORK_PATH+"/*", INST_PATH); // Not implimented yet
         }else{
             sstd::pdbg("ERROR: CPM_INST_WDIR is empty.");
@@ -295,9 +295,6 @@ bool install_libs(const std::string& CACHE_DIR,
             sstd::mkdir(archive_pkg_dir);
             gen_archive(call_path+'/'+archive_path+'.'+archive_ext, archive_ext, call_path+'/'+INST_WDIR);
             gen_hashFile(archive_pkg_dir, archive_path+"-sha256sum.txt");
-            
-            sstd::cp(INST_WDIR+"/*", INST_PATH, "npu");
-//          sstd::mv(INST_WDIR+"/*", INST_PATH); // Not implimented yet
         }
         sstd::rm(INST_WDIR);
     }
@@ -364,6 +361,7 @@ int main(int argc, char *argv[]){
     sstd::mkdir(INST_WDIR);
     sstd::mkdir(INST_PATH);
     sstd::cp("cpm/init.sh", INST_PATH);
+    sstd::cp("cpm/set_env.sh", INST_PATH);
     sstd::mkdir(INST_PATH);
     sstd::mkdir(PACKS_DIR);
     sstd::cp(buildin_packages_dir+"/*", PACKS_DIR);

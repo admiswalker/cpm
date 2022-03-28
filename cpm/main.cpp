@@ -203,7 +203,8 @@ bool install_libs(const std::string& CACHE_DIR,
                   const std::string& architecture,
                   const std::string& PACKS_DIR,
                   const std::vector<struct pkg>& v_pkg,
-                  const bool TF_genArchive, const std::string& archive_dir, const std::string& archive_ext)
+                  const bool TF_genArchive, const std::string& archive_dir, const std::string& archive_ext,
+                  const bool TF_dl_dps2cache_only)
 {
     std::string call_path = sstd::system_stdout("pwd"); sstd::stripAll_ow(call_path, "\r\n");
     
@@ -247,7 +248,10 @@ bool install_libs(const std::string& CACHE_DIR,
         cmd_env += "export CPM_INST_PATH=" + INST_PATH + '\n';
         cmd_env += "\n";
         std::string cmd_run;
-        if(TF_useArchive){
+        if(TF_dl_dps2cache_only){
+            cmd_run += runner + ' ' + pkg_shell_dir + "/download_archive.sh" + ' ' + options + '\n';
+            cmd_run += runner + ' ' + pkg_shell_dir + "/download_src.sh" + ' ' + options + '\n';
+        }else if(TF_useArchive){
             cmd_run += runner + ' ' + pkg_shell_dir + "/download_archive.sh" + ' ' + options + '\n';
             cmd_run += runner + ' ' + pkg_shell_dir + "/install_archive.sh" + ' ' + options + '\n';
         }else{
@@ -257,9 +261,10 @@ bool install_libs(const std::string& CACHE_DIR,
         //std::string str_isInstalled = sstd::system_stdout_stderr(cmd_env+runner+' '+pkg_shell_dir+"/is_installed.sh"+' '+options+'\n');
         std::string str_isInstalled = sstd::system_stdout_stderr(cmd_env+pkg_shell_dir+"/is_installed.sh");
         bool TF_isInstalled = sstd::strIn("true", str_isInstalled);
-        if(TF_isInstalled){ continue; }
+        if(TF_isInstalled && !TF_dl_dps2cache_only){ continue; }
         sstd::mkdir(INST_WDIR);
         sstd::system(cmd_env + cmd_run); // install to INST_WDIR
+        if(TF_dl_dps2cache_only){ continue; }
         
         std::string rtxt_path = INST_WDIR + "/replacement_path_for_cpm_archive.txt";
         
@@ -346,6 +351,7 @@ int main(int argc, char *argv[]){
     bool TF_genArchive = false;
     std::string archive_ext = "tar.xz";
     //std::string archive_ext = "zip"; // test by zip to reduce excusion time.
+    bool TF_dl_dps2cache_only = false; // Only downloads depending files to chache directory and exits.
     std::string base_dir = "cpm_env";
     
     char c = ' ';
@@ -356,6 +362,7 @@ int main(int argc, char *argv[]){
         switch(c){
         case 'a': { TF_genArchive = (sstd::strcmp(s,"true") ? true:false); break; }
         case 'b': { base_dir=s; break; }
+        case 'c': { TF_dl_dps2cache_only = (sstd::strcmp(s,"true") ? true:false); break; }
         case 'p': { path_packages=s; break; }
         default: { break; }
         }
@@ -369,7 +376,6 @@ int main(int argc, char *argv[]){
     std::string INST_WDIR   = base_dir+"/local_work";
     std::string INST_PATH   = base_dir+"/local";
     std::string archive_dir = base_dir+"/archive";
-    
     sstd::mkdir(CACHE_DIR);
     sstd::mkdir(PACKS_DIR);
     sstd::mkdir(BUILD_DIR);
@@ -443,9 +449,9 @@ int main(int argc, char *argv[]){
         bool ret=true;
         std::vector<struct pkg> v_pkg_requested = vPkgList2vPkg(ret, vPkgList); if(!ret){ return -1; }
         std::vector<struct pkg> v_inst_pkg      = solve_depends___dummy(ret, v_pkg_requested, table_vPkg); if(!ret){ return -1; }
-        install_libs(CACHE_DIR, BUILD_DIR, INST_PATH, INST_WDIR, v_build_env, architecture, PACKS_DIR+'/'+architecture, v_inst_pkg, TF_genArchive, archive_dir, archive_ext);
+        install_libs(CACHE_DIR, BUILD_DIR, INST_PATH, INST_WDIR, v_build_env, architecture, PACKS_DIR+'/'+architecture, v_inst_pkg, TF_genArchive, archive_dir, archive_ext, TF_dl_dps2cache_only);
     }
-    
+
     printf("\n");
     sstd::measureTime_stop_print(timem);
     return 0;

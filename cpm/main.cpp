@@ -342,29 +342,11 @@ int main(int argc, char *argv[]){
     time_m timem; sstd::measureTime_start(timem);
     
     std::string path_packages = "packages_cpm.txt"; // -p packages_cpm.txt
-    
-    // Because of when using Docker, the absolute path is determined at run time.
-    // Use relative path internally and convert absolute path when immediately before running scripts and commands.
-    std::string CACHE_DIR = "cpm_env/cache";
-    std::string BUILD_DIR = "cpm_env/build"; // -b cpm_env/build
-    std::string INST_PATH = "cpm_env/local"; // -i cpm_env/local
-    std::string INST_WDIR = INST_PATH + "_work";
+    std::string buildin_packages_dir = "cpm/packages";
     bool TF_genArchive = false;
-    std::string archive_dir  = "cpm_env/archive";
     std::string archive_ext = "tar.xz";
     //std::string archive_ext = "zip"; // test by zip to reduce excusion time.
-    std::string buildin_packages_dir = "cpm/packages";
-    std::string PACKS_DIR = "cpm_env/packages";
-    
-    sstd::mkdir(CACHE_DIR);
-    sstd::mkdir(BUILD_DIR);
-    sstd::mkdir(INST_WDIR);
-    sstd::mkdir(INST_PATH);
-    sstd::cp("cpm/init.sh", INST_PATH);
-    sstd::cp("cpm/set_env.sh", INST_PATH);
-    sstd::mkdir(INST_PATH);
-    sstd::mkdir(PACKS_DIR);
-    sstd::cp(buildin_packages_dir+"/*", PACKS_DIR);
+    std::string base_dir = "cpm_env";
     
     char c = ' ';
     for(int i=1; i<argc; ++i){
@@ -373,12 +355,29 @@ int main(int argc, char *argv[]){
         
         switch(c){
         case 'a': { TF_genArchive = (sstd::strcmp(s,"true") ? true:false); break; }
-        case 'b': { BUILD_DIR=s; break; }
-        case 'i': { INST_PATH=s; break; }
+        case 'b': { base_dir=s; break; }
         case 'p': { path_packages=s; break; }
         default: { break; }
         }
     }
+    
+    // Because of when using Docker, the absolute path is determined at run time.
+    // Use relative path internally and convert absolute path when immediately before running scripts and commands.
+    std::string CACHE_DIR   = base_dir+"/cache";
+    std::string PACKS_DIR   = base_dir+"/packages";
+    std::string BUILD_DIR   = base_dir+"/build";
+    std::string INST_WDIR   = base_dir+"/local_work";
+    std::string INST_PATH   = base_dir+"/local";
+    std::string archive_dir = base_dir+"/archive";
+    
+    sstd::mkdir(CACHE_DIR);
+    sstd::mkdir(PACKS_DIR);
+    sstd::mkdir(BUILD_DIR);
+    sstd::mkdir(INST_WDIR);
+    sstd::mkdir(INST_PATH);
+    sstd::cp(buildin_packages_dir+"/*", PACKS_DIR);
+    sstd::cp("cpm/init.sh",    INST_PATH);
+    sstd::cp("cpm/set_env.sh", INST_PATH);
     
     std::string architecture;
     std::unordered_map<std::string, std::vector<struct pkg>> table_vPkg;

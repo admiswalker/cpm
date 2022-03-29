@@ -11,7 +11,7 @@ cfn_isInstalled(){
 cfn_check_hash_value(){
     find $CPM_CACHE_DIR -name $fName_hash -type f -print0 | xargs -0 grep $(sha256sum $CPM_CACHE_DIR/$fName) >/dev/null 2>&1
     if [ ! $? = 0 ]; then
-	echo -e "\e[31mERROR: cmake: hash value of downloaded file is not match.\e[m"
+	echo -e "\e[31mERROR: hash value of downloaded file is not match.\e[m"
 	exit -1
     fi
 }

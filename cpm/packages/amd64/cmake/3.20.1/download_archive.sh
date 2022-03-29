@@ -15,7 +15,7 @@ ver=${fName_base#*-*-}    # <version>
 
 
 URL_hash=https://github.com/admiswalker/cpm_archive/raw/main/archive/amd64/cmake/3.20.1/amd64-cmake-3.20.1-sha256sum.txt
-fName_hash=${URL_hash##*/} # amd64-m4-1.4.15-sha256sum.txt
+fName_hash=${URL_hash##*/} # <architecture>-<libName>-<version>-sha256sum.txt
 
 
 cfn_echo_download_begin $libName $ver
@@ -32,7 +32,3 @@ cfn_check_hash_value
 
 
 cfn_echo_download_end $libName $ver
-
-
-fName=${URL##*/}         # amd64-cmake-3.20.1.tar.xz
-fName_base=${fName%.*.*} # amd64-cmake-3.20.1

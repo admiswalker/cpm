@@ -19,7 +19,7 @@ ver=${fName_base#*-*-}    # <version>
 
 
 URL_hash=https://github.com/admiswalker/cpm_archive/raw/main/archive/amd64/gcc/8.4.0/amd64-gcc-8.4.0-sha256sum.txt
-fName_hash=${URL_hash##*/} # amd64-m4-1.4.15-sha256sum.txt
+fName_hash=${URL_hash##*/} # <architecture>-<libName>-<version>-sha256sum.txt
 
 
 cfn_echo_download_begin $libName $ver

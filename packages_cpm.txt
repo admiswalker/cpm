@@ -1,6 +1,6 @@
 ARCHITECTURE, amd64;
 IMPORT, CPM_libExample_to_IMPORT, 0.1.0, "https://github.com/admiswalker/CPM_libExample_to_IMPORT/raw/main/cpm_import/script/download_v0.1.0_installation_scripts.sh";
-IMPORT, CPM_libExample_to_IMPORT, latest, "https://github.com/admiswalker/CPM_libExample_to_IMPORT/raw/main/cpm_import/script/download_latest_installation_scripts.sh";
+//IMPORT, CPM_libExample_to_IMPORT, latest, "https://github.com/admiswalker/CPM_libExample_to_IMPORT/raw/main/cpm_import/script/download_latest_installation_scripts.sh";
 
 //*
 BUILD_ENV, DOCKER_ENV, ./cpm/build_env/docker/ubuntu18.04_for_build_gcc;
@@ -9,7 +9,8 @@ gmp, 6.1.0;
 mpfr, 3.1.4;
 mpc, 1.0.3;
 isl, 0.18;
-gcc, 8.4.0;
+//gcc, 8.4.0;
+gcc, 9.4.0;
 //*/
 
 //*

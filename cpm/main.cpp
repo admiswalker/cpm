@@ -241,9 +241,6 @@ bool install_libs(const std::string& CACHE_DIR,
             sstd::pdbg("ERROR: BUILD_ENV has invalid value: %s.\n", v_build_env[0].c_str());
             return false;
         }
-        if(!TF_dl_dps2cache_only){
-            cmd_env += "export CPM_CACHE_DIR=" + cacheDir_pkg + '\n';
-        }
         cmd_env += "export CPM_BUILD_DIR=" + buildDir_pkg + '\n';
         cmd_env += "export CPM_DLIB_PATH=" + INST_PATH + '\n'; // dependent library
         cmd_env += "export CPM_INST_WDIR=" + INST_WDIR + '\n'; // working dir
@@ -261,6 +258,7 @@ bool install_libs(const std::string& CACHE_DIR,
             sstd::system(cmd_env4src + cmd_run4src); // download src files
             continue;
         }
+        cmd_env += "export CPM_CACHE_DIR=" + cacheDir_pkg + '\n';
         if(TF_useArchive){
             cmd_run += runner + ' ' + pkg_shell_dir + "/download_archive.sh" + ' ' + options + '\n';
             cmd_run += runner + ' ' + pkg_shell_dir + "/install_archive.sh" + ' ' + options + '\n';
@@ -300,6 +298,11 @@ bool install_libs(const std::string& CACHE_DIR,
             return false;
         }
         
+        TF_isInstalled = sstd::stripAll(sstd::system_stdout(cmd_env+pkg_shell_dir+"/is_installed.sh"), " \r\n")=="true";
+        if(!TF_isInstalled){
+            sstd::pdbg("ERROR: Installation is failed.");
+            return false;
+        }
         if(TF_genArchive && !TF_useArchive){
             if(sstd::glob(INST_WDIR+"/*.la", "fr").size()!=0 && sstd::fileExist(rtxt_path)==false){
                 sstd::pdbg("ERROR: replacement_path_for_cpm_archive.txt is not found.");

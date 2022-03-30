@@ -13,16 +13,16 @@ URL_hash=https://github.com/admiswalker/cpm_archive/raw/main/archive/amd64/gcc/7
 # SET: fName, fName_base, arcName, libName, ver
 fName=''
 if [ $URL != 0 ]; then
-    fName=${URL##*/}     # <architecture>-<libName>-<version>.tar.xz
+    fName=${URL##*/}       # <architecture>-<libName>-<version>.tar.xz
 elif [ $URL00 != 0 ]; then
-    fName00=${URL00##*/} # <architecture>-<libName>-<version>.tar.xz-00
-    fName=${fName00%-00} # <architecture>-<libName>-<version>.tar.xz
+    fName00=${URL00##*/}   # <architecture>-<libName>-<version>.tar.xz-00
+    fName=${fName00%-00}   # <architecture>-<libName>-<version>.tar.xz
 fi
-fName_base=${fName%.*.*} # <architecture>-<libName>-<version>
-tmp=${fName%-*}          # <architecture>-<libName>
-arcName=${tmp%-*}        # <architecture>
-libName=${tmp#*-}        # <libName>
-ver=${fName_base#*-*-}   # <version>
+fName_base=${fName%.*.*}   # <architecture>-<libName>-<version>
+tmp=${fName%-*}            # <architecture>-<libName>
+arcName=${tmp%-*}          # <architecture>
+libName=${tmp#*-}          # <libName>
+ver=${fName_base#*-*-}     # <version>
 fName_hash=${URL_hash##*/} # <architecture>-<libName>-<version>-sha256sum.txt
 
 

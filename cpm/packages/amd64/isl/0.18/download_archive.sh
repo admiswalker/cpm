@@ -1,34 +1,12 @@
 #!/bin/bash
 
-CPM_CALL_DIR=`pwd -P`
-. $CPM_CALL_DIR/cpm/init_path_and_dir.sh
+CPM_OWN_DIR=`dirname $0`
+. $CPM_OWN_DIR/init_path.sh
 . $CPM_OWN_DIR/common_fn.sh
+. $CPM_OWN_DIR/common_fn_envDependents.sh
 
 
-URL=https://github.com/admiswalker/cpm_archive/raw/main/archive/amd64/isl/0.18/amd64-isl-0.18.tar.xz
-fName=${URL##*/}          # <architecture>-<libName>-<version>.tar.xz
-fName_base=${fName%.*.*}  # <architecture>-<libName>-<version>
-tmp=${fName%-*}           # <architecture>-<libName>
-arcName=${tmp%-*}         # <architecture>
-libName=${tmp#*-}         # <libName>
-ver=${fName_base#*-*-}    # <version>
+cfn_set_archive_URL
 
 
-URL_hash=https://github.com/admiswalker/cpm_archive/raw/main/archive/amd64/isl/0.18/amd64-isl-0.18-sha256sum.txt
-fName_hash=${URL_hash##*/} # <architecture>-<libName>-<version>-sha256sum.txt
-
-
-cfn_echo_download_begin $libName $ver
-
-
-# downloading source file
-if [ ! -e $CPM_CACHE_DIR/$fName ]; then
-    wget -P $CPM_CACHE_DIR $URL
-fi
-if [ ! -e $CPM_CACHE_DIR/$fName_hash ]; then
-    wget -P $CPM_CACHE_DIR $URL_hash
-fi
-cfn_check_hash_value
-
-
-cfn_echo_download_end $libName $ver
+cfn_download_archive

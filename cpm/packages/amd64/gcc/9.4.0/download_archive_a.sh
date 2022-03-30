@@ -6,7 +6,7 @@ CPM_OWN_DIR=`dirname $0`
 . $CPM_OWN_DIR/common_fn_envDependents.sh
 
 
-cfn_set_archive_fName
+cfn_set_archive_URL
 
 
-cfn_install_archive
+cfn_download_archive

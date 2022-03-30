@@ -1,8 +1,9 @@
 #!/bin/bash
 
-CPM_CALL_DIR=`pwd -P`
-. $CPM_CALL_DIR/cpm/init_path_and_dir.sh
+CPM_OWN_DIR=`dirname $0`
+. $CPM_OWN_DIR/init_path.sh
 . $CPM_OWN_DIR/common_fn.sh
+. $CPM_OWN_DIR/common_fn_envDependents.sh
 
 
 URL=https://github.com/admiswalker/SubStandardLibrary-SSTD-/archive/refs/heads/master.zip

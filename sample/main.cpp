@@ -5,6 +5,7 @@
 
 int main(){
     printf("Welcome to the sample program that explains how to use CPM!\n");
+    printf("GCC version is %d.\n", __GNUC__);
     printf("\n");
 
     printf("test cpmex\n");

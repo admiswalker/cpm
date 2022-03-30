@@ -8,20 +8,19 @@ CPM_CALL_DIR=`pwd -P`
 . $CPM_CALL_DIR/cpm/set_env.sh
 
 
-libName='gcc'
-ver='8.4.0'
+fName='gcc-8.4.0.tar.xz'
+fName_base=${fName%.*.*} # <libName>-<version>
+libName=${fName_base%-*} # <libName>
+ver=${fName_base#*-}     # <version>
 cfn_echo_install_begin $libName $ver
 
-
-fName='gcc-8.4.0.tar.gz'
-fName_base=${fName%.*.*} # mpfr-3.1.4
 
 # unpacking the archive file
 if [ ! -e $CPM_BUILD_DIR/$fName_base ]; then
     #unzip -nq $CPM_CACHE_DIR/$fName -d $CPM_BUILD_DIR
-    #tar -zxf $CPM_CACHE_DIR/$fName -C $CPM_BUILD_DIR # tar.xz
+    tar -xf $CPM_CACHE_DIR/$fName -C $CPM_BUILD_DIR # tar.xz
     #tar -xvf $CPM_CACHE_DIR/$fName -C $CPM_BUILD_DIR # tar.bz2
-    tar -zxvf $CPM_CACHE_DIR/$fName -C $CPM_BUILD_DIR # tar.gz
+    #tar -zxvf $CPM_CACHE_DIR/$fName -C $CPM_BUILD_DIR # tar.gz
 fi
 
 # installation

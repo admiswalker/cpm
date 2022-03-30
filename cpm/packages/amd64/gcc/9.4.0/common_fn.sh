@@ -43,6 +43,9 @@ cfn_download_archive(){
     elif [ ${#URL00} != 0 ]; then
 	fName00=${URL00##*/}   # <architecture>-<libName>-<version>.tar.xz-00
 	fName=${fName00%-00}   # <architecture>-<libName>-<version>.tar.xz
+    else
+	echo -e "\e[31mERROR: unexpected URL pattern.\e[m"
+	exit -1
     fi
     fName_base=${fName%.*.*}   # <architecture>-<libName>-<version>
     tmp=${fName%-*}            # <architecture>-<libName>
@@ -55,27 +58,35 @@ cfn_download_archive(){
     cfn_echo_download_begin $libName $ver
 
 
-    # downloading source file
-    for i in `seq 0 99`
-    do
-	num=`printf "%02d\n" $i`
-	
-	URL_xx=URL$num
-	cmd_u='echo $'$URL_xx
-	URL_str=`eval $cmd_u`
-	URL_len=${#URL_str}
+    # downloading archive file
+    if [ ${#URL} != 0 ]; then
+	# downloading single-archive file
+	if [ ! -e $CPM_CACHE_DIR/$fName ]; then
+	    wget -P $CPM_CACHE_DIR $URL
+	fi
+    else
+	# downloading multiple-archive file
+	for i in `seq 0 99`
+	do
+	    num=`printf "%02d\n" $i`
+	    
+	    URL_xx=URL$num
+	    cmd_u='echo $'$URL_xx
+	    URL_str=`eval $cmd_u`
+	    URL_len=${#URL_str}
 
-	if [ $URL_len == 0 ]; then
-	    break
+	    if [ $URL_len == 0 ]; then
+		break
+	    fi
+	    
+	    fName_xx=${URL_str##*/} # <architecture>-<libName>-<version>.tar.xz-xx
+	    if [ ! -e $CPM_CACHE_DIR/$fName_xx ]; then
+		wget -P $CPM_CACHE_DIR $URL_str
+	    fi
+	done
+	if [ ! -e $CPM_CACHE_DIR/$fName ]; then
+	    cat $CPM_CACHE_DIR/$fName-* >> $CPM_CACHE_DIR/$fName
 	fi
-	
-	fName_xx=${URL_str##*/} # <architecture>-<libName>-<version>.tar.xz-xx
-	if [ ! -e $CPM_CACHE_DIR/$fName_xx ]; then
-	    wget -P $CPM_CACHE_DIR $URL_str
-	fi
-    done
-    if [ ! -e $CPM_CACHE_DIR/$fName ]; then
-	cat $CPM_CACHE_DIR/$fName-* >> $CPM_CACHE_DIR/$fName
     fi
     if [ ! -e $CPM_CACHE_DIR/$fName_hash ]; then
 	wget -P $CPM_CACHE_DIR $URL_hash

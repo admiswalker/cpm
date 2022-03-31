@@ -54,12 +54,17 @@ void sstd::for_printn(const struct pkg& rhs){ printf(" = "); sstd::print(rhs); }
 #include <unordered_map>
 
 #define cmd_ARCHITECTURE "ARCHITECTURE"
-#define cmd_BUILD_ENV    "BUILD_ENV"
 #define cmd_IMPORT       "IMPORT"
 
+#define cmd_BUILD_ENV  "BUILD_ENV"
 #define cmd_CPM_ENV    "CPM_ENV"
 #define cmd_DOCKER_ENV "DOCKER_ENV"
 #define cmd_SYSTEM_ENV "SYSTEM_ENV"
+
+#define cmd_INSTALL_MODE "INSTALL_MODE"
+#define cmd_INSTALL_MODE_auto    "auto"
+#define cmd_INSTALL_MODE_source  "source"
+#define cmd_INSTALL_MODE_archive "archive"
 
 
 bool isSameVer(const struct pkg& lhs, const struct pkg& rhs){
@@ -204,7 +209,8 @@ bool install_libs(const std::string& CACHE_DIR,
                   const std::string& PACKS_DIR,
                   const std::vector<struct pkg>& v_pkg,
                   const bool TF_genArchive, const std::string& archive_dir, const std::string& archive_ext,
-                  const bool TF_dl_dps2cache_only)
+                  const bool TF_dl_dps2cache_only,
+                  const std::string& install_mode)
 {
     std::string call_path = sstd::system_stdout("pwd"); sstd::stripAll_ow(call_path, "\r\n");
     
@@ -220,7 +226,7 @@ bool install_libs(const std::string& CACHE_DIR,
         }
         
         std::string pkg_shell_dir = PACKS_DIR + '/' + p.name + '/' + p.ver;
-        bool TF_useArchive = sstd::isFile(pkg_shell_dir + "/download_archive.sh");
+        bool TF_useArchive = sstd::isFile(pkg_shell_dir + "/download_archive.sh") && (install_mode != cmd_INSTALL_MODE_source);
         
         std::string cacheDir_pkg = CACHE_DIR + '/' + (TF_useArchive ? "archive":"src") + '/' + architecture + '-' + p.name + '-' + p.ver;
         std::string buildDir_pkg = BUILD_DIR + '/' + architecture + '-' + p.name + '-' + p.ver;
@@ -398,10 +404,11 @@ int main(int argc, char *argv[]){
     sstd::cp("cpm/set_env.sh", INST_PATH);
     
     std::string architecture;
+    std::string install_mode="auto"; // , "source" or "archive"
     std::unordered_map<std::string, std::vector<struct pkg>> table_vPkg;
     sstd::vec<std::string> v_build_env;
     sstd::vvec<std::string> vvLine = read_path_packages( path_packages );
-    sstd::vec<sstd::vvec<std::string>> v_vvLine = split_pksList_by_scope(vvLine, {cmd_ARCHITECTURE, cmd_BUILD_ENV, cmd_IMPORT});
+    sstd::vec<sstd::vvec<std::string>> v_vvLine = split_pksList_by_scope(vvLine, {cmd_ARCHITECTURE, cmd_BUILD_ENV, cmd_IMPORT, cmd_INSTALL_MODE});
     for(uint n=0; n<v_vvLine.size(); ++n){
         uint l=0;
         sstd::vec<std::string>& vCmd = v_vvLine[n][l];
@@ -452,6 +459,20 @@ int main(int argc, char *argv[]){
             // add pkg to table_vPkg
             struct pkg r; if(!str2struct_pkg(r, libName, ver)){ return false; }
             table_vPkg[ r.name ] <<= r;
+        }else if(vCmd[0]==cmd_INSTALL_MODE){
+            if(vCmd.size()<2){
+                sstd::pdbg("ERROR: INSTALL_MODE is empty.");
+                return -1;
+            }
+            
+            if      (vCmd[1]==cmd_INSTALL_MODE_auto   ){ install_mode = cmd_INSTALL_MODE_auto;
+            }else if(vCmd[1]==cmd_INSTALL_MODE_source ){ install_mode = cmd_INSTALL_MODE_source;
+            }else if(vCmd[1]==cmd_INSTALL_MODE_archive){ install_mode = cmd_INSTALL_MODE_archive;
+            }else{
+                sstd::pdbg("ERROR: Unexpected INSTALL_MODE. \"%s\" is not defined.", vCmd[1].c_str());
+                return -1;
+            }
+            
         }else{
             --l;
         }
@@ -461,7 +482,7 @@ int main(int argc, char *argv[]){
         bool ret=true;
         std::vector<struct pkg> v_pkg_requested = vPkgList2vPkg(ret, vPkgList); if(!ret){ return -1; }
         std::vector<struct pkg> v_inst_pkg      = solve_depends___dummy(ret, v_pkg_requested, table_vPkg); if(!ret){ return -1; }
-        install_libs(CACHE_DIR, BUILD_DIR, INST_PATH, INST_WDIR, v_build_env, architecture, PACKS_DIR+'/'+architecture, v_inst_pkg, TF_genArchive, archive_dir, archive_ext, TF_dl_dps2cache_only);
+        install_libs(CACHE_DIR, BUILD_DIR, INST_PATH, INST_WDIR, v_build_env, architecture, PACKS_DIR+'/'+architecture, v_inst_pkg, TF_genArchive, archive_dir, archive_ext, TF_dl_dps2cache_only, install_mode);
     }
 
     printf("\n");
@@ -469,10 +490,15 @@ int main(int argc, char *argv[]){
     return 0;
 }
 
+#undef cmd_INSTALL_MODE_archive
+#undef cmd_INSTALL_MODE_source
+#undef cmd_INSTALL_MODE_auto
+#undef cmd_INSTALL_MODE
+
 #undef cmd_SYSTEM_ENV
 #undef cmd_DOCKER_ENV
 #undef cmd_CPM_ENV
+#undef cmd_BUILD_ENV
 
 #undef cmd_IMPORT
-#undef cmd_BUILD_ENV
 #undef cmd_ARCHITECTURE

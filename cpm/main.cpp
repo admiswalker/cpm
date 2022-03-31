@@ -152,7 +152,8 @@ std::vector<struct pkg> solve_depends___dummy(bool& ret,
     std::vector<struct pkg> v_pkg_ret;
     
     for(uint ri=0; ri<v_pkg_requested.size(); ++ri){
-        std::vector<struct pkg> v_pkg_exist = table_vPkg.at( v_pkg_requested[ri].name );
+        auto itr = table_vPkg.find( v_pkg_requested[ri].name ); if(itr==table_vPkg.end()){ sstd::pdbg("ERROR: A package name of \"%s\" is not defined.\n", v_pkg_requested[ri].name.c_str()); ret=false; return std::vector<struct pkg>(); }
+        std::vector<struct pkg> v_pkg_exist = itr->second;
         
         struct pkg r;
         for(uint ei=0;; ++ei){

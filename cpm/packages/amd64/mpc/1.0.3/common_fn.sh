@@ -97,13 +97,13 @@ cfn_download_archive(){
     cfn_echo_download_end $libName $ver
 }
 cfn_check_hash_value(){
-    if [[ $fName_hash == *"sha256"* ]]; then
+    if ([[ $fName_hash == *"sha"* ]] || [[ $fName_hash == *"SHA"* ]]) && [[ $fName_hash == *"256"* ]]; then
 	find $CPM_CACHE_DIR -name $fName_hash -type f -print0 | xargs -0 grep $(sha256sum $CPM_CACHE_DIR/$fName) >/dev/null 2>&1
 	if [ ! $? = 0 ]; then
 	    echo -e "\e[31mERROR: hash value of downloaded file is not match.\e[m"
 	    exit -1
 	fi
-    elif [[ $fName_hash == *"sha512"* ]]; then
+    elif ([[ $fName_hash == *"sha"* ]] || [[ $fName_hash == *"SHA"* ]]) && [[ $fName_hash == *"512"* ]]; then
 	find $CPM_CACHE_DIR -name $fName_hash -type f -print0 | xargs -0 grep $(sha512sum $CPM_CACHE_DIR/$fName) >/dev/null 2>&1
 	if [ ! $? = 0 ]; then
 	    echo -e "\e[31mERROR: hash value of downloaded file is not match.\e[m"

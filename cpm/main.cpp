@@ -61,10 +61,26 @@ void sstd::for_printn(const struct pkg& rhs){ printf(" = "); sstd::print(rhs); }
 #define cmd_DOCKER_ENV "DOCKER_ENV"
 #define cmd_SYSTEM_ENV "SYSTEM_ENV"
 
-#define cmd_INSTALL_MODE "INSTALL_MODE"
+#define cmd_INSTALL_MODE         "INSTALL_MODE"
 #define cmd_INSTALL_MODE_auto    "auto"
 #define cmd_INSTALL_MODE_source  "source"
 #define cmd_INSTALL_MODE_archive "archive"
+
+
+std::string getPath_acvPkgDir      (const std::string& ACV_DIR,   const std::string& architecture, const struct pkg& p){ return ACV_DIR + '/' + architecture + '/' + p.name + '/' + p.ver; }
+std::string getPath_acvBaseName    (const std::string& ACV_DIR,   const std::string& architecture, const struct pkg& p){ return getPath_acvPkgDir(ACV_DIR, architecture, p) + '/' + architecture + '-' + p.name + '-' + p.ver; }
+std::string getPath_packsPkgDir    (const std::string& PACKS_DIR, const struct pkg& p){ return PACKS_DIR + '/' + p.name + '/' + p.ver; }
+std::string getPath_cachePkgDir_acv(const std::string& CACHE_DIR, const std::string& architecture, const struct pkg& p){ return CACHE_DIR + "/archive/" + architecture + '-' + p.name + '-' + p.ver; }
+std::string getPath_cachePkgDir_src(const std::string& CACHE_DIR, const std::string& architecture, const struct pkg& p){ return CACHE_DIR + "/src/"     + architecture + '-' + p.name + '-' + p.ver; }
+std::string getPath_buildPkgDir    (const std::string& BUILD_DIR, const std::string& architecture, const struct pkg& p){ return BUILD_DIR + '/' + architecture + '-' + p.name + '-' + p.ver; }
+
+std::string getSh_dlAcv  (const std::string& packsPkg_dir){ return packsPkg_dir + "/download_archive.sh"; }
+std::string getSh_dlSrc  (const std::string& packsPkg_dir){ return packsPkg_dir + "/download_src.sh";     }
+std::string getSh_instAcv(const std::string& packsPkg_dir){ return packsPkg_dir + "/install_archive.sh";  }
+std::string getSh_instSrc(const std::string& packsPkg_dir){ return packsPkg_dir + "/install_src.sh";      }
+std::string getSh_isInst (const std::string& packsPkg_dir){ return packsPkg_dir + "/is_installed.sh";     }
+
+std::string getTxt_depPkg(const std::string& packsPkg_dir){ return packsPkg_dir + "/packages_cpm.txt";     }
 
 
 bool isSameVer(const struct pkg& lhs, const struct pkg& rhs){
@@ -118,6 +134,7 @@ std::vector<struct pkg> vPkgList2vPkg(bool& ret, const sstd::vvec<std::string>& 
         if(vPkgList[i].size() != 2){ sstd::pdbg("ERROR: vPkgList[i].size() != 2.\n"); ret=false; return v_pkg_ret; }
         
         struct pkg r; if(!str2struct_pkg(r, vPkgList[i][0], vPkgList[i][1])){ ret=false; return v_pkg_ret; }
+//        std::string depPkg_txt = getTxt_depPkg( getPath_packsPkgDir(PACKS_DIR, p) );
         v_pkg_ret <<= r;
     }
     return v_pkg_ret;
@@ -201,19 +218,6 @@ void gen_hashFile(const std::string& ACV_DIR, const std::string& save_name){
     sstd::write(save_name, w_str);
     return;
 }
-std::string getPath_acvPkgDir      (const std::string& ACV_DIR,   const std::string& architecture, const struct pkg& p){ return ACV_DIR + '/' + architecture + '/' + p.name + '/' + p.ver; }
-std::string getPath_acvBaseName    (const std::string& ACV_DIR,   const std::string& architecture, const struct pkg& p){ return getPath_acvPkgDir(ACV_DIR, architecture, p) + '/' + architecture + '-' + p.name + '-' + p.ver; }
-std::string getPath_packsPkgDir    (const std::string& PACKS_DIR, const struct pkg& p){ return PACKS_DIR + '/' + p.name + '/' + p.ver; }
-std::string getPath_cachePkgDir_acv(const std::string& CACHE_DIR, const std::string& architecture, const struct pkg& p){ return CACHE_DIR + "/archive/" + architecture + '-' + p.name + '-' + p.ver; }
-std::string getPath_cachePkgDir_src(const std::string& CACHE_DIR, const std::string& architecture, const struct pkg& p){ return CACHE_DIR + "/src/"     + architecture + '-' + p.name + '-' + p.ver; }
-std::string getPath_buildPkgDir    (const std::string& BUILD_DIR, const std::string& architecture, const struct pkg& p){ return BUILD_DIR + '/' + architecture + '-' + p.name + '-' + p.ver; }
-
-std::string getSh_dlAcv  (const std::string& packsPkg_dir){ return packsPkg_dir + "/download_archive.sh"; }
-std::string getSh_dlSrc  (const std::string& packsPkg_dir){ return packsPkg_dir + "/download_src.sh";     }
-std::string getSh_instAcv(const std::string& packsPkg_dir){ return packsPkg_dir + "/install_archive.sh";  }
-std::string getSh_instSrc(const std::string& packsPkg_dir){ return packsPkg_dir + "/install_src.sh";      }
-std::string getSh_isInst (const std::string& packsPkg_dir){ return packsPkg_dir + "/is_installed.sh";     }
-
 bool install_libs(const std::string& CACHE_DIR,
                   const std::string& BUILD_DIR,
                   const std::string& INST_PATH,
@@ -299,7 +303,7 @@ bool install_libs(const std::string& CACHE_DIR,
         if(sstd::fileExist(rtxt_path)){
             std::string cmd_r;
             
-            std::string SRC_PATH = sstd::read(rtxt_path                             ); sstd::stripAll_ow(SRC_PATH, "\r\n");
+            std::string SRC_PATH = sstd::read(rtxt_path); sstd::stripAll_ow(SRC_PATH, "\r\n");
             std::string DST_PATH = call_path + '/' + INST_PATH;
             if(v_build_env[0] == cmd_DOCKER_ENV){ DST_PATH = sstd::read(v_build_env[1]+"/docker_base_path.txt"); sstd::stripAll_ow(DST_PATH, "\r\n"); DST_PATH += '/' + INST_PATH; }
             
@@ -338,8 +342,8 @@ bool install_libs(const std::string& CACHE_DIR,
     
     return true;
 }
-sstd::vvec<std::string> read_path_packages(const std::string& path_packages){
-    sstd::vec<std::string> vLine = sstd::getCommandList( path_packages );
+sstd::vvec<std::string> read_packages_path(const std::string& packages_path){
+    sstd::vec<std::string> vLine = sstd::getCommandList( packages_path );
     sstd::vvec<std::string> vvLine;
     for(uint i=0; i<vLine.size(); ++i){
         vvLine <<= sstd::splitByComma( vLine[i] );
@@ -378,7 +382,7 @@ int main(int argc, char *argv[]){
     printf("\n");
     time_m timem; sstd::measureTime_start(timem);
     
-    std::string path_packages = "packages_cpm.txt"; // -p packages_cpm.txt
+    std::string packages_path = "packages_cpm.txt"; // -p packages_cpm.txt
     std::string buildin_packages_dir = "cpm/packages";
     bool TF_genArchive = false;
     std::string archive_ext = "tar.xz";
@@ -395,7 +399,7 @@ int main(int argc, char *argv[]){
         case 'a': { TF_genArchive = (sstd::strcmp(s,"true") ? true:false); break; }
         case 'b': { base_dir=s; break; }
         case 'c': { TF_dl_dps2cache_only = (sstd::strcmp(s,"true") ? true:false); break; }
-        case 'p': { path_packages=s; break; }
+        case 'p': { packages_path=s; break; }
         default: { break; }
         }
     }
@@ -421,7 +425,7 @@ int main(int argc, char *argv[]){
     std::string install_mode="auto"; // , "source" or "archive"
     std::unordered_map<std::string, std::vector<struct pkg>> table_vPkg;
     sstd::vec<std::string> v_build_env;
-    sstd::vvec<std::string> vvLine = read_path_packages( path_packages );
+    sstd::vvec<std::string> vvLine = read_packages_path( packages_path );
     sstd::vec<sstd::vvec<std::string>> v_vvLine = split_pksList_by_scope(vvLine, {cmd_ARCHITECTURE, cmd_BUILD_ENV, cmd_IMPORT, cmd_INSTALL_MODE});
     for(uint n=0; n<v_vvLine.size(); ++n){
         uint l=0;

@@ -372,6 +372,89 @@ sstd::vec<sstd::vvec<std::string>> split_pksList_by_scope(const sstd::vvec<std::
     return v_vvLine;
 }
 
+struct install_cmd{
+    std::string build_env;
+    std::string install_mode;
+    
+    std::string architecture;
+    std::string libName;
+    std::string ver;
+
+    std::vector<struct install_cmd> vDep;
+};
+std::vector<struct install_cmd> packageTxt2instGraph(bool& ret_tf, const std::string& packages_path){
+    std::vector<struct install_cmd> ret_vInstCmd;
+    ret_tf=true;
+    
+    std::string build_env;
+    std::string install_mode;
+    
+    std::string architecture;
+    std::string import_libName;
+    std::string import_ver;
+    std::string import_URL;
+    
+    std::unordered_map<std::string, std::vector<struct install_cmd>> table_vPkg;
+    
+    sstd::vvec<std::string> vLine = read_packages_path( packages_path );
+    for(uint i=0; i<vLine.size(); ++i){
+        std::vector<std::string>& line = vLine[i];
+        
+        if(line[0]==cmd_ARCHITECTURE){
+            if(line.size()!=2){ sstd::pdbg("ERROR: The \"ARCHITECTURE\" command requires 1 args."); ret_tf=false; return std::vector<struct install_cmd>(); }
+            
+            architecture = line[1];
+            
+        }else if(line[0]==cmd_BUILD_ENV){
+            if(line.size()!=2){ sstd::pdbg("ERROR: The \"BUILD_ENV\" command requires 1 args."); ret_tf=false; return std::vector<struct install_cmd>(); }
+            if(! (line[1]==cmd_CPM_ENV || line[1]==cmd_DOCKER_ENV || line[1]==cmd_SYSTEM_ENV) ){ sstd::pdbg("ERROR: Unexpected BUILD_ENV option."); }
+            
+            build_env = line[1];
+            
+        }else if(line[0]==cmd_IMPORT){
+            if(line.size()!=4){ sstd::pdbg("ERROR: The \"IMPORT\" command requires 3 args."); ret_tf=false; return std::vector<struct install_cmd>(); }
+            
+            import_libName = line[1];
+            import_ver     = line[2];
+            import_URL     = line[3];
+            
+            // import するライブラリを table に追加する．
+            
+            // パッケージの依存関係を取得する
+            // ここでダウンロードする
+            // - ダウンロードした packages_cpm.txt を stack に積む．
+            //     - ダウンロードした依存ライブラリを stack に積む．
+            //     - ダウンロードした IMPORT 命令を stack に積む．
+            
+        }else if(line[0]==cmd_INSTALL_MODE){
+            if(line.size()!=4){ sstd::pdbg("ERROR: The \"INSTALL_MODE\" command requires 1 args."); ret_tf=false; return std::vector<struct install_cmd>(); }
+            if(! (line[1]==cmd_INSTALL_MODE_auto || line[1]==cmd_INSTALL_MODE_source || line[1]==cmd_INSTALL_MODE_archive) ){ sstd::pdbg("ERROR: Unexpected INSTALL_MODE option."); }
+            
+            install_mode = line[1];
+            
+        }else{
+            if(line.size()!=2){ sstd::pdbg("ERROR: When specifing the library, version needs to be defined."); ret_tf=false; return std::vector<struct install_cmd>(); }
+            
+            struct install_cmd ic;
+            ic.build_env    = build_env;
+            ic.install_mode = install_mode;
+            ic.architecture = architecture;
+            ic.libName      = line[0];
+            ic.ver          = line[1];
+            
+            // ライブラリを table に追加する．
+            
+            // パッケージの依存関係を取得する
+            // 1. read packages_cpm.txt
+            // 1. packages_cpm.txt の内容を vLine に追記する．
+            
+            // 依存グラフの作成
+        }
+    }
+    
+    return ret_vInstCmd;
+}
+
 int main(int argc, char *argv[]){
     printf("\n");
     printf("+---------------------------------------------------+\n");
@@ -420,6 +503,14 @@ int main(int argc, char *argv[]){
     sstd::cp(buildin_packages_dir+"/*", PACKS_DIR);
     sstd::cp("cpm/init.sh",    INST_PATH);
     sstd::cp("cpm/set_env.sh", INST_PATH);
+
+    bool ret;
+    std::vector<struct install_cmd> vInstCmd = packageTxt2instCmd(ret, packages_path); if(!ret){ sstd::pdbg("ERROR: packageTxt2instCmd() is failed."); }
+    for(uint i=0; i<vInstCmd.size(); ++i){
+        // install here
+    }
+    return -1;
+    //---------------------------------------------------------------------------------------------------------------------------------
     
     std::string architecture;
     std::string install_mode="auto"; // , "source" or "archive"

@@ -52,6 +52,8 @@ void sstd::for_printn(const struct pkg& rhs){ printf(" = "); sstd::print(rhs); }
 
 #include <sstd/sstd.hpp> // include after "sstd::print_for_vT"
 #include <unordered_map>
+#include "src/version_processor.hpp"
+
 
 #define cmd_ARCHITECTURE "ARCHITECTURE"
 #define cmd_IMPORT       "IMPORT"
@@ -468,6 +470,9 @@ int main(int argc, char *argv[]){
     printf("+---------------------------------------------------+\n");
     printf("\n");
     time_m timem; sstd::measureTime_start(timem);
+
+    sstd::printn(cpm::plus(1,1));
+    return 0;
     
     std::string packages_path = "packages_cpm.txt"; // -p packages_cpm.txt
     std::string buildin_packages_dir = "cpm/packages";

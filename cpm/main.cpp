@@ -379,11 +379,11 @@ struct install_cmd{
     std::string architecture;
     std::string libName;
     std::string ver;
-
-    std::vector<struct install_cmd> vDep;
+    
+    std::vector<std::string> vDep; // dependencies
 };
-std::vector<struct install_cmd> packageTxt2instGraph(bool& ret_tf, const std::string& packages_path){
-    std::vector<struct install_cmd> ret_vInstCmd;
+std::unordered_map<std::string, struct install_cmd> packageTxt2instGraph(bool& ret_tf, const std::string& packages_path){
+    std::unordered_map<std::string, struct install_cmd> ret_table_vPkg; // a package list including dependency graph.
     ret_tf=true;
     
     std::string build_env;
@@ -394,46 +394,44 @@ std::vector<struct install_cmd> packageTxt2instGraph(bool& ret_tf, const std::st
     std::string import_ver;
     std::string import_URL;
     
-    std::unordered_map<std::string, std::vector<struct install_cmd>> table_vPkg;
-    
     sstd::vvec<std::string> vLine = read_packages_path( packages_path );
     for(uint i=0; i<vLine.size(); ++i){
         std::vector<std::string>& line = vLine[i];
         
         if(line[0]==cmd_ARCHITECTURE){
-            if(line.size()!=2){ sstd::pdbg("ERROR: The \"ARCHITECTURE\" command requires 1 args."); ret_tf=false; return std::vector<struct install_cmd>(); }
+            if(line.size()!=2){ sstd::pdbg("ERROR: The \"ARCHITECTURE\" command requires 1 args."); ret_tf=false; return std::unordered_map<std::string, struct install_cmd>(); }
             
             architecture = line[1];
             
         }else if(line[0]==cmd_BUILD_ENV){
-            if(line.size()!=2){ sstd::pdbg("ERROR: The \"BUILD_ENV\" command requires 1 args."); ret_tf=false; return std::vector<struct install_cmd>(); }
+            if(line.size()!=2){ sstd::pdbg("ERROR: The \"BUILD_ENV\" command requires 1 args."); ret_tf=false; return std::unordered_map<std::string, struct install_cmd>(); }
             if(! (line[1]==cmd_CPM_ENV || line[1]==cmd_DOCKER_ENV || line[1]==cmd_SYSTEM_ENV) ){ sstd::pdbg("ERROR: Unexpected BUILD_ENV option."); }
             
             build_env = line[1];
             
         }else if(line[0]==cmd_IMPORT){
-            if(line.size()!=4){ sstd::pdbg("ERROR: The \"IMPORT\" command requires 3 args."); ret_tf=false; return std::vector<struct install_cmd>(); }
+            if(line.size()!=4){ sstd::pdbg("ERROR: The \"IMPORT\" command requires 3 args."); ret_tf=false; return std::unordered_map<std::string, struct install_cmd>(); }
             
             import_libName = line[1];
             import_ver     = line[2];
             import_URL     = line[3];
             
-            // import するライブラリを table に追加する．
+            // import するライブラリを table に追加する
             
             // パッケージの依存関係を取得する
             // ここでダウンロードする
-            // - ダウンロードした packages_cpm.txt を stack に積む．
-            //     - ダウンロードした依存ライブラリを stack に積む．
-            //     - ダウンロードした IMPORT 命令を stack に積む．
+            // - ダウンロードした packages_cpm.txt を stack に積む
+            //     - ダウンロードした依存ライブラリを stack に積む
+            //     - ダウンロードした IMPORT 命令を stack に積む
             
         }else if(line[0]==cmd_INSTALL_MODE){
-            if(line.size()!=4){ sstd::pdbg("ERROR: The \"INSTALL_MODE\" command requires 1 args."); ret_tf=false; return std::vector<struct install_cmd>(); }
+            if(line.size()!=4){ sstd::pdbg("ERROR: The \"INSTALL_MODE\" command requires 1 args."); ret_tf=false; return std::unordered_map<std::string, struct install_cmd>(); }
             if(! (line[1]==cmd_INSTALL_MODE_auto || line[1]==cmd_INSTALL_MODE_source || line[1]==cmd_INSTALL_MODE_archive) ){ sstd::pdbg("ERROR: Unexpected INSTALL_MODE option."); }
             
             install_mode = line[1];
             
         }else{
-            if(line.size()!=2){ sstd::pdbg("ERROR: When specifing the library, version needs to be defined."); ret_tf=false; return std::vector<struct install_cmd>(); }
+            if(line.size()!=2){ sstd::pdbg("ERROR: When specifing the library, version needs to be defined."); ret_tf=false; return std::unordered_map<std::string, struct install_cmd>(); }
             
             struct install_cmd ic;
             ic.build_env    = build_env;
@@ -442,7 +440,13 @@ std::vector<struct install_cmd> packageTxt2instGraph(bool& ret_tf, const std::st
             ic.libName      = line[0];
             ic.ver          = line[1];
             
-            // ライブラリを table に追加する．
+            // ライブラリを table に追加する
+            auto itr = ret_table_vPkg.find( ic.libName );
+            if(itr!=ret_table_vPkg.end()){
+                // solve the range of version
+                ;
+            }
+            ret_table_vPkg[ ic.libName ] = ic;
             
             // パッケージの依存関係を取得する
             // 1. read packages_cpm.txt
@@ -452,7 +456,7 @@ std::vector<struct install_cmd> packageTxt2instGraph(bool& ret_tf, const std::st
         }
     }
     
-    return ret_vInstCmd;
+    return ret_table_vPkg;
 }
 
 int main(int argc, char *argv[]){
@@ -505,10 +509,10 @@ int main(int argc, char *argv[]){
     sstd::cp("cpm/set_env.sh", INST_PATH);
 
     bool ret;
-    std::vector<struct install_cmd> vInstCmd = packageTxt2instCmd(ret, packages_path); if(!ret){ sstd::pdbg("ERROR: packageTxt2instCmd() is failed."); }
-    for(uint i=0; i<vInstCmd.size(); ++i){
+    std::unordered_map<std::string, struct install_cmd> ret_table_vPkg = packageTxt2instGraph(ret, packages_path); if(!ret){ sstd::pdbg("ERROR: packageTxt2instCmd() is failed."); }
+//    for(uint i=0; i<ret_table_vPkg.size(); ++i){
         // install here
-    }
+//    }
     return -1;
     //---------------------------------------------------------------------------------------------------------------------------------
     

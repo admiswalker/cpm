@@ -181,18 +181,17 @@ int cpm::cmpVer(const std::string& lhs, const std::string& rhs){
     
     std::vector<std::string> vL = sstd::split(lhs, '.');
     std::vector<std::string> vR = sstd::split(rhs, '.');
-    /*
+    
     // remove head 0 padding. ex: ver 01.00.00 -> 1..
-    for(uint i=0; i<vL.size(); ++i){ sstd::lstrip_ow(vL[0], '0'); }
-    for(uint i=0; i<vR.size(); ++i){ sstd::lstrip_ow(vR[0], '0'); }
-//    if(vL==vR){ return 0; }
-    */
+    for(uint i=0; i<vL.size(); ++i){ sstd::lstrip_ow(vL[i], '0'); }
+    for(uint i=0; i<vR.size(); ++i){ sstd::lstrip_ow(vR[i], '0'); }
+//  if(vL==vR){ return 0; }
     
     for(uint vi=0; vi<sstd::min(vL.size(), vR.size()); ++vi){
         if(vL[vi].size() < vR[vi].size()){ return -1; }
         if(vL[vi].size() > vR[vi].size()){ return  1; }
         
-        for(uint i=0; i<vL.size(); ++i){
+        for(uint i=0; i<vL[vi].size(); ++i){
             if(vL[vi][i] < vR[vi][i]){ return -1; } // follow the ASCII Code order
             if(vL[vi][i] > vR[vi][i]){ return  1; } // follow the ASCII Code order
         }

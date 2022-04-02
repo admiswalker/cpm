@@ -66,17 +66,17 @@ TEST(version_processor, str2vis_case02){
     sstd::printn(r.ver);
 }
 
-TEST(version_processor, split_visNE_case01){
+TEST(version_processor, split_visNE){
     struct cpm::vis v;
     v.is  = 6;
     v.ver = "1.0.0";
     
     std::vector<struct cpm::vis> v_vis = cpm::split_visNE(v);
     
-    sstd::printn(cpm::is2str(v_vis[0].is));
-    sstd::printn(v_vis[0].ver);
-    sstd::printn(cpm::is2str(v_vis[1].is));
-    sstd::printn(v_vis[1].ver);
+    ASSERT_TRUE(cpm::is2str(v_vis[0].is) == "<");
+    ASSERT_STREQ(v_vis[0].ver.c_str(), "1.0.0");
+    ASSERT_TRUE(cpm::is2str(v_vis[1].is) == ">");
+    ASSERT_STREQ(v_vis[1].ver.c_str(), "1.0.0");
 }
 
 

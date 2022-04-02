@@ -10,6 +10,8 @@
 //sstd, 2.0.1;
 //sstd, ver==2.0.1;
 //sstd, 2.0.1==ver;
+//sstd, ver==2.0.*;
+//sstd, ver==2.*.*;
 
 //sstd, 2.0.1<=ver;
 //sstd, 2.0.1<=ver<inf;

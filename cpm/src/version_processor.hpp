@@ -23,6 +23,11 @@ namespace cpm{
     
     uchar str2is(bool& ret, const std::string& ra);
     std::string is2str(const uchar& is);
+    
+    std::vector<struct vis> split_visNE(const struct vis& vis);
+    
+    int cmpVer(const std::string& lhs, const std::string& rhs);
+    int cmpVer(const struct vis& lhs, const struct vis& rhs);
 }
 
 // range: L, R

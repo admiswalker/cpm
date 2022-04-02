@@ -91,6 +91,7 @@ std::string s = sstd::stripAll(str, ' ');
 #define CPM_GT 5 // >= : greater than
 #define CPM_NE 6 // != : not equal to
 
+
 bool strMatch_chars(const char c, const char* cs, const uint cs_len){
     bool ret = false;
     for(uint i=0; i<cs_len; ++i){
@@ -159,6 +160,49 @@ struct cpm::vis cpm::str2vis(const std::string& str){
     r.ver = ver;
 
     return r;
+}
+std::vector<struct cpm::vis> cpm::split_visNE(const struct cpm::vis& v){
+    struct vis l;
+    l.is  = CPM_LT;
+    l.ver = v.ver;
+    
+    struct vis r;
+    r.is  = CPM_GT;
+    r.ver = v.ver;
+    
+    return std::vector<struct cpm::vis>({l, r});
+}
+int cpm::cmpVer(const std::string& lhs, const std::string& rhs){
+    // lhs <  rhs: -1
+    // lhs == rhs:  0
+    // lhs >  rhs:  1
+    
+    if(lhs==rhs){ return 0; }
+    
+    std::vector<std::string> vL = sstd::split(lhs, '.');
+    std::vector<std::string> vR = sstd::split(rhs, '.');
+    /*
+    // remove head 0 padding. ex: ver 01.00.00 -> 1..
+    for(uint i=0; i<vL.size(); ++i){ sstd::lstrip_ow(vL[0], '0'); }
+    for(uint i=0; i<vR.size(); ++i){ sstd::lstrip_ow(vR[0], '0'); }
+//    if(vL==vR){ return 0; }
+    */
+    
+    for(uint vi=0; vi<sstd::min(vL.size(), vR.size()); ++vi){
+        if(vL[vi].size() < vR[vi].size()){ return -1; }
+        if(vL[vi].size() > vR[vi].size()){ return  1; }
+        
+        for(uint i=0; i<vL.size(); ++i){
+            if(vL[vi][i] < vR[vi][i]){ return -1; } // follow the ASCII Code order
+            if(vL[vi][i] > vR[vi][i]){ return  1; } // follow the ASCII Code order
+        }
+    }
+    if(vL.size() != vR.size()){ return (vL.size() < vR.size() ? -1:1); }
+    
+    return 0;
+}
+int cpm::cmpVer(const struct cpm::vis& lhs, const struct cpm::vis& rhs){
+    return cpm::cmpVer(lhs.ver, rhs.ver);
 }
 
 

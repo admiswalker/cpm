@@ -29,7 +29,7 @@ HEADS_t += $(wildcard ./test/*.hpp)
 # exe and exe_test
 
 DIR  = ./src/*.
-#DIR += ./src/xxx/*.
+DIR += ./test/*.
 
 #------------------------------------------------------------
 
@@ -68,7 +68,7 @@ $(TARGET): $(LIB_ALL) $(OBJS) $(SRC)
 	@echo "------------------------------------------------------------"
 	$(CXX) -o $@ $(SRC) $(OBJS) $(CFLAGS)
 	@echo ""
-$(TARGET_t): $(LIB_ALL) $(OBJS) $(SRC_t)
+$(TARGET_t): $(LIB_ALL) $(OBJS) $(HEADS) $(HEADppS) $(SRC_t)
 	@echo ""
 	@echo "------------------------------------------------------------"
 	@echo "TARGET: \n$@\n"

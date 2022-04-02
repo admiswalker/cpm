@@ -4,7 +4,7 @@
 
 namespace cpm{
     int plus(int, int);
-    
+    /*
     struct verRange{
         std::string L;
         uint LIS; // left inequality-sign
@@ -13,6 +13,16 @@ namespace cpm{
     };
 
     struct verRange str2verStruct(const std::string& verStr);
+    */
+    struct vis{ // version inequality-sign
+        uchar is=0; // inequality-sign
+        std::string ver;
+    };
+    
+    struct vis str2vis(const std::string& str);
+    
+    uchar str2is(bool& ret, const std::string& ra);
+    std::string is2str(const uchar& is);
 }
 
 // range: L, R

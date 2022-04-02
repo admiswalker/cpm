@@ -22,6 +22,7 @@
 TEST(version_processor, v01){
     ASSERT_EQ(1, 1);
 }
+/*
 TEST(version_processor, case01){
     std::string v = "0.0.0<=ver<=2.0.1";
     
@@ -43,3 +44,27 @@ TEST(version_processor, case03){
     
     ASSERT_EQ(1, 1);
 }
+*/
+TEST(version_processor, str2vis_case00){
+    std::string s = "";
+    struct cpm::vis r = cpm::str2vis(s);
+    sstd::printn(cpm::is2str(r.is));
+    sstd::printn(r.ver);
+}
+TEST(version_processor, str2vis_case01){
+    ASSERT_EQ(1, 1);
+
+    std::string s = "  <=  1.0.0  ";
+    struct cpm::vis r = cpm::str2vis(s);
+    sstd::printn(cpm::is2str(r.is));
+    sstd::printn(r.ver);
+}
+TEST(version_processor, str2vis_case02){
+    ASSERT_EQ(1, 1);
+
+    std::string s = "<=";
+    struct cpm::vis r = cpm::str2vis(s);
+    sstd::printn(cpm::is2str(r.is));
+    sstd::printn(r.ver);
+}
+

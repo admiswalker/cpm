@@ -1,7 +1,7 @@
 
 
 FORCE_TO_MAKE:
-	cd cpm; make
+	cd cpm; make -j
 
 
 clean:

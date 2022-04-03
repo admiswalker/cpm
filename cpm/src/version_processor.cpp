@@ -231,31 +231,29 @@ std::vector<struct cpm::vis> cpm::visAND(const std::vector<struct vis>& vLhs, co
     for(uint li=0; li<vLhs.size(); ++li){
         if(vLhs[li].is==CPM_EQ){
         }else if(vLhs[li].is==CPM_GT || vLhs[li].is==CPM_GE){
-//            printf("in GT GE\n");
-            for(int ri=vRhs.size()-1; ri>=0; --ri){
+            for(uint ri=0; ri<vRhs.size(); ++ri){
                 int c = cpm::cmpVer(vRhs[ri].ver, vLhs[li].ver);
-                if( c > 0 ){
-                    // when: vRhs[ri].ver > vLhs[li].ver
-                
-                    if(vRhs[ri].is==CPM_LT || vRhs[ri].is==CPM_LE){
+                if(vRhs[ri].is==CPM_LT || vRhs[ri].is==CPM_LE){
+                    if( c > 0 ){
+                        // when: vRhs[ri].ver > vLhs[li].ver
                         ret <<= vLhs[li];
                         ret <<= vRhs[ri]; // case01a, case02a
                         break;
+                    }else if( c < 0 ){
+                        // c == 0
+                        // when: vRhs[ri].ver == vLhs[li].ver
                     }
-                }else if( c < 0 ){
-                }else{
-                    // c == 0
-                    // when: vRhs[ri].ver == vLhs[li].ver
-                    
+                }else if(vRhs[ri].is==CPM_GT || vRhs[ri].is==CPM_GE){
+                    if( c > 0 ){
+                        // when: vRhs[ri].ver < vLhs[li].ver
+                        break; // case02a
+                    }else{
+                    }
                 }
             }
         }else if(vLhs[li].is==CPM_LT || vLhs[li].is==CPM_LE){
-//            printf("in LT LE\n");
             for(int ri=vRhs.size()-1; ri>=0; --ri){
-                sstd::printn(ri);
-                sstd::printn(li);
                 int c = cpm::cmpVer(vRhs[ri].ver, vLhs[li].ver);
-                sstd::printn(c);
                 if(vRhs[ri].is==CPM_GT || vRhs[ri].is==CPM_GE){
                     if( c < 0 ){
                         // when: vRhs[ri].ver < vLhs[li].ver
@@ -266,23 +264,12 @@ std::vector<struct cpm::vis> cpm::visAND(const std::vector<struct vis>& vLhs, co
                 }else if(vRhs[ri].is==CPM_LT || vRhs[ri].is==CPM_LE){
                     if( c < 0 ){
                         // when: vRhs[ri].ver < vLhs[li].ver
-                        break; // case02a
+                        break; // case02b
                     }else{
                     }
                 }
             }
         }
-        
-        
-        /*
-            // getIdx_LT_LE();
-        for(uint ri=0; ri<vRhs.size(); ++ri){
-            if(vRhs[li] >= vLhs[li]){
-                ;
-            }
-            ret <<= ;
-        }
-        */
     }
     
     

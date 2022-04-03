@@ -177,7 +177,7 @@ int cpm::cmpVer(const std::string& lhs, const std::string& rhs){
     // lhs == rhs:  0
     // lhs >  rhs:  1
     
-    if(lhs==rhs){ return 0; }
+    if(lhs==rhs){ return 0; } // eq_case01
     
     std::vector<std::string> vL = sstd::split(lhs, '.');
     std::vector<std::string> vR = sstd::split(rhs, '.');
@@ -188,17 +188,17 @@ int cpm::cmpVer(const std::string& lhs, const std::string& rhs){
 //  if(vL==vR){ return 0; }
     
     for(uint vi=0; vi<sstd::min(vL.size(), vR.size()); ++vi){
-        if(vL[vi].size() < vR[vi].size()){ return -1; }
-        if(vL[vi].size() > vR[vi].size()){ return  1; }
+        if(vL[vi].size() < vR[vi].size()){ return -1; } // lt_case01_a, lt_case01_b, lt_case01_c
+        if(vL[vi].size() > vR[vi].size()){ return  1; } // gt_case01_a, gt_case01_b, gt_case01_c
         
         for(uint i=0; i<vL[vi].size(); ++i){
-            if(vL[vi][i] < vR[vi][i]){ return -1; } // follow the ASCII Code order
-            if(vL[vi][i] > vR[vi][i]){ return  1; } // follow the ASCII Code order
+            if(vL[vi][i] < vR[vi][i]){ return -1; } // follow the ASCII Code order // lt_case02_a, lt_case02_b, lt_case02_c
+            if(vL[vi][i] > vR[vi][i]){ return  1; } // follow the ASCII Code order // gt_case02_a, gt_case02_b, gt_case02_c
         }
     }
-    if(vL.size() != vR.size()){ return (vL.size() < vR.size() ? -1:1); }
+    if(vL.size() != vR.size()){ return (vL.size() < vR.size() ? -1:1); } // lt_case03, gt_case03
     
-    return 0;
+    return 0; // eq_case02_a, eq_case02_b
 }
 int cpm::cmpVer(const struct cpm::vis& lhs, const struct cpm::vis& rhs){
     return cpm::cmpVer(lhs.ver, rhs.ver);

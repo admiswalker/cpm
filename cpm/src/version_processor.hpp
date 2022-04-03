@@ -18,16 +18,23 @@ namespace cpm{
         uchar is=0; // inequality-sign
         std::string ver;
     };
-    
-    struct vis str2vis(const std::string& str);
+    bool operator==(const struct vis& lhs, const struct vis& rhs);
     
     uchar str2is(bool& ret, const std::string& ra);
     std::string is2str(const uchar& is);
+    
+    struct vis str2vis(const        char* pStr);
+    struct vis str2vis(const std::string&  str);
     
     std::vector<struct vis> split_visNE(const struct vis& vis);
     
     int cmpVer(const std::string& lhs, const std::string& rhs);
     int cmpVer(const struct vis& lhs, const struct vis& rhs);
+
+    std::vector<struct vis> visAND(const std::vector<struct vis>& vLhs, const std::vector<struct vis>& vRhs);
+
+    void print(const struct vis& vis);
+    void print(const std::vector<struct vis>& v);
 }
 
 // range: L, R

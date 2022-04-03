@@ -5,6 +5,28 @@ int cpm::plus(int lhs, int rhs){
     return lhs+rhs;
 }
 
+bool cpm::operator==(const struct cpm::vis& lhs, const struct cpm::vis& rhs){
+    return (lhs.is==rhs.is) && (lhs.ver==rhs.ver);
+}
+
+
+void print_owN(const struct cpm::vis& vis){
+    printf("is: %s, ver: %s", cpm::is2str(vis.is).c_str(), vis.ver.c_str());
+}
+void cpm::print(const struct cpm::vis& vis){
+    print_owN(vis);
+    printf("\n");
+}
+void cpm::print(const std::vector<struct cpm::vis>& v){
+    for(uint i=0; i<v.size(); ++i){
+        printf("[ ");
+        print_owN(v[i]);
+        printf(" ], ");
+    }
+    printf("\n");
+}
+
+
 //-------------
 /*
 bool strEq_len(uint ii, const char* lhs, const char* rhs, const uint len){
@@ -76,13 +98,6 @@ struct cpm::verRange cpm::str2verStruct(const std::string& verStr){
     return vr;
 }
 */
-/*
-// 欲しい関数
-
-std::string s = sstd::stripAll(str, ' ');
-
-*/
-
 
 #define CPM_LT 1 // <  : less than
 #define CPM_LE 2 // <= : less than or equal to
@@ -146,8 +161,8 @@ uchar cpm::str2is(bool& ret, const std::string& ra){
         return 0;
     }
 }
-struct cpm::vis cpm::str2vis(const std::string& str){
-    std::string s = sstd::stripAll(str, " ");
+struct cpm::vis cpm::str2vis(const char* pStr){
+    std::string s = sstd::stripAll(pStr, " ");
     
     std::string ra  = getWhile_c(s, "<=>!");
     std::string ver = std::string(&s[ra.size()], s.size()-ra.size());
@@ -161,6 +176,8 @@ struct cpm::vis cpm::str2vis(const std::string& str){
 
     return r;
 }
+struct cpm::vis cpm::str2vis(const std::string& str){ return cpm::str2vis(str.c_str()); }
+
 std::vector<struct cpm::vis> cpm::split_visNE(const struct cpm::vis& v){
     struct vis l;
     l.is  = CPM_LT;
@@ -204,6 +221,55 @@ int cpm::cmpVer(const struct cpm::vis& lhs, const struct cpm::vis& rhs){
     return cpm::cmpVer(lhs.ver, rhs.ver);
 }
 
+std::vector<struct cpm::vis> cpm::visAND(const std::vector<struct vis>& vLhs, const std::vector<struct vis>& vRhs){
+    printf("in cpm::visAND\n");
+    std::vector<struct cpm::vis> ret;
+    
+    // sort_vis(vLhs);
+    // sort_vis(vRhs);
+
+    for(uint li=0; li<vLhs.size(); ++li){
+        if(vLhs[li].is==CPM_EQ){
+        }else if(vLhs[li].is==CPM_GT || vLhs[li].is==CPM_GE){
+            for(uint ri=0; ri<vRhs.size(); ++ri){
+                if(! (cpm::cmpVer(vRhs[ri].ver, vLhs[li].ver) > 0)){ continue; }
+                // when: vRhs[ri].ver > vLhs[li].ver
+                
+                if(vRhs[ri].is==CPM_LT || vRhs[ri].is==CPM_LE){
+                    ret <<= vLhs[li];
+                    ret <<= vRhs[ri]; // case01a, case02a
+                    break;
+                }
+            }
+        }else if(vLhs[li].is==CPM_LT || vLhs[li].is==CPM_LE){
+            for(uint ri=0; ri<vRhs.size(); ++ri){
+                if(! (cpm::cmpVer(vRhs[ri].ver, vLhs[li].ver) < 0)){ continue; }
+                // when: vRhs[ri].ver < vLhs[li].ver
+                
+                if(vRhs[ri].is==CPM_GT || vRhs[ri].is==CPM_GE){
+                    ret <<= vRhs[ri];
+                    ret <<= vLhs[li]; // case01b, case02b
+                    break;
+                }
+            }
+        }
+        
+        
+        /*
+            // getIdx_LT_LE();
+        for(uint ri=0; ri<vRhs.size(); ++ri){
+            if(vRhs[li] >= vLhs[li]){
+                ;
+            }
+            ret <<= ;
+        }
+        */
+    }
+    
+    
+    
+    return ret;
+}
 
 #undef CPM_NE
 #undef CPM_GT

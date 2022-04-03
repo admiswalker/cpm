@@ -231,25 +231,44 @@ std::vector<struct cpm::vis> cpm::visAND(const std::vector<struct vis>& vLhs, co
     for(uint li=0; li<vLhs.size(); ++li){
         if(vLhs[li].is==CPM_EQ){
         }else if(vLhs[li].is==CPM_GT || vLhs[li].is==CPM_GE){
-            for(uint ri=0; ri<vRhs.size(); ++ri){
-                if(! (cpm::cmpVer(vRhs[ri].ver, vLhs[li].ver) > 0)){ continue; }
-                // when: vRhs[ri].ver > vLhs[li].ver
+//            printf("in GT GE\n");
+            for(int ri=vRhs.size()-1; ri>=0; --ri){
+                int c = cpm::cmpVer(vRhs[ri].ver, vLhs[li].ver);
+                if( c > 0 ){
+                    // when: vRhs[ri].ver > vLhs[li].ver
                 
-                if(vRhs[ri].is==CPM_LT || vRhs[ri].is==CPM_LE){
-                    ret <<= vLhs[li];
-                    ret <<= vRhs[ri]; // case01a, case02a
-                    break;
+                    if(vRhs[ri].is==CPM_LT || vRhs[ri].is==CPM_LE){
+                        ret <<= vLhs[li];
+                        ret <<= vRhs[ri]; // case01a, case02a
+                        break;
+                    }
+                }else if( c < 0 ){
+                }else{
+                    // c == 0
+                    // when: vRhs[ri].ver == vLhs[li].ver
+                    
                 }
             }
         }else if(vLhs[li].is==CPM_LT || vLhs[li].is==CPM_LE){
-            for(uint ri=0; ri<vRhs.size(); ++ri){
-                if(! (cpm::cmpVer(vRhs[ri].ver, vLhs[li].ver) < 0)){ continue; }
-                // when: vRhs[ri].ver < vLhs[li].ver
-                
+//            printf("in LT LE\n");
+            for(int ri=vRhs.size()-1; ri>=0; --ri){
+                sstd::printn(ri);
+                sstd::printn(li);
+                int c = cpm::cmpVer(vRhs[ri].ver, vLhs[li].ver);
+                sstd::printn(c);
                 if(vRhs[ri].is==CPM_GT || vRhs[ri].is==CPM_GE){
-                    ret <<= vRhs[ri];
-                    ret <<= vLhs[li]; // case01b, case02b
-                    break;
+                    if( c < 0 ){
+                        // when: vRhs[ri].ver < vLhs[li].ver
+                        ret <<= vRhs[ri];
+                        ret <<= vLhs[li]; // case01b, case02b
+                        break;
+                    }
+                }else if(vRhs[ri].is==CPM_LT || vRhs[ri].is==CPM_LE){
+                    if( c < 0 ){
+                        // when: vRhs[ri].ver < vLhs[li].ver
+                        break; // case02a
+                    }else{
+                    }
                 }
             }
         }

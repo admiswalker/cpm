@@ -276,6 +276,106 @@ TEST(version_processor, visAND_case02b){
     ASSERT_TRUE(ret[1]==r_ans);
 }
 
+TEST(version_processor, visAND_composite_case_01a){
+    // lhs:   0.1.0 <=  ver  <= 1.0.0,  2.0.0 <=  ver  <= 3.0.0
+    // rhs: ver  <= 0.4.0, 0.6.0 <=  ver  <= 2.4.0, 2.6.0 <= ver
+    
+    std::vector<struct cpm::vis> vLhs;
+    struct cpm::vis l1 = cpm::str2vis(">=0.1.0");
+    struct cpm::vis l2 = cpm::str2vis("<=1.0.0");
+    struct cpm::vis l3 = cpm::str2vis(">=2.0.0");
+    struct cpm::vis l4 = cpm::str2vis("<=3.0.0");
+    std::vector<struct cpm::vis> vRhs;
+    struct cpm::vis r1 = cpm::str2vis("<=0.4.0");
+    struct cpm::vis r2 = cpm::str2vis(">=0.6.0");
+    struct cpm::vis r3 = cpm::str2vis("<=2.4.0");
+    struct cpm::vis r4 = cpm::str2vis(">=2.6.0");
+    vLhs = {l1, l2, l3, l4};
+    vRhs = {r1, r2, r3, r4};
+    
+    std::vector<struct cpm::vis> ret = cpm::visAND(vLhs, vRhs);
+    cpm::print(ret);
+    
+    struct cpm::vis l1_ans = cpm::str2vis(">=0.1.0");
+    struct cpm::vis r1_ans = cpm::str2vis("<=0.4.0");
+    struct cpm::vis l2_ans = cpm::str2vis(">=0.6.0");
+    struct cpm::vis r2_ans = cpm::str2vis("<=1.0.0");
+    struct cpm::vis l3_ans = cpm::str2vis(">=2.0.0");
+    struct cpm::vis r3_ans = cpm::str2vis("<=2.4.0");
+    struct cpm::vis l4_ans = cpm::str2vis(">=2.6.0");
+    struct cpm::vis r4_ans = cpm::str2vis("<=3.0.0");
+    ASSERT_TRUE(ret.size()==8);
+    ASSERT_TRUE(ret[0]==l1_ans);
+    ASSERT_TRUE(ret[1]==r1_ans);
+    ASSERT_TRUE(ret[2]==l2_ans);
+    ASSERT_TRUE(ret[3]==r2_ans);
+    ASSERT_TRUE(ret[4]==l3_ans);
+    ASSERT_TRUE(ret[5]==r3_ans);
+    ASSERT_TRUE(ret[6]==l4_ans);
+    ASSERT_TRUE(ret[7]==r4_ans);
+}
+TEST(version_processor, visAND_composite_case_01b){
+    // lhs: ver  <= 0.4.0, 0.6.0 <=  ver  <= 2.4.0, 2.6.0 <= ver
+    // rhs:   0.1.0 <=  ver  <= 1.0.0,  2.0.0 <=  ver  <= 3.0.0
+    
+    std::vector<struct cpm::vis> vLhs;
+    struct cpm::vis l1 = cpm::str2vis("<=0.4.0");
+    struct cpm::vis l2 = cpm::str2vis(">=0.6.0");
+    struct cpm::vis l3 = cpm::str2vis("<=2.4.0");
+    struct cpm::vis l4 = cpm::str2vis(">=2.6.0");
+    std::vector<struct cpm::vis> vRhs;
+    struct cpm::vis r1 = cpm::str2vis(">=0.1.0");
+    struct cpm::vis r2 = cpm::str2vis("<=1.0.0");
+    struct cpm::vis r3 = cpm::str2vis(">=2.0.0");
+    struct cpm::vis r4 = cpm::str2vis("<=3.0.0");
+    vLhs = {l1, l2, l3, l4};
+    vRhs = {r1, r2, r3, r4};
+    
+    std::vector<struct cpm::vis> ret = cpm::visAND(vLhs, vRhs);
+    cpm::print(ret);
+    
+    struct cpm::vis l1_ans = cpm::str2vis(">=0.1.0");
+    struct cpm::vis r1_ans = cpm::str2vis("<=0.4.0");
+    struct cpm::vis l2_ans = cpm::str2vis(">=0.6.0");
+    struct cpm::vis r2_ans = cpm::str2vis("<=1.0.0");
+    struct cpm::vis l3_ans = cpm::str2vis(">=2.0.0");
+    struct cpm::vis r3_ans = cpm::str2vis("<=2.4.0");
+    struct cpm::vis l4_ans = cpm::str2vis(">=2.6.0");
+    struct cpm::vis r4_ans = cpm::str2vis("<=3.0.0");
+    ASSERT_TRUE(ret.size()==8);
+    ASSERT_TRUE(ret[0]==l1_ans);
+    ASSERT_TRUE(ret[1]==r1_ans);
+    ASSERT_TRUE(ret[2]==l2_ans);
+    ASSERT_TRUE(ret[3]==r2_ans);
+    ASSERT_TRUE(ret[4]==l3_ans);
+    ASSERT_TRUE(ret[5]==r3_ans);
+    ASSERT_TRUE(ret[6]==l4_ans);
+    ASSERT_TRUE(ret[7]==r4_ans);
+}
+/*
+TEST(version_processor, visAND_case03a){
+    // lhs: 0.1.0 <=     ver     <= 2.0.0
+    // rhs:    0.4.0 <=  ver  <= 0.6.0
+    
+    std::vector<struct cpm::vis> vLhs;
+    std::vector<struct cpm::vis> vRhs;
+    struct cpm::vis l1 = cpm::str2vis(">=0.1.0");
+    struct cpm::vis l2 = cpm::str2vis("<=2.0.0");
+    struct cpm::vis r1 = cpm::str2vis(">=0.4.0");
+    struct cpm::vis r2 = cpm::str2vis("<=0.6.0");
+    vLhs = {l1, l2};
+    vRhs = {r1, r2};
+    
+    std::vector<struct cpm::vis> ret = cpm::visAND(vLhs, vRhs);
+    cpm::print(ret);
+    
+    struct cpm::vis l_ans = cpm::str2vis(">=1.0.0");
+    struct cpm::vis r_ans = cpm::str2vis("<=2.0.0");
+    ASSERT_TRUE(ret.size()==2);
+    ASSERT_TRUE(ret[0]==l_ans);
+    ASSERT_TRUE(ret[1]==r_ans);
+}
+*/
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 
 #undef CPM_NE

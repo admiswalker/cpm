@@ -352,7 +352,7 @@ TEST(version_processor, visAND_composite_case_01b){
     ASSERT_TRUE(ret[6]==l4_ans);
     ASSERT_TRUE(ret[7]==r4_ans);
 }
-/*
+
 TEST(version_processor, visAND_case03a){
     // lhs: 0.1.0 <=     ver     <= 2.0.0
     // rhs:    0.4.0 <=  ver  <= 0.6.0
@@ -369,13 +369,13 @@ TEST(version_processor, visAND_case03a){
     std::vector<struct cpm::vis> ret = cpm::visAND(vLhs, vRhs);
     cpm::print(ret);
     
-    struct cpm::vis l_ans = cpm::str2vis(">=1.0.0");
-    struct cpm::vis r_ans = cpm::str2vis("<=2.0.0");
-    ASSERT_TRUE(ret.size()==2);
+    struct cpm::vis l_ans = cpm::str2vis(">=0.4.0");
+    struct cpm::vis r_ans = cpm::str2vis("<=0.6.0");
+    ASSERT_EQ(ret.size(), 2);
     ASSERT_TRUE(ret[0]==l_ans);
     ASSERT_TRUE(ret[1]==r_ans);
 }
-*/
+
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 
 #undef CPM_NE

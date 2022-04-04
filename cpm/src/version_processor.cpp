@@ -1,12 +1,37 @@
 #include "version_processor.hpp"
 
 
+#define CPM_LT 1 // <  : less than
+#define CPM_LE 2 // <= : less than or equal to
+#define CPM_EQ 3 // == : equal to
+#define CPM_GE 4 // >= : greater than or equal to
+#define CPM_GT 5 // >= : greater than
+#define CPM_NE 6 // != : not equal to
+
+
 int cpm::plus(int lhs, int rhs){
     return lhs+rhs;
 }
 
 bool cpm::operator==(const struct cpm::vis& lhs, const struct cpm::vis& rhs){
     return (lhs.is==rhs.is) && (lhs.ver==rhs.ver);
+}
+bool cpm::operator<(const struct cpm::vis& lhs, const struct cpm::vis& rhs){
+    int c = cmpVer(lhs.ver, rhs.ver);
+    if      ( c < 0 ){ return true;
+    }else if( c > 0 ){ return false;
+    }else{
+        // c == 0
+
+        // order: <, <=, >=, >
+        if      (lhs.is==CPM_LT){ return true;
+        }else if(lhs.is==CPM_LE &&  rhs.is==CPM_LT){ return false;
+        }else if(lhs.is==CPM_GE && (rhs.is==CPM_LT || rhs.is==CPM_LE)){ return false;
+        }else if(lhs.is==CPM_GT && (rhs.is==CPM_LT || rhs.is==CPM_LE || rhs.is==CPM_GE)){ return false;
+        }
+    }
+    
+    return true;
 }
 
 
@@ -99,12 +124,6 @@ struct cpm::verRange cpm::str2verStruct(const std::string& verStr){
 }
 */
 
-#define CPM_LT 1 // <  : less than
-#define CPM_LE 2 // <= : less than or equal to
-#define CPM_EQ 3 // == : equal to
-#define CPM_GE 4 // >= : greater than or equal to
-#define CPM_GT 5 // >= : greater than
-#define CPM_NE 6 // != : not equal to
 
 
 bool strMatch_chars(const char c, const char* cs, const uint cs_len){
@@ -220,7 +239,8 @@ int cpm::cmpVer(const std::string& lhs, const std::string& rhs){
 int cpm::cmpVer(const struct cpm::vis& lhs, const struct cpm::vis& rhs){
     return cpm::cmpVer(lhs.ver, rhs.ver);
 }
-
+/*
+// Old impliments
 std::vector<struct cpm::vis> cpm::visAND(const std::vector<struct vis>& vLhs, const std::vector<struct vis>& vRhs){
     printf("in cpm::visAND\n");
     std::vector<struct cpm::vis> ret;
@@ -271,11 +291,92 @@ std::vector<struct cpm::vis> cpm::visAND(const std::vector<struct vis>& vLhs, co
             }
         }
     }
-    
-    
-    
     return ret;
 }
+*/
+
+std::vector<struct cpm::vis> cpm::visAND(const std::vector<struct vis>& vLhs, const std::vector<struct vis>& vRhs){
+    printf("in cpm::visAND\n");
+
+    std::vector<std::pair<struct cpm::vis, char>> vVC(vLhs.size()+vRhs.size());
+
+    uint n=0;
+    for(uint i=0; i<vLhs.size(); ++i, ++n){ vVC[n] = {vLhs[i], 'l'}; }
+    for(uint i=0; i<vRhs.size(); ++i, ++n){ vVC[n] = {vRhs[i], 'r'}; }
+    
+    std::sort(vVC.begin(), vVC.end());
+    
+    for(auto VC: vVC){
+        cpm::print(VC.first);
+        sstd::printn(VC.second);
+    }
+
+    std::vector<struct cpm::vis> ret;
+    if(vVC.size()<=2){ return ret; }
+    {
+        struct cpm::vis prev_v = vVC[0].first;
+        char prev_c = vVC[0].second;
+        
+        for(uint i=1; i<vVC.size(); ++i){
+            struct cpm::vis now_v = vVC[i].first;
+            char now_c = vVC[i].second;
+            
+//            if(prev_v.is == now_c.is){}
+        }
+    }
+
+    
+    
+    /*
+    // sort_vis(vLhs);
+    // sort_vis(vRhs);
+    for(uint li=0; li<vLhs.size(); ++li){
+        if(vLhs[li].is==CPM_EQ){
+        }else if(vLhs[li].is==CPM_GT || vLhs[li].is==CPM_GE){
+            for(uint ri=0; ri<vRhs.size(); ++ri){
+                int c = cpm::cmpVer(vRhs[ri].ver, vLhs[li].ver);
+                if(vRhs[ri].is==CPM_LT || vRhs[ri].is==CPM_LE){
+                    if( c > 0 ){
+                        // when: vRhs[ri].ver > vLhs[li].ver
+                        ret <<= vLhs[li];
+                        ret <<= vRhs[ri]; // case01a, case02a
+                        break;
+                    }else if( c < 0 ){
+                        // c == 0
+                        // when: vRhs[ri].ver == vLhs[li].ver
+                    }
+                }else if(vRhs[ri].is==CPM_GT || vRhs[ri].is==CPM_GE){
+                    if( c > 0 ){
+                        // when: vRhs[ri].ver < vLhs[li].ver
+                        break; // case02a
+                    }else{
+                    }
+                }
+            }
+        }else if(vLhs[li].is==CPM_LT || vLhs[li].is==CPM_LE){
+            for(int ri=vRhs.size()-1; ri>=0; --ri){
+                int c = cpm::cmpVer(vRhs[ri].ver, vLhs[li].ver);
+                if(vRhs[ri].is==CPM_GT || vRhs[ri].is==CPM_GE){
+                    if( c < 0 ){
+                        // when: vRhs[ri].ver < vLhs[li].ver
+                        ret <<= vRhs[ri];
+                        ret <<= vLhs[li]; // case01b, case02b
+                        break;
+                    }
+                }else if(vRhs[ri].is==CPM_LT || vRhs[ri].is==CPM_LE){
+                    if( c < 0 ){
+                        // when: vRhs[ri].ver < vLhs[li].ver
+                        break; // case02b
+                    }else{
+                    }
+                }
+            }
+        }
+    }
+    */
+    return ret;
+}
+
 
 #undef CPM_NE
 #undef CPM_GT

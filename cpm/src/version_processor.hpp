@@ -19,6 +19,7 @@ namespace cpm{
         std::string ver;
     };
     bool operator==(const struct vis& lhs, const struct vis& rhs);
+    bool operator<(const struct vis& lhs, const struct vis& rhs);
     
     uchar str2is(bool& ret, const std::string& ra);
     std::string is2str(const uchar& is);

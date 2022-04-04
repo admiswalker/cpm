@@ -57,6 +57,47 @@ TEST(version_processor, split_visNE){
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 
+TEST(version_processor, sort_01){
+    std::vector<struct cpm::vis> v;
+    struct cpm::vis e1 = cpm::str2vis(">0.1.0");
+    struct cpm::vis e2 = cpm::str2vis(">=0.1.0");
+    struct cpm::vis e3 = cpm::str2vis("<=0.1.0");
+    struct cpm::vis e4 = cpm::str2vis("<0.1.0");
+    v = {e1, e2, e3, e4};
+    
+    cpm::print(v);
+    std::sort(v.begin(), v.end());
+    cpm::print(v);
+    
+    struct cpm::vis e1_ans = cpm::str2vis("<0.1.0");
+    struct cpm::vis e2_ans = cpm::str2vis("<=0.1.0");
+    struct cpm::vis e3_ans = cpm::str2vis(">=0.1.0");
+    struct cpm::vis e4_ans = cpm::str2vis(">0.1.0");
+    ASSERT_EQ(v.size(), (uint)4);
+    ASSERT_TRUE(v[0]==e1_ans);
+    ASSERT_TRUE(v[1]==e2_ans);
+    ASSERT_TRUE(v[2]==e3_ans);
+    ASSERT_TRUE(v[3]==e4_ans);
+}
+TEST(version_processor, sort_02){
+    std::vector<struct cpm::vis> v;
+    struct cpm::vis e1 = cpm::str2vis("<=0.1.0");
+    struct cpm::vis e2 = cpm::str2vis(">=0.1.0");
+    v = {e1, e2};
+    
+    cpm::print(v);
+    std::sort(v.begin(), v.end());
+    cpm::print(v);
+    
+    struct cpm::vis e1_ans = cpm::str2vis("<=0.1.0");
+    struct cpm::vis e2_ans = cpm::str2vis(">=0.1.0");
+    ASSERT_EQ(v.size(), (uint)2);
+    ASSERT_TRUE(v[0]==e1_ans);
+    ASSERT_TRUE(v[1]==e2_ans);
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------
+
 TEST(version_processor, cmpVer_eq_case01){
     std::string lhs = "1.0.0";
     std::string rhs = "1.0.0";
@@ -371,7 +412,7 @@ TEST(version_processor, visAND_case03a){
     
     struct cpm::vis l_ans = cpm::str2vis(">=0.4.0");
     struct cpm::vis r_ans = cpm::str2vis("<=0.6.0");
-    ASSERT_EQ(ret.size(), 2);
+    ASSERT_EQ(ret.size(), (uint)2);
     ASSERT_TRUE(ret[0]==l_ans);
     ASSERT_TRUE(ret[1]==r_ans);
 }

@@ -18,20 +18,24 @@ bool cpm::operator==(const struct cpm::vis& lhs, const struct cpm::vis& rhs){
 }
 bool cpm::operator<(const struct cpm::vis& lhs, const struct cpm::vis& rhs){
     int c = cmpVer(lhs.ver, rhs.ver);
-    if      ( c < 0 ){ return true;
-    }else if( c > 0 ){ return false;
-    }else{
-        // c == 0
+    if( c < 0 ){ return true; }
+    if( c > 0 ){ return false; }
+    // c == 0
 
-        // order: <, <=, >=, >
-        if      (lhs.is==CPM_LT){ return true;
-        }else if(lhs.is==CPM_LE &&  rhs.is==CPM_LT){ return false;
-        }else if(lhs.is==CPM_GE && (rhs.is==CPM_LT || rhs.is==CPM_LE)){ return false;
-        }else if(lhs.is==CPM_GT && (rhs.is==CPM_LT || rhs.is==CPM_LE || rhs.is==CPM_GE)){ return false;
-        }
-    }
-    
-    return true;
+    // order: <, <=, >=, >
+    /*
+      if      (lhs.is==CPM_LT){ return true;
+      }else if(lhs.is==CPM_LE &&  rhs.is==CPM_LT){ return false;
+      }else if(lhs.is==CPM_GE && (rhs.is==CPM_LT || rhs.is==CPM_LE)){ return false;
+      }else if(lhs.is==CPM_GT && (rhs.is==CPM_LT || rhs.is==CPM_LE || rhs.is==CPM_GE)){ return false;
+      }
+      return true;
+    */
+    if(lhs.is==CPM_LT){ return true; }
+    if(lhs.is==CPM_LE){ return  (rhs.is==CPM_LT ? false:true); }
+    if(lhs.is==CPM_GE){ return ((rhs.is==CPM_LT || rhs.is==CPM_LE) ? false:true); }
+//  if(lhs.is==CPM_GT){ return false; }
+    return false;
 }
 
 

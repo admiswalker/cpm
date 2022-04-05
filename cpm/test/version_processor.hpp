@@ -462,7 +462,7 @@ TEST(version_processor, visAND_case01a){
     
     struct cpm::vis l_ans = cpm::str2vis(">=1.0.0");
     struct cpm::vis r_ans = cpm::str2vis("<=2.0.0");
-    ASSERT_TRUE(ret.size()==2);
+    ASSERT_EQ(ret.size(), (uint)2);
     ASSERT_TRUE(ret[0]==l_ans);
     ASSERT_TRUE(ret[1]==r_ans);
 }
@@ -482,7 +482,7 @@ TEST(version_processor, visAND_case01b){
     
     struct cpm::vis l_ans = cpm::str2vis(">=1.0.0");
     struct cpm::vis r_ans = cpm::str2vis("<=2.0.0");
-    ASSERT_TRUE(ret.size()==2);
+    ASSERT_EQ(ret.size(), (uint)2);
     ASSERT_TRUE(ret[0]==l_ans);
     ASSERT_TRUE(ret[1]==r_ans);
 }
@@ -506,7 +506,7 @@ TEST(version_processor, visAND_case02a){
     
     struct cpm::vis l_ans = cpm::str2vis(">=1.0.0");
     struct cpm::vis r_ans = cpm::str2vis("<=2.0.0");
-    ASSERT_TRUE(ret.size()==2);
+    ASSERT_EQ(ret.size(), (uint)2);
     ASSERT_TRUE(ret[0]==l_ans);
     ASSERT_TRUE(ret[1]==r_ans);
 }
@@ -530,7 +530,7 @@ TEST(version_processor, visAND_case02b){
     
     struct cpm::vis l_ans = cpm::str2vis(">=1.0.0");
     struct cpm::vis r_ans = cpm::str2vis("<=2.0.0");
-    ASSERT_TRUE(ret.size()==2);
+    ASSERT_EQ(ret.size(), (uint)2);
     ASSERT_TRUE(ret[0]==l_ans);
     ASSERT_TRUE(ret[1]==r_ans);
 }
@@ -563,7 +563,7 @@ TEST(version_processor, visAND_composite_case_01a){
     struct cpm::vis r3_ans = cpm::str2vis("<=2.4.0");
     struct cpm::vis l4_ans = cpm::str2vis(">=2.6.0");
     struct cpm::vis r4_ans = cpm::str2vis("<=3.0.0");
-    ASSERT_TRUE(ret.size()==8);
+    ASSERT_EQ(ret.size(), (uint)8);
     ASSERT_TRUE(ret[0]==l1_ans);
     ASSERT_TRUE(ret[1]==r1_ans);
     ASSERT_TRUE(ret[2]==l2_ans);
@@ -601,7 +601,7 @@ TEST(version_processor, visAND_composite_case_01b){
     struct cpm::vis r3_ans = cpm::str2vis("<=2.4.0");
     struct cpm::vis l4_ans = cpm::str2vis(">=2.6.0");
     struct cpm::vis r4_ans = cpm::str2vis("<=3.0.0");
-    ASSERT_TRUE(ret.size()==8);
+    ASSERT_EQ(ret.size(), (uint)8);
     ASSERT_TRUE(ret[0]==l1_ans);
     ASSERT_TRUE(ret[1]==r1_ans);
     ASSERT_TRUE(ret[2]==l2_ans);

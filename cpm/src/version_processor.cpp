@@ -357,6 +357,8 @@ std::vector<struct cpm::vis> cpm::visAND(const std::vector<struct vis>& vLhs, co
                 if(now.first.is==CPM_LT || now.first.is==CPM_LE){ continue; }
                 if(l_used && r_used){
                     ret <<= prev.first;
+                    l_used = false;
+                    r_used = false;
                     update_prev=true;
                 }
                 
@@ -365,20 +367,20 @@ std::vector<struct cpm::vis> cpm::visAND(const std::vector<struct vis>& vLhs, co
                 if(l_used && r_used){
                     ret <<= prev.first;
                     ret <<= now.first;
+                    l_used = false;
+                    r_used = false;
                     update_prev=true;
                 }
                 
             }
         }
-        /*
         if(l_used && r_used){
-//            if(prev.first.is==CPM_LT || prev.first.is==CPM_LE){
-//                ret <<= prev.first;
-//            }else{
+            if(prev.first.is==CPM_LT || prev.first.is==CPM_LE){
+                ret <<= prev.first;
+            }else{
                 ret <<= now.first;
-//            }
+            }
         }
-        */
     }
     return ret;
 }

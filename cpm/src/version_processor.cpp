@@ -340,6 +340,7 @@ std::vector<struct cpm::vis> cpm::visAND(const std::vector<struct vis>& vLhs, co
             sstd::printn(update_prev);
             if(update_prev){
                 update_prev=false;
+//                if(i+1==vVC.size()){ now = vVC[i]; break; }
                 prev = vVC[i];
                 if(i+1==vVC.size()){ break; }
                 l_used = (prev.second=='l');
@@ -356,21 +357,28 @@ std::vector<struct cpm::vis> cpm::visAND(const std::vector<struct vis>& vLhs, co
                 if(now.first.is==CPM_LT || now.first.is==CPM_LE){ continue; }
                 if(l_used && r_used){
                     ret <<= prev.first;
+                    update_prev=true;
                 }
-                update_prev=true;
                 
             }else if(prev.first.is==CPM_GE || prev.first.is==CPM_GT){
                 if(now.first.is==CPM_GE || now.first.is==CPM_GT){ prev=now; continue; }
                 if(l_used && r_used){
                     ret <<= prev.first;
+                    ret <<= now.first;
+                    update_prev=true;
                 }
-                update_prev=true;
                 
             }
         }
+        /*
         if(l_used && r_used){
-            ret <<= now.first;
+//            if(prev.first.is==CPM_LT || prev.first.is==CPM_LE){
+//                ret <<= prev.first;
+//            }else{
+                ret <<= now.first;
+//            }
         }
+        */
     }
     return ret;
 }

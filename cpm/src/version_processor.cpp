@@ -329,13 +329,11 @@ std::vector<struct cpm::vis> cpm::visAND(const std::vector<struct vis>& vLhs, co
     bool l_used=false;
     bool r_used=false;
     {
-        bool update_prev=false;
-        T_pair prev = vVC[0];
-        l_used = (prev.second=='l');
-        r_used = (prev.second=='r');
+        bool update_prev=true;
+        T_pair prev;
         T_pair now;
         
-        for(uint i=1; i<vVC.size(); ++i){
+        for(uint i=0; i<vVC.size(); ++i){
             sstd::printn(i);
             sstd::printn(update_prev);
             if(update_prev){

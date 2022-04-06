@@ -693,6 +693,78 @@ TEST(version_processor, visAND_case04_02){
     ASSERT_TRUE(ret[0]==l_ans);
     ASSERT_TRUE(ret[1]==r_ans);
 }
+TEST(version_processor, visAND_case04_03){
+    // lhs: ver <= 1.0.0, 2.0.0 <= ver
+    // rhs: ver <= 1.0.0, 2.0.0 <= ver
+    
+    std::vector<struct cpm::vis> vLhs;
+    std::vector<struct cpm::vis> vRhs;
+    struct cpm::vis l1 = cpm::str2vis("<=1.0.0");
+    struct cpm::vis l2 = cpm::str2vis(">=2.0.0");
+    struct cpm::vis r1 = cpm::str2vis("<=1.0.0");
+    struct cpm::vis r2 = cpm::str2vis(">=2.0.0");
+    vLhs = {l1, l2};
+    vRhs = {r1, r2};
+    
+    std::vector<struct cpm::vis> ret = cpm::visAND(vLhs, vRhs);
+    cpm::print(ret);
+    
+    struct cpm::vis l_ans = cpm::str2vis("<=1.0.0");
+    struct cpm::vis r_ans = cpm::str2vis(">=2.0.0");
+    ASSERT_EQ(ret.size(), (uint)2);
+    ASSERT_TRUE(ret[0]==l_ans);
+    ASSERT_TRUE(ret[1]==r_ans);
+}
+TEST(version_processor, visAND_case05a){
+    // lhs: 1.0.0 <=     ver     <= 2.0.0
+    // rhs:   ver <= 1.4.0, 1.6.0 <= ver
+    
+    std::vector<struct cpm::vis> vLhs;
+    std::vector<struct cpm::vis> vRhs;
+    struct cpm::vis l1 = cpm::str2vis(">=1.0.0");
+    struct cpm::vis l2 = cpm::str2vis("<=2.0.0");
+    struct cpm::vis r1 = cpm::str2vis("<=1.4.0");
+    struct cpm::vis r2 = cpm::str2vis(">=1.6.0");
+    vLhs = {l1, l2};
+    vRhs = {r1, r2};
+    
+    std::vector<struct cpm::vis> ret = cpm::visAND(vLhs, vRhs);
+    
+    struct cpm::vis l1_ans = cpm::str2vis(">=1.0.0");
+    struct cpm::vis r1_ans = cpm::str2vis("<=1.4.0");
+    struct cpm::vis l2_ans = cpm::str2vis(">=1.6.0");
+    struct cpm::vis r2_ans = cpm::str2vis("<=2.0.0");
+    ASSERT_EQ(ret.size(), (uint)4);
+    ASSERT_TRUE(ret[0]==l1_ans);
+    ASSERT_TRUE(ret[1]==r1_ans);
+    ASSERT_TRUE(ret[2]==l2_ans);
+    ASSERT_TRUE(ret[3]==r2_ans);
+}
+TEST(version_processor, visAND_case05b){
+    // lhs:   ver <= 1.4.0, 1.6.0 <= ver
+    // rhs: 1.0.0 <=     ver     <= 2.0.0
+    
+    std::vector<struct cpm::vis> vLhs;
+    std::vector<struct cpm::vis> vRhs;
+    struct cpm::vis l1 = cpm::str2vis("<=1.4.0");
+    struct cpm::vis l2 = cpm::str2vis(">=1.6.0");
+    struct cpm::vis r1 = cpm::str2vis(">=1.0.0");
+    struct cpm::vis r2 = cpm::str2vis("<=2.0.0");
+    vLhs = {l1, l2};
+    vRhs = {r1, r2};
+    
+    std::vector<struct cpm::vis> ret = cpm::visAND(vLhs, vRhs);
+    
+    struct cpm::vis l1_ans = cpm::str2vis(">=1.0.0");
+    struct cpm::vis r1_ans = cpm::str2vis("<=1.4.0");
+    struct cpm::vis l2_ans = cpm::str2vis(">=1.6.0");
+    struct cpm::vis r2_ans = cpm::str2vis("<=2.0.0");
+    ASSERT_EQ(ret.size(), (uint)4);
+    ASSERT_TRUE(ret[0]==l1_ans);
+    ASSERT_TRUE(ret[1]==r1_ans);
+    ASSERT_TRUE(ret[2]==l2_ans);
+    ASSERT_TRUE(ret[3]==r2_ans);
+}
 
 
 TEST(version_processor, visAND_composite_case_01a){

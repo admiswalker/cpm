@@ -338,7 +338,6 @@ std::vector<struct cpm::vis> cpm::visAND(const std::vector<struct vis>& vLhs, co
             sstd::printn(update_prev);
             if(update_prev){
                 update_prev=false;
-//                if(i+1==vVC.size()){ now = vVC[i]; break; }
                 prev = vVC[i];
                 if(i+1==vVC.size()){ break; }
                 l_used = (prev.second=='l');

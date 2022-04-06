@@ -243,74 +243,9 @@ int cpm::cmpVer(const std::string& lhs, const std::string& rhs){
 int cpm::cmpVer(const struct cpm::vis& lhs, const struct cpm::vis& rhs){
     return cpm::cmpVer(lhs.ver, rhs.ver);
 }
-/*
-// Old impliments
+
 std::vector<struct cpm::vis> cpm::visAND(const std::vector<struct vis>& vLhs, const std::vector<struct vis>& vRhs){
-    printf("in cpm::visAND\n");
-    std::vector<struct cpm::vis> ret;
     
-    // sort_vis(vLhs);
-    // sort_vis(vRhs);
-
-    for(uint li=0; li<vLhs.size(); ++li){
-        if(vLhs[li].is==CPM_EQ){
-        }else if(vLhs[li].is==CPM_GT || vLhs[li].is==CPM_GE){
-            for(uint ri=0; ri<vRhs.size(); ++ri){
-                int c = cpm::cmpVer(vRhs[ri].ver, vLhs[li].ver);
-                if(vRhs[ri].is==CPM_LT || vRhs[ri].is==CPM_LE){
-                    if( c > 0 ){
-                        // when: vRhs[ri].ver > vLhs[li].ver
-                        ret <<= vLhs[li];
-                        ret <<= vRhs[ri]; // case01a, case02a
-                        break;
-                    }else if( c < 0 ){
-                        // c == 0
-                        // when: vRhs[ri].ver == vLhs[li].ver
-                    }
-                }else if(vRhs[ri].is==CPM_GT || vRhs[ri].is==CPM_GE){
-                    if( c > 0 ){
-                        // when: vRhs[ri].ver < vLhs[li].ver
-                        break; // case02a
-                    }else{
-                    }
-                }
-            }
-        }else if(vLhs[li].is==CPM_LT || vLhs[li].is==CPM_LE){
-            for(int ri=vRhs.size()-1; ri>=0; --ri){
-                int c = cpm::cmpVer(vRhs[ri].ver, vLhs[li].ver);
-                if(vRhs[ri].is==CPM_GT || vRhs[ri].is==CPM_GE){
-                    if( c < 0 ){
-                        // when: vRhs[ri].ver < vLhs[li].ver
-                        ret <<= vRhs[ri];
-                        ret <<= vLhs[li]; // case01b, case02b
-                        break;
-                    }
-                }else if(vRhs[ri].is==CPM_LT || vRhs[ri].is==CPM_LE){
-                    if( c < 0 ){
-                        // when: vRhs[ri].ver < vLhs[li].ver
-                        break; // case02b
-                    }else{
-                    }
-                }
-            }
-        }
-    }
-    return ret;
-}
-*/
-/*
-struct vist{ // version inequality-sign
-    char t=0; // type: 'l' or 'r'
-    uchar is=0; // inequality-sign
-    std::string ver;
-};
-bool operator<(const struct vist& lhs, const struct vist& rhs){
-    return lhs.;
-}
-*/
-std::vector<struct cpm::vis> cpm::visAND(const std::vector<struct vis>& vLhs, const std::vector<struct vis>& vRhs){
-    printf("in cpm::visAND\n");
-
     using T_pair = std::pair<struct cpm::vis, char>;
     std::vector<T_pair> vVC(vLhs.size()+vRhs.size());
     
@@ -319,23 +254,16 @@ std::vector<struct cpm::vis> cpm::visAND(const std::vector<struct vis>& vLhs, co
     for(uint i=0; i<vRhs.size(); ++i, ++n){ vVC[n] = {vRhs[i], 'r'}; }
     
     std::sort(vVC.begin(), vVC.end());
-    for(auto x:vVC){
-        cpm::print(x.first);
-        sstd::printn(x.second);
-    }
-    printf("-----------\n");
     
     std::vector<struct cpm::vis> ret;
-    bool l_used=false;
-    bool r_used=false;
     {
         bool update_prev=true;
         T_pair prev;
         T_pair now;
+        bool l_used=false;
+        bool r_used=false;
         
         for(uint i=0; i<vVC.size(); ++i){
-            sstd::printn(i);
-            sstd::printn(update_prev);
             if(update_prev){
                 update_prev=false;
                 prev = vVC[i];
@@ -347,8 +275,6 @@ std::vector<struct cpm::vis> cpm::visAND(const std::vector<struct vis>& vLhs, co
             now = vVC[i];
             l_used = l_used || (now.second=='l');
             r_used = r_used || (now.second=='r');
-            sstd::printn(l_used);
-            sstd::printn(r_used);
             
             if(prev.first.is==CPM_LT || prev.first.is==CPM_LE){
                 if(now.first.is==CPM_LT || now.first.is==CPM_LE){ continue; }

@@ -244,7 +244,7 @@ int cpm::cmpVer(const struct cpm::vis& lhs, const struct cpm::vis& rhs){
     return cpm::cmpVer(lhs.ver, rhs.ver);
 }
 
-
+/*
 uint gotoEnd_of_LTLG(bool& l_used, bool& r_used, const std::vector<T_pair>& vVC, const uint begin_idx){
     uint i_end;
     uint i=begin_idx;
@@ -267,100 +267,36 @@ int gotoBegin_of_GTGE(bool& l_used, bool& r_used, const std::vector<T_pair>& vVC
     i_begin = i+1;
     return i_begin;
 }
+*/
+std::pair<struct cpm::vis, struct cpm::vis> split_by_range(const std::vector<struct vis>& vLhs)
+{
+    std::vector<T_pair> vL;
+}
+bool visAND_range(std::vector<struct vis>& r,
+                  const std::pair<struct cpm::vis, struct cpm::vis>& vL,
+                  const std::pair<struct cpm::vis, struct cpm::vis>& vR)
+{
+    r.clear();
+    
+    return true;
+}
 std::vector<struct cpm::vis> cpm::visAND(const std::vector<struct vis>& vLhs, const std::vector<struct vis>& vRhs){
+    std::sort(vLhs.begin(), vLhs.end());
+    std::sort(vRhs.begin(), vRhs.end());
     
-    using T_pair = std::pair<struct cpm::vis, char>;
-    std::vector<T_pair> vVC(vLhs.size()+vRhs.size());
-    
-    uint n=0;
-    for(uint i=0; i<vLhs.size(); ++i, ++n){ vVC[n] = {vLhs[i], 'l'}; }
-    for(uint i=0; i<vRhs.size(); ++i, ++n){ vVC[n] = {vRhs[i], 'r'}; }
-    
-    std::sort(vVC.begin(), vVC.end());
+    using T_pair = std::pair<struct cpm::vis, struct cpm::vis>;
+    std::vector<T_pair> vL = split_by_range(vLhs);
+    std::vector<T_pair> vR = split_by_range(vRhs);
     
     std::vector<struct cpm::vis> ret;
-    {
-        // 1) ==, <= && >=
-        // 2) != to < && >
-        // 3) <=
-        uint i=0;
-        T_pair now;
-        
-        uint i_begin=0;
-        T_pair begin = vVC[i_begin];
-        if(begin.first.is==CPM_LT || begin.first.is==CPM_LE){
-            bool l_used = (begin.second=='l');
-            bool r_used = (begin.second=='r');
-            i_begin = gotoEnd_of_LTLG(l_used, r_used, vVC, i);
-            if(l_used && r_used){ ret <<= begin.first; }
-        }
-        
-        // 4) >=
-        int i_end=vVC.size();
-        T_pair end=vVC[i_end-1];
-        if(end.first.is==CPM_GT || end.first.is==CPM_GE){
-            bool l_used = (end.second=='l');
-            bool r_used = (end.second=='r');
-            i_end = gotoBegin_of_GTGE(l_used, r_used, vVC, vVC.size()-1);
-            if(l_used && r_used){ ret <<= end.first; }
-        }
-        
-        // 5) >= && <=
-        for(uint i=i_begin; i<i_end; ++i){
-            T_pair begin=vVC[i];
-            if(begin.first.is!=CPM_LT && begin.first.is!=CPM_LE){ sstd::pdbg("ERROR: Unexpected value, i==%d\n", i); break; }
-            i_begin = gotoEnd_of_LTLG(l_used, r_used, vVC, i);
+    for(uint li=0; li<vL.size(); ++li){
+        for(uint ri=ri_begin; ri<vL.size(); ++ri){
+            std::vector<struct cpm::vis> r;
+            bool TF_include = visAND_range(r, vL[li], vR[ri]);
+            ret <<= r;
         }
     }
-    /*
-    {
-        bool update_prev=true;
-        T_pair prev;
-        T_pair now;
-        bool l_used=false;
-        bool r_used=false;
-        
-        for(uint i=0; i<vVC.size(); ++i){
-            if(update_prev){
-                update_prev=false;
-                prev = vVC[i];
-                if(i+1==vVC.size()){ break; }
-                l_used = (prev.second=='l');
-                r_used = (prev.second=='r');
-                continue;
-            }
-            now = vVC[i];
-            l_used = l_used || (now.second=='l');
-            r_used = r_used || (now.second=='r');
-            
-            if(prev.first.is==CPM_LT || prev.first.is==CPM_LE){
-                if(now.first.is==CPM_LT || now.first.is==CPM_LE){ continue; }
-                if(!( l_used && r_used )){ continue; }
-                ret <<= prev.first;
-                l_used = false;
-                r_used = false;
-                update_prev=true;
-                --i;
-                
-            }else if(prev.first.is==CPM_GE || prev.first.is==CPM_GT){
-                if(now.first.is==CPM_GE || now.first.is==CPM_GT){ prev=now; continue; }
-                if(!( l_used && r_used )){ continue; }
-                ret <<= prev.first;
-                ret <<= now.first;
-                l_used = false;
-                r_used = false;
-                update_prev=true;
-            }
-        }
-        if(l_used && r_used){
-            if(prev.first.is==CPM_LT || prev.first.is==CPM_LE){
-                ret <<= prev.first;
-            }else{
-                ret <<= now.first;
-            }
-        }
-    }
-    */
+    
     return ret;
 }
 

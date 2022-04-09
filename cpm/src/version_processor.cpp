@@ -143,7 +143,9 @@ int cpm::cmpVer(const std::string& lhs, const std::string& rhs){
     for(uint i=0; i<vR.size(); ++i){ sstd::lstrip_ow(vR[i], '0'); }
 //  if(vL==vR){ return 0; }
     
-    for(uint vi=0; vi<sstd::min(vL.size(), vR.size()); ++vi){
+    uint len=sstd::min(vL.size(), vR.size());
+    for(uint vi=0; vi<len; ++vi){
+        if(sstd::strmatch(vL[vi], vR[vi]) || sstd::strmatch(vR[vi], vL[vi])){ continue; }
         if(vL[vi].size() < vR[vi].size()){ return -1; } // lt_case01_a, lt_case01_b, lt_case01_c
         if(vL[vi].size() > vR[vi].size()){ return  1; } // gt_case01_a, gt_case01_b, gt_case01_c
         
@@ -152,6 +154,16 @@ int cpm::cmpVer(const std::string& lhs, const std::string& rhs){
             if(vL[vi][i] > vR[vi][i]){ return  1; } // follow the ASCII Code order // gt_case02_a, gt_case02_b, gt_case02_c
         }
     }
+    bool tf_eq=true;
+    for(uint i=len; i<vL.size(); ++i){
+        if(vL[i]=="*" || vL[i]=="?"){ continue; }
+        tf_eq=false;
+    }
+    for(uint i=len; i<vR.size(); ++i){
+        if(vR[i]=="*" || vR[i]=="?"){ continue; }
+        tf_eq=false;
+    }
+    if(tf_eq){ return 0; }
     if(vL.size() != vR.size()){ return (vL.size() < vR.size() ? -1:1); } // lt_case03, gt_case03
     
     return 0; // eq_case02_a, eq_case02_b

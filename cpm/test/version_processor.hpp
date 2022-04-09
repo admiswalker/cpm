@@ -499,6 +499,77 @@ TEST(version_processor, cmpVer_str_inf_case05){
     ASSERT_EQ(cpm::cmpVer(lhs, rhs),  0);
 }
 
+//---
+
+TEST(version_processor, cmpVer_str_wc_case01a){
+    std::string lhs = "1.*.*";
+    std::string rhs = "1.2.3";
+    ASSERT_EQ(cpm::cmpVer(lhs, rhs), 0);
+}
+TEST(version_processor, cmpVer_str_wc_case01b){
+    std::string lhs = "1.2.3";
+    std::string rhs = "1.*.*";
+    ASSERT_EQ(cpm::cmpVer(lhs, rhs), 0);
+}
+TEST(version_processor, cmpVer_str_wc_case01c){
+    std::string lhs = "1.*.*";
+    std::string rhs = "1.*.*";
+    ASSERT_EQ(cpm::cmpVer(lhs, rhs), 0);
+}
+
+TEST(version_processor, cmpVer_str_wc_case02a){
+    std::string lhs = "1.0.*.*";
+    std::string rhs = "1.0.0";
+    ASSERT_EQ(cpm::cmpVer(lhs, rhs), 0);
+}
+TEST(version_processor, cmpVer_str_wc_case02b){
+    std::string lhs = "1.0.0";
+    std::string rhs = "1.0.*.*";
+    ASSERT_EQ(cpm::cmpVer(lhs, rhs), 0);
+}
+
+TEST(version_processor, cmpVer_str_wc_case03a){
+    std::string lhs = "1.?.?";
+    std::string rhs = "1.2.3";
+    ASSERT_EQ(cpm::cmpVer(lhs, rhs), 0);
+}
+TEST(version_processor, cmpVer_str_wc_case03b){
+    std::string lhs = "1.2.3";
+    std::string rhs = "1.?.?";
+    ASSERT_EQ(cpm::cmpVer(lhs, rhs), 0);
+}
+TEST(version_processor, cmpVer_str_wc_case03c){
+    std::string lhs = "1.?.?";
+    std::string rhs = "1.?.?";
+    ASSERT_EQ(cpm::cmpVer(lhs, rhs), 0);
+}
+
+TEST(version_processor, cmpVer_str_wc_case04){
+    std::string lhs = "1.1?.0";
+    std::string rhs = "1.10.0";
+    ASSERT_EQ(cpm::cmpVer(lhs, rhs), 0);
+}
+TEST(version_processor, cmpVer_str_wc_case05){
+    std::string lhs = "1.2?.0";
+    std::string rhs = "1.10.0";
+    ASSERT_EQ(cpm::cmpVer(lhs, rhs), 1);
+}
+TEST(version_processor, cmpVer_str_wc_case06){
+    std::string lhs = "1.1?.0";
+    std::string rhs = "1.20.0";
+    ASSERT_EQ(cpm::cmpVer(lhs, rhs), -1);
+}
+TEST(version_processor, cmpVer_str_wc_case07a){
+    std::string lhs = "1.?0.0";
+    std::string rhs = "1.100.0";
+    ASSERT_EQ(cpm::cmpVer(lhs, rhs), -1);
+}
+TEST(version_processor, cmpVer_str_wc_case07b){
+    std::string lhs = "1.100.0";
+    std::string rhs = "1.?0.0";
+    ASSERT_EQ(cpm::cmpVer(lhs, rhs),  1);
+}
+
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 
 TEST(version_processor, cmpVer_vis_eq_case00){

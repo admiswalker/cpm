@@ -94,13 +94,13 @@ $(LIB_GOOGLETEST):
 
 
 # 各ファイルの分割コンパイル
-$(TEMP_DIR)/%.o: %.cpp
+$(TEMP_DIR)/%.o: %.cpp $(LIB_SSTD)
 	@echo ""
 	mkdir -p $(dir $@);\
 	$(CXX) $< -c -o $@ $(CFLAGS)
 
 # 「-include $(DEPS)」により，必要な部分のみ分割で再コンパイルを行うため，依存関係を記した *.d ファイルに生成する
-$(TEMP_DIR)/%.d: %.cpp
+$(TEMP_DIR)/%.d: %.cpp $(LIB_SSTD)
 	@echo ""
 	mkdir -p $(dir $@);\
 	$(CXX) $< -MM $(CFLAGS)\

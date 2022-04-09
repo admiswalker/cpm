@@ -20,6 +20,7 @@ namespace cpm{
         uchar is=0; // inequality-sign
         std::string ver;
     };
+    // version の ver とかの方がまだわかる．
     bool operator==(const struct vis& lhs, const struct vis& rhs);
     bool operator<(const struct vis& lhs, const struct vis& rhs);
     
@@ -33,25 +34,16 @@ namespace cpm{
     
     int cmpVer(const std::string& lhs, const std::string& rhs);
     int cmpVer(const struct vis& lhs, const struct vis& rhs);
-
+    
+    void rm_same_vis(std::vector<struct vis>& v);
+    
     std::vector<T_pair> split_by_range(bool& ret_TF, const std::vector<struct vis>& vLhs);
     std::vector<struct vis> visAND(bool& ret_TF, const T_pair& l, const T_pair& r);
     std::vector<struct vis> visAND(const std::vector<struct vis>& vLhs, const std::vector<struct vis>& vRhs);
+    // 関数名: verAND とかの方がまだわかる．
 
     void print(const struct vis& vis);
     void print(const std::vector<struct vis>& v);
 }
 
 #undef T_pair
-
-// range: L, R
-// - '-inf'
-// - '0.0.0' ~ '*.*.*'
-// - 'inf'
-
-// inequality-sign
-// - ASCII Code
-//   - <: 92
-//   - =: 93
-//   - >: 94
-

@@ -1,6 +1,5 @@
 #include "version_processor.hpp"
 
-
 #define CPM_NULL 0 // initial value
 #define CPM_LT 1   // <  : less than
 #define CPM_LE 2   // <= : less than or equal to
@@ -8,6 +7,8 @@
 #define CPM_GE 4   // >= : greater than or equal to
 #define CPM_GT 5   // >= : greater than
 #define CPM_NE 6   // != : not equal to
+
+#define T_pair std::pair<struct cpm::vis,struct cpm::vis>
 
 
 int cpm::plus(int lhs, int rhs){
@@ -209,12 +210,25 @@ int cpm::cmpVer(const struct cpm::vis& lhs, const struct cpm::vis& rhs){
     sstd::pdbg("ERROR: lhs.is has unexpected value: %d.\n", lhs.is);
     return -1;
 }
-
-
-#define T_pair std::pair<struct cpm::vis,struct cpm::vis>
-
-std::vector<T_pair> cpm::split_by_range(bool& ret_TF, const std::vector<struct cpm::vis>& v)
-{
+void cpm::rm_same_vis(std::vector<struct vis>& v){
+    // --- NOTE: Needs to input sorted value ---
+    
+    int vi=0;
+    int i=0;
+    if(v.size()<=1){ return; }
+    for(; i<(int)v.size()-1;){
+        if(v[i].is==v[i+1].is && v[i].ver==v[i+1].ver){ ++i; }
+        v[vi] = v[i]; ++vi; ++i;
+    }
+    if(i<(int)v.size()){
+        v[vi] = v[i]; ++vi;
+    }
+    
+    v.resize(vi);
+}
+std::vector<T_pair> cpm::split_by_range(bool& ret_TF, const std::vector<struct cpm::vis>& v){
+    // --- NOTE: Needs to input sorted value ---
+    
     ret_TF=true;
     std::vector<T_pair> vR;
 
@@ -244,7 +258,7 @@ std::vector<T_pair> cpm::split_by_range(bool& ret_TF, const std::vector<struct c
         TF_pushBack=true;
     }
 
-    // middle: case03_middle01, case03_middle02
+    // middle: case02_middle01, case02_middle02
     for(uint i=b; i<e; ++i){
         T_pair r;
         if(v[i].is==CPM_EQ){
@@ -384,21 +398,41 @@ std::vector<struct cpm::vis> cpm::visAND(bool& ret_TF, const T_pair& l, const T_
     return ret;
 }
 std::vector<struct cpm::vis> cpm::visAND(const std::vector<struct cpm::vis>& vLhs_in, const std::vector<struct cpm::vis>& vRhs_in){
+    std::vector<struct cpm::vis> ret;
     
-    std::vector<struct vis> vLhs=vLhs_in;
-    std::vector<struct vis> vRhs=vRhs_in;
+    std::vector<struct vis> vLhs;
+    std::vector<struct vis> vRhs;
+    for(uint i=0; i<vLhs_in.size(); ++i){
+        if(vLhs_in[i].is==CPM_NE){
+            std::vector<struct cpm::vis> r = cpm::split_visNE(vLhs_in[i]);
+            vLhs <<= r;
+            continue;
+        }
+        vLhs <<= vLhs_in[i];
+    }
+    for(uint i=0; i<vRhs_in.size(); ++i){
+        if(vRhs_in[i].is==CPM_NE){
+            std::vector<struct cpm::vis> r = cpm::split_visNE(vRhs_in[i]);
+            vRhs <<= r;
+            continue;
+        }
+        vRhs <<= vRhs_in[i];
+    }
+
+    
     std::sort(vLhs.begin(), vLhs.end());
     std::sort(vRhs.begin(), vRhs.end());
+    cpm::rm_same_vis(vLhs);
+    cpm::rm_same_vis(vRhs);
     
     bool tf;
-    std::vector<T_pair> vL = split_by_range(tf, vLhs);
-    std::vector<T_pair> vR = split_by_range(tf, vRhs);
+    std::vector<T_pair> vL = cpm::split_by_range(tf, vLhs); if(!tf){ return ret; }
+    std::vector<T_pair> vR = cpm::split_by_range(tf, vRhs); if(!tf){ return ret; }
     
-    std::vector<struct cpm::vis> ret;
     for(uint li=0; li<vL.size(); ++li){
         for(uint ri=0; ri<vR.size(); ++ri){
             bool tf;
-            std::vector<struct cpm::vis> r = visAND(tf, vL[li], vR[ri]);
+            std::vector<struct cpm::vis> r = cpm::visAND(tf, vL[li], vR[ri]); if(!tf){ return std::vector<struct cpm::vis>(); }
             ret <<= r;
         }
     }

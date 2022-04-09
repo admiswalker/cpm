@@ -414,7 +414,6 @@ std::vector<struct cpm::vis> cpm::visAND(const std::vector<struct cpm::vis>& vLh
         }
         vRhs <<= vRhs_in[i];
     }
-
     
     std::sort(vLhs.begin(), vLhs.end());
     std::sort(vRhs.begin(), vRhs.end());

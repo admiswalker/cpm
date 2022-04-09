@@ -36,3 +36,9 @@ namespace cpm{
 }
 
 #undef T_pair
+
+
+// change name candidates:
+// - strcut cpm::vis -> struct cpm::ver, .ver -> .verStr (version string), .is -> .isignNum
+// - T_pair -> verRange
+// - visAND -> verAND

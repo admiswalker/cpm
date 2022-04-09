@@ -5,17 +5,6 @@
 #define T_pair std::pair<struct vis,struct vis>
 
 namespace cpm{
-    int plus(int, int);
-    /*
-    struct verRange{
-        std::string L;
-        uint LIS; // left inequality-sign
-        uint RIS; // right inequality-sign
-        std::string R;
-    };
-
-    struct verRange str2verStruct(const std::string& verStr);
-    */
     struct vis{ // version inequality-sign
         uchar is=0; // inequality-sign
         std::string ver;

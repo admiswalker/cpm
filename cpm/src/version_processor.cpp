@@ -11,10 +11,6 @@
 #define T_pair std::pair<struct cpm::vis,struct cpm::vis>
 
 
-int cpm::plus(int lhs, int rhs){
-    return lhs+rhs;
-}
-
 bool cpm::operator==(const struct cpm::vis& lhs, const struct cpm::vis& rhs){
     return (lhs.is==rhs.is) && (lhs.ver==rhs.ver);
 }

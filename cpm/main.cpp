@@ -470,9 +470,6 @@ int main(int argc, char *argv[]){
     printf("+---------------------------------------------------+\n");
     printf("\n");
     time_m timem; sstd::measureTime_start(timem);
-
-    sstd::printn(cpm::plus(1,1));
-    return 0;
     
     std::string packages_path = "packages_cpm.txt"; // -p packages_cpm.txt
     std::string buildin_packages_dir = "cpm/packages";

@@ -206,7 +206,7 @@ std::vector<T_pair> cpm::split_by_range(bool& ret_TF, const std::vector<struct c
     ret_TF=true;
     std::vector<T_pair> vR;
 
-    // begin
+    // begin: case01a_begin
     if(v.size()==0){ return vR; }
     uint b=0;
     if(v[b].is==CPM_LT || v[b].is==CPM_LE){
@@ -219,7 +219,7 @@ std::vector<T_pair> cpm::split_by_range(bool& ret_TF, const std::vector<struct c
         ++b;
     }
 
-    // end
+    // end: case01b_end
     uint e=v.size(); // end
     T_pair r_end;
     bool TF_pushBack=false;
@@ -232,7 +232,7 @@ std::vector<T_pair> cpm::split_by_range(bool& ret_TF, const std::vector<struct c
         TF_pushBack=true;
     }
 
-    // middle
+    // middle: case03_middle01, case03_middle02
     for(uint i=b; i<e; ++i){
         T_pair r;
         if(v[i].is==CPM_EQ){

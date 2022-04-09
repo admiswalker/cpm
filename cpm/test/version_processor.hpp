@@ -524,7 +524,7 @@ TEST(version_processor, cmpVer_vis_case02){
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 
-TEST(version_processor, visAND_split_range_case01a){
+TEST(version_processor, visAND_split_range_case01a_begin){
     // lhs: ver <= 1.0.0
     
     std::vector<struct cpm::vis> v;
@@ -543,7 +543,7 @@ TEST(version_processor, visAND_split_range_case01a){
     ASSERT_TRUE(ret[0].first ==l1_ans);
     ASSERT_TRUE(ret[0].second==r1_ans);
 }
-TEST(version_processor, visAND_split_range_case01b){
+TEST(version_processor, visAND_split_range_case01b_end){
     // lhs: 1.0.0 <= ver
     
     std::vector<struct cpm::vis> v;
@@ -562,7 +562,7 @@ TEST(version_processor, visAND_split_range_case01b){
     ASSERT_TRUE(ret[0].first ==l1_ans);
     ASSERT_TRUE(ret[0].second==r1_ans);
 }
-TEST(version_processor, visAND_split_range_01){
+TEST(version_processor, visAND_split_range_case03_middle01){
     // lhs: ver  <= 1.0.0,  2.0.0 <=  ver  <= 3.0.0, 4.0.0 <= ver
     
     std::vector<struct cpm::vis> v;
@@ -592,9 +592,8 @@ TEST(version_processor, visAND_split_range_01){
     ASSERT_TRUE(ret[2].first ==l3_ans);
     ASSERT_TRUE(ret[2].second==r3_ans);
 }
-TEST(version_processor, visAND_split_range_02){
-    // lhs: ver  <= 1.0.0,  2.0.0 <=  ver  <= 3.0.0, 4.0.0 <= ver
-    // rhs:                                                   ver  <= 5.0.0, 6.0.0 <=  ver
+TEST(version_processor, visAND_split_range_case03_middle02){
+    // rhs: ver  <= 5.0.0, 6.0.0 <=  ver
     
     std::vector<struct cpm::vis> v;
     struct cpm::vis e1 = cpm::str2vis("<=5.0.0");

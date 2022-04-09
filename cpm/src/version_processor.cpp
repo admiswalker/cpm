@@ -19,26 +19,6 @@ bool cpm::operator==(const struct cpm::vis& lhs, const struct cpm::vis& rhs){
 }
 bool cpm::operator<(const struct cpm::vis& lhs, const struct cpm::vis& rhs){
     return cmpVer(lhs, rhs) < 0;
-    /*
-    int c = cmpVer(lhs.ver, rhs.ver);
-    if( c < 0 ){ return true; }
-    if( c > 0 ){ return false; }
-    // c == 0
-
-    // order: <, <=, >=, >
-//      if      (lhs.is==CPM_LT){ return true;
-//      }else if(lhs.is==CPM_LE &&  rhs.is==CPM_LT){ return false;
-//      }else if(lhs.is==CPM_GE && (rhs.is==CPM_LT || rhs.is==CPM_LE)){ return false;
-//      }else if(lhs.is==CPM_GT && (rhs.is==CPM_LT || rhs.is==CPM_LE || rhs.is==CPM_GE)){ return false;
-//      }
-//      return true;
-    
-    if(lhs.is==CPM_LT){ return true; }
-    if(lhs.is==CPM_LE){ return  (rhs.is==CPM_LT ? false:true); }
-    if(lhs.is==CPM_GE){ return ((rhs.is==CPM_LT || rhs.is==CPM_LE) ? false:true); }
-//  if(lhs.is==CPM_GT){ return false; }
-    return false;
-    */
 }
 
 
@@ -255,11 +235,11 @@ int cpm::cmpVer(const struct cpm::vis& lhs, const struct cpm::vis& rhs){
     // lhs >  rhs:  1
     
     int c = cmpVer(lhs.ver, rhs.ver);
-    if( c < 0 ){ return true; }
-    if( c > 0 ){ return false; }
-    
+    if( c < 0 ){ return -1; }
+    if( c > 0 ){ return  1; }
+
     // c == 0
-    // order: <, <=, >=, >
+    // order: <, <=, ==, >=, >
     if(lhs.is==CPM_LT){
         if(rhs.is==CPM_LT){ return  0; }
         return -1;
@@ -269,9 +249,17 @@ int cpm::cmpVer(const struct cpm::vis& lhs, const struct cpm::vis& rhs){
         if(rhs.is==CPM_LE){ return  0; }
         return -1;
     }
+    if(lhs.is==CPM_EQ){
+        if(rhs.is==CPM_LT){ return  1; }
+        if(rhs.is==CPM_LE){ return  1; }
+        if(rhs.is==CPM_EQ){ return  0; }
+        return -1;
+    }
     if(lhs.is==CPM_GE){
-        if(rhs.is==CPM_LT || rhs.is==CPM_LE){ return  1; }
-        if(rhs.is==CPM_GE                  ){ return  0; }
+        if(rhs.is==CPM_LT){ return  1; }
+        if(rhs.is==CPM_LE){ return  1; }
+        if(rhs.is==CPM_EQ){ return  1; }
+        if(rhs.is==CPM_GE){ return  0; }
         return -1;
     }
     if(lhs.is==CPM_GT){
@@ -372,16 +360,83 @@ std::vector<struct cpm::vis> cpm::visAND(bool& ret_TF, const T_pair& l, const T_
 {
     ret_TF=true;
     std::vector<struct cpm::vis> ret;
-//    if(l.size()==0 || r.size()==0){ ret_TF=false; return ret; }
+    if(l.first.is==CPM_NULL || l.second.is==CPM_NULL || r.first.is==CPM_NULL || r.second.is==CPM_NULL){ ret_TF=false; return ret; }
+    if(l.first.ver.size()==0 || l.second.ver.size()==0 || r.first.ver.size()==0 || r.second.ver.size()==0){ ret_TF=false; return ret; }
     
-    // l ⊂ r
-//    if(cmpVer(l.first)){
-//    }
+    cpm::print(l.first);
+    cpm::print(r.first);
+    sstd::printn(cmpVer(l.first, r.first));
+    cpm::print(l.second);
+    cpm::print(r.second);
+    sstd::printn(cmpVer(l.second, r.second));
     
-    // l ⊃ r
-    
-    // l ∩ r
+    // ll: l.first
+    // lr: l.second
+    // rl: r.first
+    // rr: r.second
 
+    // case06
+    // l == r
+    // l, r: ll == lr == rl == rr
+    if(cmpVer(l.first, r.first)==0){ // ll == rl
+        if(cmpVer(l.second, r.second)==0){ // lr == rr
+            if(l.first.ver==l.second.ver){ // ll == rr
+                struct cpm::vis r;
+                r.is  = CPM_EQ;
+                r.ver = l.first.ver;
+                ret <<= r;
+                return ret;
+            }
+        }
+    }
+    
+    // case01, case02, case05a
+    // l ⊂ r: rl <= ll && lr <= rr
+    // l:       ll <---> lr
+    // r: rl <---------------> rr
+    if(cmpVer(l.first, r.first)>=0){ // ll >= rl
+        if(cmpVer(l.second, r.second)<=0){ // lr <= rr
+            ret <<= l.first;
+            ret <<= l.second;
+            return ret;
+        }
+    }
+    
+    // case05b
+    // l ⊃ r
+    // l: ll <---------------> lr
+    // r:       rl <---> rr
+    if(cmpVer(l.first, r.first)<=0){ // ll <= rl
+        if(cmpVer(l.second, r.second)>=0){ // lr >= rr
+            ret <<= r.first;
+            ret <<= r.second;
+            return ret;
+        }
+    }
+    
+    // case03a
+    // l ∩ r (1): rl <= ll && rr <= lr
+    // l:       ll <--------> lr
+    // r: rl <-------> rr
+    if(cmpVer(l.first, r.first)>=0){ // ll >= rl
+        if(cmpVer(l.second, r.second)>=0){ // lr >= rr
+            ret <<= l.first;
+            ret <<= r.second;
+            return ret;
+        }
+    }
+    
+    // case03b, case04a
+    // l ∩ r (2): ll <= rl && lr <= rr
+    // l: ll <-------> lr
+    // r:       rl <--------> rr
+    if(cmpVer(l.first, r.first)<=0){ // ll <= rl
+        if(cmpVer(l.second, r.second)<=0){ // lr <= rr
+            ret <<= r.first;
+            ret <<= l.second;
+            return ret;
+        }
+    }
     
     return ret;
 }

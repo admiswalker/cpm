@@ -620,19 +620,19 @@ TEST(version_processor, visAND_split_range_02){
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 
-TEST(version_processor, visAND_scalar_01){
-    // lhs: ver  <= 1.0.0,  2.0.0 <=  ver  <= 3.0.0, 4.0.0 <= ver
-    // rhs:                                                   ver  <= 5.0.0, 6.0.0 <=  ver
+TEST(version_processor, visAND_scalar_case01){
+    // lhs: 1.0.0 <= ver <= 1.0.0
+    // rhs: 1.0.0 <= ver <= 1.0.0
     
     using T_pair = std::pair<struct cpm::vis,struct cpm::vis>;
     T_pair L;
-    struct cpm::vis l1 = cpm::str2vis(">-inf");
+    struct cpm::vis l1 = cpm::str2vis(">=1.0.0");
     struct cpm::vis l2 = cpm::str2vis("<=1.0.0");
     L.first  = l1;
     L.second = l2;
     T_pair R;
-    struct cpm::vis r1 = cpm::str2vis(">-inf");
-    struct cpm::vis r2 = cpm::str2vis("<=5.0.0");
+    struct cpm::vis r1 = cpm::str2vis(">=1.0.0");
+    struct cpm::vis r2 = cpm::str2vis("<=1.0.0");
     R.first  = r1;
     R.second = r2;
     
@@ -640,122 +640,52 @@ TEST(version_processor, visAND_scalar_01){
     std::vector<struct cpm::vis> ret = cpm::visAND(tf, L, R);
 //    for(auto r: ret){ cpm::print(r); }
     
-    struct cpm::vis l1_ans = cpm::str2vis(">-inf");
-    struct cpm::vis r1_ans = cpm::str2vis("<=1.0.0");
+    struct cpm::vis l1_ans = cpm::str2vis("==1.0.0");
     ASSERT_TRUE(tf);
-    ASSERT_EQ(ret.size(), (uint)2);
+    ASSERT_EQ(ret.size(), (uint)1);
     ASSERT_TRUE(ret[0]==l1_ans);
-    ASSERT_TRUE(ret[1]==r1_ans);
 }
-TEST(version_processor, visAND_scalar_02){
-    // lhs: ver  <= 1.0.0,  2.0.0 <=  ver  <= 3.0.0, 4.0.0 <= ver
-    // rhs:                                                   ver  <= 5.0.0, 6.0.0 <=  ver
+TEST(version_processor, visAND_scalar_case02a){
+    // lhs: 1.0.0 <= ver <= 2.0.0
+    // rhs:                 2.0.0 <= ver <= 3.0.0
     
-    using T_pair = std::pair<struct cpm::vis,struct cpm::vis>;
-    T_pair L;
+    std::vector<struct cpm::vis> vLhs;
+    std::vector<struct cpm::vis> vRhs;
+    struct cpm::vis l1 = cpm::str2vis(">=1.0.0");
+    struct cpm::vis l2 = cpm::str2vis("<=2.0.0");
+    struct cpm::vis r1 = cpm::str2vis(">=2.0.0");
+    struct cpm::vis r2 = cpm::str2vis("<=3.0.0");
+    vLhs = {l1, l2};
+    vRhs = {r1, r2};
+    
+    std::vector<struct cpm::vis> ret = cpm::visAND(vLhs, vRhs);
+//    cpm::print(ret);
+    
+    struct cpm::vis l1_ans = cpm::str2vis("==2.0.0");
+    ASSERT_EQ(ret.size(), (uint)1);
+    ASSERT_TRUE(ret[0]==l1_ans);
+}
+TEST(version_processor, visAND_scalar_case02b){
+    // lhs:                 2.0.0 <= ver <= 3.0.0
+    // rhs: 1.0.0 <= ver <= 2.0.0
+    
+    std::vector<struct cpm::vis> vLhs;
+    std::vector<struct cpm::vis> vRhs;
     struct cpm::vis l1 = cpm::str2vis(">=2.0.0");
     struct cpm::vis l2 = cpm::str2vis("<=3.0.0");
-    L.first  = l1;
-    L.second = l2;
-    T_pair R;
-    struct cpm::vis r1 = cpm::str2vis(">-inf");
-    struct cpm::vis r2 = cpm::str2vis("<=5.0.0");
-    R.first  = r1;
-    R.second = r2;
+    struct cpm::vis r1 = cpm::str2vis(">=1.0.0");
+    struct cpm::vis r2 = cpm::str2vis("<=2.0.0");
+    vLhs = {l1, l2};
+    vRhs = {r1, r2};
     
-    bool tf;
-    std::vector<struct cpm::vis> ret = cpm::visAND(tf, L, R);
-//    for(auto r: ret){ cpm::print(r); }
+    std::vector<struct cpm::vis> ret = cpm::visAND(vLhs, vRhs);
+//    cpm::print(ret);
     
-    struct cpm::vis l1_ans = cpm::str2vis(">=2.0.0");
-    struct cpm::vis r1_ans = cpm::str2vis("<=3.0.0");
-    ASSERT_TRUE(tf);
-    ASSERT_EQ(ret.size(), (uint)2);
+    struct cpm::vis l1_ans = cpm::str2vis("==2.0.0");
+    ASSERT_EQ(ret.size(), (uint)1);
     ASSERT_TRUE(ret[0]==l1_ans);
-    ASSERT_TRUE(ret[1]==r1_ans);
 }
-TEST(version_processor, visAND_scalar_03a){
-    // lhs: ver  <= 1.0.0,  2.0.0 <=  ver  <= 3.0.0, 4.0.0 <= ver
-    // rhs:                                                   ver  <= 5.0.0, 6.0.0 <=  ver
-    
-    using T_pair = std::pair<struct cpm::vis,struct cpm::vis>;
-    T_pair L;
-    struct cpm::vis l1 = cpm::str2vis(">=4.0.0");
-    struct cpm::vis l2 = cpm::str2vis("<inf");
-    L.first  = l1;
-    L.second = l2;
-    T_pair R;
-    struct cpm::vis r1 = cpm::str2vis(">-inf");
-    struct cpm::vis r2 = cpm::str2vis("<=5.0.0");
-    R.first  = r1;
-    R.second = r2;
-    
-    bool tf;
-    std::vector<struct cpm::vis> ret = cpm::visAND(tf, L, R);
-//    for(auto r: ret){ cpm::print(r); }
-    
-    struct cpm::vis l1_ans = cpm::str2vis(">=4.0.0");
-    struct cpm::vis r1_ans = cpm::str2vis("<=5.0.0");
-    ASSERT_TRUE(tf);
-    ASSERT_EQ(ret.size(), (uint)2);
-    ASSERT_TRUE(ret[0]==l1_ans);
-    ASSERT_TRUE(ret[1]==r1_ans);
-}
-TEST(version_processor, visAND_scalar_03b){
-    // lhs:                                                   ver  <= 5.0.0, 6.0.0 <=  ver
-    // rhs: ver  <= 1.0.0,  2.0.0 <=  ver  <= 3.0.0, 4.0.0 <= ver
-    
-    using T_pair = std::pair<struct cpm::vis,struct cpm::vis>;
-    T_pair L;
-    struct cpm::vis l1 = cpm::str2vis(">-inf");
-    struct cpm::vis l2 = cpm::str2vis("<=5.0.0");
-    L.first  = l1;
-    L.second = l2;
-    T_pair R;
-    struct cpm::vis r1 = cpm::str2vis(">=4.0.0");
-    struct cpm::vis r2 = cpm::str2vis("<inf");
-    R.first  = r1;
-    R.second = r2;
-    
-    bool tf;
-    std::vector<struct cpm::vis> ret = cpm::visAND(tf, L, R);
-//    for(auto r: ret){ cpm::print(r); }
-    
-    struct cpm::vis l1_ans = cpm::str2vis(">=4.0.0");
-    struct cpm::vis r1_ans = cpm::str2vis("<=5.0.0");
-    ASSERT_TRUE(tf);
-    ASSERT_EQ(ret.size(), (uint)2);
-    ASSERT_TRUE(ret[0]==l1_ans);
-    ASSERT_TRUE(ret[1]==r1_ans);
-}
-TEST(version_processor, visAND_scalar_04a){
-    // lhs: ver  <= 1.0.0,  2.0.0 <=  ver  <= 3.0.0, 4.0.0 <= ver
-    // rhs:                                                   ver  <= 5.0.0, 6.0.0 <=  ver
-    
-    using T_pair = std::pair<struct cpm::vis,struct cpm::vis>;
-    T_pair L;
-    struct cpm::vis l1 = cpm::str2vis(">=4.0.0");
-    struct cpm::vis l2 = cpm::str2vis("<inf");
-    L.first  = l1;
-    L.second = l2;
-    T_pair R;
-    struct cpm::vis r1 = cpm::str2vis(">=6.0.0");
-    struct cpm::vis r2 = cpm::str2vis("<inf");
-    R.first  = r1;
-    R.second = r2;
-    
-    bool tf;
-    std::vector<struct cpm::vis> ret = cpm::visAND(tf, L, R);
-//    for(auto r: ret){ cpm::print(r); }
-    
-    struct cpm::vis l1_ans = cpm::str2vis(">=6.0.0");
-    struct cpm::vis r1_ans = cpm::str2vis("<inf");
-    ASSERT_TRUE(tf);
-    ASSERT_EQ(ret.size(), (uint)2);
-    ASSERT_TRUE(ret[0]==l1_ans);
-    ASSERT_TRUE(ret[1]==r1_ans);
-}
-TEST(version_processor, visAND_scalar_05a){
+TEST(version_processor, visAND_scalar_case03a){
     // lhs:    2.0.0 <= ver <= 3.0.0
     // rhs: 1.0.0 <=    ver    <= 4.0.0
     
@@ -782,7 +712,7 @@ TEST(version_processor, visAND_scalar_05a){
     ASSERT_TRUE(ret[0]==l1_ans);
     ASSERT_TRUE(ret[1]==r1_ans);
 }
-TEST(version_processor, visAND_scalar_05b){
+TEST(version_processor, visAND_scalar_case03b){
     // lhs: 1.0.0 <=    ver    <= 4.0.0
     // rhs:    2.0.0 <= ver <= 3.0.0
     
@@ -809,19 +739,19 @@ TEST(version_processor, visAND_scalar_05b){
     ASSERT_TRUE(ret[0]==l1_ans);
     ASSERT_TRUE(ret[1]==r1_ans);
 }
-TEST(version_processor, visAND_scalar_06){
-    // lhs: 1.0.0 <= ver <= 1.0.0
-    // rhs: 1.0.0 <= ver <= 1.0.0
+TEST(version_processor, visAND_scalar_case04a){
+    // lhs: 4.0.0 <= ver
+    // rhs:          ver  <= 5.0.0
     
     using T_pair = std::pair<struct cpm::vis,struct cpm::vis>;
     T_pair L;
-    struct cpm::vis l1 = cpm::str2vis(">=1.0.0");
-    struct cpm::vis l2 = cpm::str2vis("<=1.0.0");
+    struct cpm::vis l1 = cpm::str2vis(">=4.0.0");
+    struct cpm::vis l2 = cpm::str2vis("<inf");
     L.first  = l1;
     L.second = l2;
     T_pair R;
-    struct cpm::vis r1 = cpm::str2vis(">=1.0.0");
-    struct cpm::vis r2 = cpm::str2vis("<=1.0.0");
+    struct cpm::vis r1 = cpm::str2vis(">-inf");
+    struct cpm::vis r2 = cpm::str2vis("<=5.0.0");
     R.first  = r1;
     R.second = r2;
     
@@ -829,12 +759,14 @@ TEST(version_processor, visAND_scalar_06){
     std::vector<struct cpm::vis> ret = cpm::visAND(tf, L, R);
 //    for(auto r: ret){ cpm::print(r); }
     
-    struct cpm::vis l1_ans = cpm::str2vis("==1.0.0");
+    struct cpm::vis l1_ans = cpm::str2vis(">=4.0.0");
+    struct cpm::vis r1_ans = cpm::str2vis("<=5.0.0");
     ASSERT_TRUE(tf);
-    ASSERT_EQ(ret.size(), (uint)1);
+    ASSERT_EQ(ret.size(), (uint)2);
     ASSERT_TRUE(ret[0]==l1_ans);
+    ASSERT_TRUE(ret[1]==r1_ans);
 }
-TEST(version_processor, visAND_scalar_07a){
+TEST(version_processor, visAND_scalar_case04a_border_case){
     // lhs: ver <= 1.0.0,
     // rhs:               2.0.0 <= ver
     
@@ -858,7 +790,61 @@ TEST(version_processor, visAND_scalar_07a){
     ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)0);
 }
-TEST(version_processor, visAND_scalar_07b){
+TEST(version_processor, visAND_scalar_case04b){
+    // lhs:          ver  <= 5.0.0
+    // rhs: 4.0.0 <= ver
+    
+    using T_pair = std::pair<struct cpm::vis,struct cpm::vis>;
+    T_pair L;
+    struct cpm::vis l1 = cpm::str2vis(">-inf");
+    struct cpm::vis l2 = cpm::str2vis("<=5.0.0");
+    L.first  = l1;
+    L.second = l2;
+    T_pair R;
+    struct cpm::vis r1 = cpm::str2vis(">=4.0.0");
+    struct cpm::vis r2 = cpm::str2vis("<inf");
+    R.first  = r1;
+    R.second = r2;
+    
+    bool tf;
+    std::vector<struct cpm::vis> ret = cpm::visAND(tf, L, R);
+//    for(auto r: ret){ cpm::print(r); }
+    
+    struct cpm::vis l1_ans = cpm::str2vis(">=4.0.0");
+    struct cpm::vis r1_ans = cpm::str2vis("<=5.0.0");
+    ASSERT_TRUE(tf);
+    ASSERT_EQ(ret.size(), (uint)2);
+    ASSERT_TRUE(ret[0]==l1_ans);
+    ASSERT_TRUE(ret[1]==r1_ans);
+}
+TEST(version_processor, visAND_scalar_case04b_02){
+    // lhs: 4.0.0 <= ver
+    // rhs:      6.0.0 <= ver
+    
+    using T_pair = std::pair<struct cpm::vis,struct cpm::vis>;
+    T_pair L;
+    struct cpm::vis l1 = cpm::str2vis(">=4.0.0");
+    struct cpm::vis l2 = cpm::str2vis("<inf");
+    L.first  = l1;
+    L.second = l2;
+    T_pair R;
+    struct cpm::vis r1 = cpm::str2vis(">=6.0.0");
+    struct cpm::vis r2 = cpm::str2vis("<inf");
+    R.first  = r1;
+    R.second = r2;
+    
+    bool tf;
+    std::vector<struct cpm::vis> ret = cpm::visAND(tf, L, R);
+//    for(auto r: ret){ cpm::print(r); }
+    
+    struct cpm::vis l1_ans = cpm::str2vis(">=6.0.0");
+    struct cpm::vis r1_ans = cpm::str2vis("<inf");
+    ASSERT_TRUE(tf);
+    ASSERT_EQ(ret.size(), (uint)2);
+    ASSERT_TRUE(ret[0]==l1_ans);
+    ASSERT_TRUE(ret[1]==r1_ans);
+}
+TEST(version_processor, visAND_scalar_case04b_border_case){
     // lhs:               2.0.0 <= ver
     // rhs: ver <= 1.0.0,
     
@@ -881,46 +867,6 @@ TEST(version_processor, visAND_scalar_07b){
     struct cpm::vis l1_ans = cpm::str2vis("==1.0.0");
     ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)0);
-}
-TEST(version_processor, visAND_scalar_case08a){
-    // lhs: 1.0.0 <= ver <= 2.0.0
-    // rhs:                 2.0.0 <= ver <= 3.0.0
-    
-    std::vector<struct cpm::vis> vLhs;
-    std::vector<struct cpm::vis> vRhs;
-    struct cpm::vis l1 = cpm::str2vis(">=1.0.0");
-    struct cpm::vis l2 = cpm::str2vis("<=2.0.0");
-    struct cpm::vis r1 = cpm::str2vis(">=2.0.0");
-    struct cpm::vis r2 = cpm::str2vis("<=3.0.0");
-    vLhs = {l1, l2};
-    vRhs = {r1, r2};
-    
-    std::vector<struct cpm::vis> ret = cpm::visAND(vLhs, vRhs);
-//    cpm::print(ret);
-    
-    struct cpm::vis l1_ans = cpm::str2vis("==2.0.0");
-    ASSERT_EQ(ret.size(), (uint)1);
-    ASSERT_TRUE(ret[0]==l1_ans);
-}
-TEST(version_processor, visAND_scalar_case08b){
-    // lhs:                 2.0.0 <= ver <= 3.0.0
-    // rhs: 1.0.0 <= ver <= 2.0.0
-    
-    std::vector<struct cpm::vis> vLhs;
-    std::vector<struct cpm::vis> vRhs;
-    struct cpm::vis l1 = cpm::str2vis(">=2.0.0");
-    struct cpm::vis l2 = cpm::str2vis("<=3.0.0");
-    struct cpm::vis r1 = cpm::str2vis(">=1.0.0");
-    struct cpm::vis r2 = cpm::str2vis("<=2.0.0");
-    vLhs = {l1, l2};
-    vRhs = {r1, r2};
-    
-    std::vector<struct cpm::vis> ret = cpm::visAND(vLhs, vRhs);
-//    cpm::print(ret);
-    
-    struct cpm::vis l1_ans = cpm::str2vis("==2.0.0");
-    ASSERT_EQ(ret.size(), (uint)1);
-    ASSERT_TRUE(ret[0]==l1_ans);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------

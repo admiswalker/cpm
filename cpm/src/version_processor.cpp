@@ -269,7 +269,7 @@ std::vector<struct cpm::vis> cpm::visAND(bool& ret_TF, const T_pair& l, const T_
     // rl: r.first
     // rr: r.second
     
-    // case06
+    // s_case01
     // ll == rl && lr == rr && ll.ver == lr.ver
     // l: ll <---> lr
     // r: rl <---> rr
@@ -285,7 +285,7 @@ std::vector<struct cpm::vis> cpm::visAND(bool& ret_TF, const T_pair& l, const T_
         }
     }
     
-    // case08a
+    // case02a
     // lr.is=='<=' && rl.is=='>=' && lr.ver == rl.ver
     // l: ll <---> lr
     // r:          rl <---> rr
@@ -301,7 +301,7 @@ std::vector<struct cpm::vis> cpm::visAND(bool& ret_TF, const T_pair& l, const T_
         }
     }
     
-    // case08b
+    // case02b
     // rr.is=='<=' && ll.is=='>=' && rr.ver == ll.ver
     // l:          ll <---> lr
     // r: rl <---> rr
@@ -317,7 +317,7 @@ std::vector<struct cpm::vis> cpm::visAND(bool& ret_TF, const T_pair& l, const T_
         }
     }
     
-    // case01, case02, case05a
+    // case03a
     // l ⊂ r: rl <= ll && lr <= rr
     // l:       ll <---> lr
     // r: rl <---------------> rr
@@ -329,7 +329,7 @@ std::vector<struct cpm::vis> cpm::visAND(bool& ret_TF, const T_pair& l, const T_
         }
     }
     
-    // case05b
+    // case03b
     // l ⊃ r
     // l: ll <---------------> lr
     // r:       rl <---> rr
@@ -340,8 +340,8 @@ std::vector<struct cpm::vis> cpm::visAND(bool& ret_TF, const T_pair& l, const T_
             return ret;
         }
     }
-    
-    // case03a
+
+    // case04a, case04a_border_case
     // l ∩ r (1): rl <= ll <= rr && rr <= lr
     // l:       ll <--------> lr
     // r: rl <-------> rr
@@ -355,7 +355,7 @@ std::vector<struct cpm::vis> cpm::visAND(bool& ret_TF, const T_pair& l, const T_
         }
     }
     
-    // case03b, case04a
+    // case04b, case04b_border_case
     // l ∩ r (2): ll <= rl <= lr && lr <= rr
     // l: ll <-------> lr
     // r:       rl <--------> rr

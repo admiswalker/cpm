@@ -2,6 +2,8 @@
 #include <sstd/sstd.hpp>
 
 
+#define T_pair std::pair<struct vis,struct vis>
+
 namespace cpm{
     int plus(int, int);
     /*
@@ -32,11 +34,15 @@ namespace cpm{
     int cmpVer(const std::string& lhs, const std::string& rhs);
     int cmpVer(const struct vis& lhs, const struct vis& rhs);
 
+    std::vector<T_pair> split_by_range(bool& ret_TF, const std::vector<struct vis>& vLhs);
+    std::vector<struct vis> visAND(bool& ret_TF, const T_pair& l, const T_pair& r);
     std::vector<struct vis> visAND(const std::vector<struct vis>& vLhs, const std::vector<struct vis>& vRhs);
 
     void print(const struct vis& vis);
     void print(const std::vector<struct vis>& v);
 }
+
+#undef T_pair
 
 // range: L, R
 // - '-inf'

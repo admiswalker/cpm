@@ -1701,7 +1701,7 @@ TEST(version_processor, visAND_merge_same_option){ // test rm_same_vis()
 }
 /*
 TEST(version_processor, visAND_check_input_error){
-    // lhs: < 1.0.0, < 2.0.0, 
+    // lhs: < 1.0.0, < 2.0.0
     // rhs: 
     
     std::vector<struct cpm::vis> vLhs;
@@ -1713,17 +1713,10 @@ TEST(version_processor, visAND_check_input_error){
     
     std::vector<struct cpm::vis> ret = cpm::visAND(vLhs, vRhs);
     
-    struct cpm::vis l1_ans = cpm::str2vis(">-inf");
-    struct cpm::vis r1_ans = cpm::str2vis("<1.0.0");
-    struct cpm::vis l2_ans = cpm::str2vis(">1.0.0");
-    struct cpm::vis r2_ans = cpm::str2vis("<inf");
-    ASSERT_EQ(ret.size(), (uint)4);
-    ASSERT_TRUE(ret[0]==l1_ans);
-    ASSERT_TRUE(ret[1]==r1_ans);
-    ASSERT_TRUE(ret[2]==l2_ans);
-    ASSERT_TRUE(ret[3]==r2_ans);
+    ASSERT_EQ(ret.size(), (uint)0);
 }
 */
+
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 
 #undef CPM_NE

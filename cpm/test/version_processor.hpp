@@ -933,7 +933,7 @@ TEST(version_processor, visAND_case00){
     std::vector<struct cpm::vis> vRhs;
     
     std::vector<struct cpm::vis> ret = cpm::visAND(vLhs, vRhs);
-    cpm::print(ret);
+//    cpm::print(ret);
     
     ASSERT_EQ(ret.size(), (uint)0);
 }
@@ -1196,7 +1196,7 @@ TEST(version_processor, visAND_case04_03){
     vRhs = {r1, r2};
     
     std::vector<struct cpm::vis> ret = cpm::visAND(vLhs, vRhs);
-    cpm::print(ret);
+//    cpm::print(ret);
     
     struct cpm::vis l1_ans = cpm::str2vis(">-inf");
     struct cpm::vis r1_ans = cpm::str2vis("<=1.0.0");
@@ -1380,7 +1380,7 @@ TEST(version_processor, visAND_case08a){
     vRhs = {r1, r2};
     
     std::vector<struct cpm::vis> ret = cpm::visAND(vLhs, vRhs);
-    cpm::print(ret);
+//    cpm::print(ret);
     
     ASSERT_EQ(ret.size(), (uint)0);
 }
@@ -1398,7 +1398,7 @@ TEST(version_processor, visAND_case08b){
     vRhs = {r1, r2};
     
     std::vector<struct cpm::vis> ret = cpm::visAND(vLhs, vRhs);
-    cpm::print(ret);
+//    cpm::print(ret);
     
     ASSERT_EQ(ret.size(), (uint)0);
 }
@@ -1416,7 +1416,7 @@ TEST(version_processor, visAND_case09a){
     vRhs = {r1, r2};
     
     std::vector<struct cpm::vis> ret = cpm::visAND(vLhs, vRhs);
-    cpm::print(ret);
+//    cpm::print(ret);
     
     ASSERT_EQ(ret.size(), (uint)0);
 }
@@ -1434,7 +1434,7 @@ TEST(version_processor, visAND_case09b){
     vRhs = {r1, r2};
     
     std::vector<struct cpm::vis> ret = cpm::visAND(vLhs, vRhs);
-    cpm::print(ret);
+//    cpm::print(ret);
     
     ASSERT_EQ(ret.size(), (uint)0);
 }
@@ -1452,7 +1452,7 @@ TEST(version_processor, visAND_case10a){
     vRhs = {r1, r2};
     
     std::vector<struct cpm::vis> ret = cpm::visAND(vLhs, vRhs);
-    cpm::print(ret);
+//    cpm::print(ret);
     
     ASSERT_EQ(ret.size(), (uint)2);
     struct cpm::vis l1_ans = cpm::str2vis(">1.0.0");
@@ -1474,7 +1474,7 @@ TEST(version_processor, visAND_case10b){
     vRhs = {r1, r2};
     
     std::vector<struct cpm::vis> ret = cpm::visAND(vLhs, vRhs);
-    cpm::print(ret);
+//    cpm::print(ret);
     
     ASSERT_EQ(ret.size(), (uint)2);
     struct cpm::vis l1_ans = cpm::str2vis(">1.0.0");

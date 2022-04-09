@@ -38,80 +38,7 @@ void cpm::print(const std::vector<struct cpm::vis>& v){
     printf("\n");
 }
 
-
 //-------------
-/*
-bool strEq_len(uint ii, const char* lhs, const char* rhs, const uint len){
-    for(uint i=0; i<len; ++i){
-        if(lhs[i]!=rhs[i]){ return false; }
-    }
-    return true;
-}
-std::vector<std::string> split(const std::string& str, const std::string& splitter){
-    std::vector<std::string> vRet;
-    
-    std::string r;
-    uint i=0;
-    if(strEq_len(i, &str[i], splitter.c_str(), splitter.size())){
-        vRet <<= splitter;
-        i += splitter.size();
-    }
-    for(; i<str.size() - splitter.size() + 1; ++i){
-        if(strEq_len(i, &str[i], splitter.c_str(), splitter.size())){
-            vRet <<= r; r.clear();
-            vRet <<= splitter;
-            i += splitter.size() - 1; // minus 1, because of the end of for-loop ++i
-        }else{
-            r += str[i];
-        }
-    }
-    for(; i<str.size(); ++i){ r += str[i]; }
-    if(r.size()!=0){ vRet <<= r; }
-    
-    return vRet;
-}
-std::vector<std::string> split(const char* str, const std::vector<std::string>& vSplitter){
-    std::vector<std::string> vRet;
-    
-    std::string r;
-    uint i=0;
-    if(strEq_len(i, &str[i], splitter.c_str(), splitter.size())){
-        vRet <<= splitter;
-        i += splitter.size();
-    }
-    for(; i<str.size() - splitter.size() + 1; ++i){
-        if(strEq_len(i, &str[i], splitter.c_str(), splitter.size())){
-            vRet <<= r; r.clear();
-            vRet <<= splitter;
-            i += splitter.size() - 1; // minus 1, because of the end of for-loop ++i
-        }else{
-            r += str[i];
-        }
-    }
-    for(; i<str.size(); ++i){ r += str[i]; }
-    if(r.size()!=0){ vRet <<= r; }
-    
-    return vRet;
-}
-struct cpm::verRange cpm::str2verStruct(const std::string& verStr){
-    sstd::printn(verStr);
-    
-//    std::vector<std::string> v = split(verStr, {"==", "<=", ">=", "<", ">"});
-    std::vector<std::string> v = split(verStr, std::string("<="));
-    sstd::printn(v);
-    
-    
-    struct cpm::verRange vr;
-    
-
-
-
-    
-    return vr;
-}
-*/
-
-
 
 bool strMatch_chars(const char c, const char* cs, const uint cs_len){
     bool ret = false;
@@ -271,31 +198,6 @@ int cpm::cmpVer(const struct cpm::vis& lhs, const struct cpm::vis& rhs){
     return -1;
 }
 
-/*
-uint gotoEnd_of_LTLG(bool& l_used, bool& r_used, const std::vector<T_pair>& vVC, const uint begin_idx){
-    uint i_end;
-    uint i=begin_idx;
-    for(; i<vVC.size(); ++i){
-        if(vVC[i].first.is!=CPM_LT && vVC[i].first.is!=CPM_LE){ break; }
-        l_used = (vVC[i].second=='l');
-        r_used = (vVC[i].second=='r');
-    }
-    i_end = i;
-    return i_end;
-}
-int gotoBegin_of_GTGE(bool& l_used, bool& r_used, const std::vector<T_pair>& vVC, const uint end_idx){
-    int i_begin;
-    int i=end_idx;
-    for(; i>=0; --i){
-        if(vVC[i].first.is!=CPM_GT && vVC[i].first.is!=CPM_GE){ break; }
-        l_used = (vVC[i].second=='l');
-        r_used = (vVC[i].second=='r');
-    }
-    i_begin = i+1;
-    return i_begin;
-}
-*/
-
 
 #define T_pair std::pair<struct cpm::vis,struct cpm::vis>
 
@@ -361,14 +263,6 @@ std::vector<struct cpm::vis> cpm::visAND(bool& ret_TF, const T_pair& l, const T_
     std::vector<struct cpm::vis> ret;
     if(l.first.is==CPM_NULL || l.second.is==CPM_NULL || r.first.is==CPM_NULL || r.second.is==CPM_NULL){ ret_TF=false; return ret; }
     if(l.first.ver.size()==0 || l.second.ver.size()==0 || r.first.ver.size()==0 || r.second.ver.size()==0){ ret_TF=false; return ret; }
-    /*
-    cpm::print(l.first);
-    cpm::print(r.first);
-    sstd::printn(cmpVer(l.first, r.first));
-    cpm::print(l.second);
-    cpm::print(r.second);
-    sstd::printn(cmpVer(l.second, r.second));
-    */
     
     // ll: l.first
     // lr: l.second
@@ -478,41 +372,25 @@ std::vector<struct cpm::vis> cpm::visAND(bool& ret_TF, const T_pair& l, const T_
     return ret;
 }
 std::vector<struct cpm::vis> cpm::visAND(const std::vector<struct cpm::vis>& vLhs_in, const std::vector<struct cpm::vis>& vRhs_in){
-    printf("begin visAND\n");
-    printf("---\n"); 
-    for(auto l: vLhs_in){ printf("print: vL\n"); cpm::print(l); }
-    for(auto r: vRhs_in){ printf("print: vR\n"); cpm::print(r); }
+    
     std::vector<struct vis> vLhs=vLhs_in;
     std::vector<struct vis> vRhs=vRhs_in;
     std::sort(vLhs.begin(), vLhs.end());
     std::sort(vRhs.begin(), vRhs.end());
-
-    printf("---\n"); 
+    
     bool tf;
     std::vector<T_pair> vL = split_by_range(tf, vLhs);
     std::vector<T_pair> vR = split_by_range(tf, vRhs);
-    for(auto l: vL){ printf("print: vL\n"); cpm::print(l.first); cpm::print(l.second); }
-    for(auto r: vR){ printf("print: vR\n"); cpm::print(r.first); cpm::print(r.second); }
-    printf("---\n"); 
     
     std::vector<struct cpm::vis> ret;
     for(uint li=0; li<vL.size(); ++li){
         for(uint ri=0; ri<vR.size(); ++ri){
-            sstd::printn(li);
-            sstd::printn(ri);
-            cpm::print(vL[li].first);
-            cpm::print(vL[li].second);
-            cpm::print(vR[ri].first);
-            cpm::print(vR[ri].second);
             bool tf;
             std::vector<struct cpm::vis> r = visAND(tf, vL[li], vR[ri]);
-            cpm::print(r);
             ret <<= r;
         }
     }
-    printf("---\n"); 
     
-    printf("end visAND\n");
     return ret;
 }
 

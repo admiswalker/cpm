@@ -2,43 +2,43 @@
 #include <sstd/sstd.hpp>
 
 
-#define T_pair std::pair<struct vis,struct vis>
+#define T_verLR std::pair<struct ver,struct ver>
 
 namespace cpm{
-    struct vis{ // version inequality-sign
-        uchar is=0; // inequality-sign
+    struct ver{ // version inequality-sign
+        uchar ineq=0; // inequality-sign
         std::string ver;
     };
     // version の ver とかの方がまだわかる．
-    bool operator==(const struct vis& lhs, const struct vis& rhs);
-    bool operator<(const struct vis& lhs, const struct vis& rhs);
+    bool operator==(const struct ver& lhs, const struct ver& rhs);
+    bool operator<(const struct ver& lhs, const struct ver& rhs);
     
     uchar str2is(bool& ret, const std::string& ra);
     std::string is2str(const uchar& is);
     
-    struct vis str2vis(const        char* pStr);
-    struct vis str2vis(const std::string&  str);
+    struct ver str2ver(const        char* pStr);
+    struct ver str2ver(const std::string&  str);
     
-    std::vector<struct vis> split_visNE(const struct vis& vis);
+    std::vector<struct ver> split_verNE(const struct ver& ver);
     
     int cmpVer(const std::string& lhs, const std::string& rhs);
-    int cmpVer(const struct vis& lhs, const struct vis& rhs);
+    int cmpVer(const struct ver& lhs, const struct ver& rhs);
     
-    void rm_same_vis(std::vector<struct vis>& v);
+    void rm_same_ver(std::vector<struct ver>& v);
     
-    std::vector<T_pair> split_by_range(bool& ret_TF, const std::vector<struct vis>& vLhs);
-    std::vector<struct vis> visAND(bool& ret_TF, const T_pair& l, const T_pair& r);
-    std::vector<struct vis> visAND(const std::vector<struct vis>& vLhs, const std::vector<struct vis>& vRhs);
+    std::vector<T_verLR> split_by_range(bool& ret_TF, const std::vector<struct ver>& vLhs);
+    std::vector<struct ver> verAND(bool& ret_TF, const T_verLR& l, const T_verLR& r);
+    std::vector<struct ver> verAND(const std::vector<struct ver>& vLhs, const std::vector<struct ver>& vRhs);
     // 関数名: verAND とかの方がまだわかる．
 
-    void print(const struct vis& vis);
-    void print(const std::vector<struct vis>& v);
+    void print(const struct ver& ver);
+    void print(const std::vector<struct ver>& v);
 }
 
-#undef T_pair
+#undef T_verLR
 
 
 // change name candidates:
 // - strcut cpm::vis -> struct cpm::ver, .ver -> .verStr (version string), .is -> .isignNum
-// - T_pair -> verRange
+// - T_pair -> T_verLR
 // - visAND -> verAND

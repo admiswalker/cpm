@@ -8,25 +8,25 @@
 #define CPM_GT 5   // >= : greater than
 #define CPM_NE 6   // != : not equal to
 
-#define T_pair std::pair<struct cpm::vis,struct cpm::vis>
+#define T_verLR std::pair<struct cpm::ver,struct cpm::ver>
 
 
-bool cpm::operator==(const struct cpm::vis& lhs, const struct cpm::vis& rhs){
-    return (lhs.is==rhs.is) && (lhs.ver==rhs.ver);
+bool cpm::operator==(const struct cpm::ver& lhs, const struct cpm::ver& rhs){
+    return (lhs.ineq==rhs.ineq) && (lhs.ver==rhs.ver);
 }
-bool cpm::operator<(const struct cpm::vis& lhs, const struct cpm::vis& rhs){
+bool cpm::operator<(const struct cpm::ver& lhs, const struct cpm::ver& rhs){
     return cmpVer(lhs, rhs) < 0;
 }
 
 
-void print_owN(const struct cpm::vis& vis){
-    printf("is: %s, ver: %s", cpm::is2str(vis.is).c_str(), vis.ver.c_str());
+void print_owN(const struct cpm::ver& lhs){
+    printf("is: %s, ver: %s", cpm::is2str(lhs.ineq).c_str(), lhs.ver.c_str());
 }
-void cpm::print(const struct cpm::vis& vis){
-    print_owN(vis);
+void cpm::print(const struct cpm::ver& lhs){
+    print_owN(lhs);
     printf("\n");
 }
-void cpm::print(const std::vector<struct cpm::vis>& v){
+void cpm::print(const std::vector<struct cpm::ver>& v){
     for(uint i=0; i<v.size(); ++i){
         printf("[ ");
         print_owN(v[i]);
@@ -93,33 +93,33 @@ uchar cpm::str2is(bool& ret, const std::string& ra){
         return 0;
     }
 }
-struct cpm::vis cpm::str2vis(const char* pStr){
+struct cpm::ver cpm::str2ver(const char* pStr){
     std::string s = sstd::stripAll(pStr, " ");
     
     std::string ra  = getWhile_c(s, "<=>!");
     std::string ver = std::string(&s[ra.size()], s.size()-ra.size());
 
     bool ret;
-    uchar ret_is = cpm::str2is(ret, ra); if(!ret){ return cpm::vis(); }
+    uchar ret_is = cpm::str2is(ret, ra); if(!ret){ return cpm::ver(); }
 
-    struct cpm::vis r;
-    r.is = ret_is;
+    struct cpm::ver r;
+    r.ineq = ret_is;
     r.ver = ver;
 
     return r;
 }
-struct cpm::vis cpm::str2vis(const std::string& str){ return cpm::str2vis(str.c_str()); }
+struct cpm::ver cpm::str2ver(const std::string& str){ return cpm::str2ver(str.c_str()); }
 
-std::vector<struct cpm::vis> cpm::split_visNE(const struct cpm::vis& v){
-    struct vis l;
-    l.is  = CPM_LT;
+std::vector<struct cpm::ver> cpm::split_verNE(const struct cpm::ver& v){
+    struct cpm::ver l;
+    l.ineq  = CPM_LT;
     l.ver = v.ver;
     
-    struct vis r;
-    r.is  = CPM_GT;
+    struct cpm::ver r;
+    r.ineq  = CPM_GT;
     r.ver = v.ver;
     
-    return std::vector<struct cpm::vis>({l, r});
+    return std::vector<struct cpm::ver>({l, r});
 }
 int cpm::cmpVer(const std::string& lhs, const std::string& rhs){
     // lhs <  rhs: -1
@@ -165,7 +165,7 @@ int cpm::cmpVer(const std::string& lhs, const std::string& rhs){
     
     return 0; // eq_case02_a, eq_case02_b
 }
-int cpm::cmpVer(const struct cpm::vis& lhs, const struct cpm::vis& rhs){
+int cpm::cmpVer(const struct cpm::ver& lhs, const struct cpm::ver& rhs){
     // lhs <  rhs: -1
     // lhs == rhs:  0
     // lhs >  rhs:  1
@@ -176,44 +176,44 @@ int cpm::cmpVer(const struct cpm::vis& lhs, const struct cpm::vis& rhs){
 
     // c == 0
     // order: <, <=, ==, >=, >
-    if(lhs.is==CPM_LT){
-        if(rhs.is==CPM_LT){ return  0; }
+    if(lhs.ineq==CPM_LT){
+        if(rhs.ineq==CPM_LT){ return  0; }
         return -1;
     }
-    if(lhs.is==CPM_LE){
-        if(rhs.is==CPM_LT){ return  1; }
-        if(rhs.is==CPM_LE){ return  0; }
+    if(lhs.ineq==CPM_LE){
+        if(rhs.ineq==CPM_LT){ return  1; }
+        if(rhs.ineq==CPM_LE){ return  0; }
         return -1;
     }
-    if(lhs.is==CPM_EQ){
-        if(rhs.is==CPM_LT){ return  1; }
-        if(rhs.is==CPM_LE){ return  1; }
-        if(rhs.is==CPM_EQ){ return  0; }
+    if(lhs.ineq==CPM_EQ){
+        if(rhs.ineq==CPM_LT){ return  1; }
+        if(rhs.ineq==CPM_LE){ return  1; }
+        if(rhs.ineq==CPM_EQ){ return  0; }
         return -1;
     }
-    if(lhs.is==CPM_GE){
-        if(rhs.is==CPM_LT){ return  1; }
-        if(rhs.is==CPM_LE){ return  1; }
-        if(rhs.is==CPM_EQ){ return  1; }
-        if(rhs.is==CPM_GE){ return  0; }
+    if(lhs.ineq==CPM_GE){
+        if(rhs.ineq==CPM_LT){ return  1; }
+        if(rhs.ineq==CPM_LE){ return  1; }
+        if(rhs.ineq==CPM_EQ){ return  1; }
+        if(rhs.ineq==CPM_GE){ return  0; }
         return -1;
     }
-    if(lhs.is==CPM_GT){
-        if(rhs.is==CPM_GT){ return  0; }
+    if(lhs.ineq==CPM_GT){
+        if(rhs.ineq==CPM_GT){ return  0; }
         return  1;
     }
     
-    sstd::pdbg("ERROR: lhs.is has unexpected value: %d.\n", lhs.is);
+    sstd::pdbg("ERROR: lhs.ineq has unexpected value: %d.\n", lhs.ineq);
     return -1;
 }
-void cpm::rm_same_vis(std::vector<struct vis>& v){
+void cpm::rm_same_ver(std::vector<struct cpm::ver>& v){
     // --- NOTE: Needs to input sorted value ---
     
     int vi=0;
     int i=0;
     if(v.size()<=1){ return; }
     for(; i<(int)v.size()-1;){
-        if(v[i].is==v[i+1].is && v[i].ver==v[i+1].ver){ ++i; }
+        if(v[i].ineq==v[i+1].ineq && v[i].ver==v[i+1].ver){ ++i; }
         v[vi] = v[i]; ++vi; ++i;
     }
     if(i<(int)v.size()){
@@ -222,20 +222,20 @@ void cpm::rm_same_vis(std::vector<struct vis>& v){
     
     v.resize(vi);
 }
-std::vector<T_pair> cpm::split_by_range(bool& ret_TF, const std::vector<struct cpm::vis>& v){
+std::vector<T_verLR> cpm::split_by_range(bool& ret_TF, const std::vector<struct cpm::ver>& v){
     // --- NOTE: Needs to input sorted value ---
     
     ret_TF=true;
-    std::vector<T_pair> vR;
+    std::vector<T_verLR> vR;
 
     // begin: case01a_begin
     if(v.size()==0){ return vR; }
     uint b=0;
-    if(v[b].is==CPM_LT || v[b].is==CPM_LE){
-        T_pair r;
-        r.first.is  =CPM_GT;
+    if(v[b].ineq==CPM_LT || v[b].ineq==CPM_LE){
+        T_verLR r;
+        r.first.ineq  =CPM_GT;
         r.first.ver ="-inf";
-        r.second.is =v[b].is;
+        r.second.ineq =v[b].ineq;
         r.second.ver=v[b].ver;
         vR <<= r;
         ++b;
@@ -243,12 +243,12 @@ std::vector<T_pair> cpm::split_by_range(bool& ret_TF, const std::vector<struct c
 
     // end: case01b_end
     uint e=v.size(); // end
-    T_pair r_end;
+    T_verLR r_end;
     bool TF_pushBack=false;
-    if(v[e-1].is==CPM_GT || v[e-1].is==CPM_GE){
-        r_end.first.is  =v[e-1].is;
+    if(v[e-1].ineq==CPM_GT || v[e-1].ineq==CPM_GE){
+        r_end.first.ineq  =v[e-1].ineq;
         r_end.first.ver =v[e-1].ver;
-        r_end.second.is =CPM_LT;
+        r_end.second.ineq =CPM_LT;
         r_end.second.ver="inf";
         --e;
         TF_pushBack=true;
@@ -256,20 +256,20 @@ std::vector<T_pair> cpm::split_by_range(bool& ret_TF, const std::vector<struct c
 
     // middle: case02_middle01, case02_middle02
     for(uint i=b; i<e; ++i){
-        T_pair r;
-        if(v[i].is==CPM_EQ){
-            r.first.is  =CPM_EQ;
+        T_verLR r;
+        if(v[i].ineq==CPM_EQ){
+            r.first.ineq  =CPM_EQ;
             r.first.ver =v[i].ver;
-            r.second.is =CPM_EQ;
+            r.second.ineq =CPM_EQ;
             r.second.ver=v[i].ver;
         }else{
             if(i+1>=e){ ret_TF=false; sstd::pdbg("ERROR: Unexpected vec size. Inequality-sign is not closed.\n"); return vR; }
-            if(!( (v[i  ].is==CPM_GT || v[i  ].is==CPM_GE) &&
-                  (v[i+1].is==CPM_LT || v[i+1].is==CPM_LE)    )){ ret_TF=false; sstd::pdbg("ERROR: Unexpected inequality-sign. Inequality-sign is not closed.\n"); return vR; }
+            if(!( (v[i  ].ineq==CPM_GT || v[i  ].ineq==CPM_GE) &&
+                  (v[i+1].ineq==CPM_LT || v[i+1].ineq==CPM_LE)    )){ ret_TF=false; sstd::pdbg("ERROR: Unexpected inequality-sign. Inequality-sign is not closed.\n"); return vR; }
             
-            r.first.is  =v[i  ].is;
+            r.first.ineq  =v[i  ].ineq;
             r.first.ver =v[i  ].ver;
-            r.second.is =v[i+1].is;
+            r.second.ineq =v[i+1].ineq;
             r.second.ver=v[i+1].ver;
             ++i;
         }
@@ -279,11 +279,11 @@ std::vector<T_pair> cpm::split_by_range(bool& ret_TF, const std::vector<struct c
     if(TF_pushBack){ vR <<= r_end; }
     return vR;
 }
-std::vector<struct cpm::vis> cpm::visAND(bool& ret_TF, const T_pair& l, const T_pair& r)
+std::vector<struct cpm::ver> cpm::verAND(bool& ret_TF, const T_verLR& l, const T_verLR& r)
 {
     ret_TF=true;
-    std::vector<struct cpm::vis> ret;
-    if(l.first.is==CPM_NULL || l.second.is==CPM_NULL || r.first.is==CPM_NULL || r.second.is==CPM_NULL){ ret_TF=false; return ret; }
+    std::vector<struct cpm::ver> ret;
+    if(l.first.ineq==CPM_NULL || l.second.ineq==CPM_NULL || r.first.ineq==CPM_NULL || r.second.ineq==CPM_NULL){ ret_TF=false; return ret; }
     if(l.first.ver.size()==0 || l.second.ver.size()==0 || r.first.ver.size()==0 || r.second.ver.size()==0){ ret_TF=false; return ret; }
     
     // ll: l.first
@@ -298,8 +298,8 @@ std::vector<struct cpm::vis> cpm::visAND(bool& ret_TF, const T_pair& l, const T_
     if(cmpVer(l.first, r.first)==0){ // ll == rl
         if(cmpVer(l.second, r.second)==0){ // lr == rr
             if(l.first.ver==l.second.ver){ // ll == rr
-                struct cpm::vis r;
-                r.is  = CPM_EQ;
+                struct cpm::ver r;
+                r.ineq  = CPM_EQ;
                 r.ver = l.first.ver;
                 ret <<= r;
                 return ret;
@@ -308,14 +308,14 @@ std::vector<struct cpm::vis> cpm::visAND(bool& ret_TF, const T_pair& l, const T_
     }
     
     // case02a
-    // lr.is=='<=' && rl.is=='>=' && lr.ver == rl.ver
+    // lr.ineq=='<=' && rl.ineq=='>=' && lr.ver == rl.ver
     // l: ll <---> lr
     // r:          rl <---> rr
     if(l.second.ver == r.first.ver){ // lr.ver == rl.ver
-        if(l.second.is==CPM_LE){ // lr.is=='<='
-            if(r.first.is==CPM_GE){ // rl.is=='>='
-                struct cpm::vis r;
-                r.is  = CPM_EQ;
+        if(l.second.ineq==CPM_LE){ // lr.ineq=='<='
+            if(r.first.ineq==CPM_GE){ // rl.ineq=='>='
+                struct cpm::ver r;
+                r.ineq  = CPM_EQ;
                 r.ver = l.second.ver;
                 ret <<= r;
                 return ret;
@@ -324,14 +324,14 @@ std::vector<struct cpm::vis> cpm::visAND(bool& ret_TF, const T_pair& l, const T_
     }
     
     // case02b
-    // rr.is=='<=' && ll.is=='>=' && rr.ver == ll.ver
+    // rr.ineq=='<=' && ll.ineq=='>=' && rr.ver == ll.ver
     // l:          ll <---> lr
     // r: rl <---> rr
     if(r.second.ver == l.first.ver){ // rr.ver == ll.ver
-        if(r.second.is==CPM_LE){ // rr.is=='<='
-            if(l.first.is==CPM_GE){ // ll.is=='>='
-                struct cpm::vis r;
-                r.is  = CPM_EQ;
+        if(r.second.ineq==CPM_LE){ // rr.ineq=='<='
+            if(l.first.ineq==CPM_GE){ // ll.ineq=='>='
+                struct cpm::ver r;
+                r.ineq  = CPM_EQ;
                 r.ver = l.first.ver;
                 ret <<= r;
                 return ret;
@@ -393,22 +393,22 @@ std::vector<struct cpm::vis> cpm::visAND(bool& ret_TF, const T_pair& l, const T_
     
     return ret;
 }
-std::vector<struct cpm::vis> cpm::visAND(const std::vector<struct cpm::vis>& vLhs_in, const std::vector<struct cpm::vis>& vRhs_in){
-    std::vector<struct cpm::vis> ret;
+std::vector<struct cpm::ver> cpm::verAND(const std::vector<struct cpm::ver>& vLhs_in, const std::vector<struct cpm::ver>& vRhs_in){
+    std::vector<struct cpm::ver> ret;
     
-    std::vector<struct vis> vLhs;
-    std::vector<struct vis> vRhs;
+    std::vector<struct cpm::ver> vLhs;
+    std::vector<struct cpm::ver> vRhs;
     for(uint i=0; i<vLhs_in.size(); ++i){
-        if(vLhs_in[i].is==CPM_NE){
-            std::vector<struct cpm::vis> r = cpm::split_visNE(vLhs_in[i]);
+        if(vLhs_in[i].ineq==CPM_NE){
+            std::vector<struct cpm::ver> r = cpm::split_verNE(vLhs_in[i]);
             vLhs <<= r;
             continue;
         }
         vLhs <<= vLhs_in[i];
     }
     for(uint i=0; i<vRhs_in.size(); ++i){
-        if(vRhs_in[i].is==CPM_NE){
-            std::vector<struct cpm::vis> r = cpm::split_visNE(vRhs_in[i]);
+        if(vRhs_in[i].ineq==CPM_NE){
+            std::vector<struct cpm::ver> r = cpm::split_verNE(vRhs_in[i]);
             vRhs <<= r;
             continue;
         }
@@ -417,17 +417,17 @@ std::vector<struct cpm::vis> cpm::visAND(const std::vector<struct cpm::vis>& vLh
     
     std::sort(vLhs.begin(), vLhs.end());
     std::sort(vRhs.begin(), vRhs.end());
-    cpm::rm_same_vis(vLhs);
-    cpm::rm_same_vis(vRhs);
+    cpm::rm_same_ver(vLhs);
+    cpm::rm_same_ver(vRhs);
     
     bool tf;
-    std::vector<T_pair> vL = cpm::split_by_range(tf, vLhs); if(!tf){ return ret; }
-    std::vector<T_pair> vR = cpm::split_by_range(tf, vRhs); if(!tf){ return ret; }
+    std::vector<T_verLR> vL = cpm::split_by_range(tf, vLhs); if(!tf){ return ret; }
+    std::vector<T_verLR> vR = cpm::split_by_range(tf, vRhs); if(!tf){ return ret; }
     
     for(uint li=0; li<vL.size(); ++li){
         for(uint ri=0; ri<vR.size(); ++ri){
             bool tf;
-            std::vector<struct cpm::vis> r = cpm::visAND(tf, vL[li], vR[ri]); if(!tf){ return std::vector<struct cpm::vis>(); }
+            std::vector<struct cpm::ver> r = cpm::verAND(tf, vL[li], vR[ri]); if(!tf){ return std::vector<struct cpm::ver>(); }
             ret <<= r;
         }
     }
@@ -435,7 +435,7 @@ std::vector<struct cpm::vis> cpm::visAND(const std::vector<struct cpm::vis>& vLh
     return ret;
 }
 
-#undef T_pair
+#undef T_verLR
 
 
 #undef CPM_NE

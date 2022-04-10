@@ -9,7 +9,6 @@ namespace cpm{
         uchar ineq=0; // inequality-sign
         std::string ver;
     };
-    // version の ver とかの方がまだわかる．
     bool operator==(const struct ver& lhs, const struct ver& rhs);
     bool operator<(const struct ver& lhs, const struct ver& rhs);
     
@@ -29,16 +28,9 @@ namespace cpm{
     std::vector<T_verLR> split_by_range(bool& ret_TF, const std::vector<struct ver>& vLhs);
     std::vector<struct ver> verAND(bool& ret_TF, const T_verLR& l, const T_verLR& r);
     std::vector<struct ver> verAND(const std::vector<struct ver>& vLhs, const std::vector<struct ver>& vRhs);
-    // 関数名: verAND とかの方がまだわかる．
 
     void print(const struct ver& ver);
     void print(const std::vector<struct ver>& v);
 }
 
 #undef T_verLR
-
-
-// change name candidates:
-// - strcut cpm::vis -> struct cpm::ver, .ver -> .verStr (version string), .is -> .isignNum
-// - T_pair -> T_verLR
-// - visAND -> verAND

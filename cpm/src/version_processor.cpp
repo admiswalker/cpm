@@ -10,7 +10,6 @@
 
 #define T_verLR std::pair<struct cpm::ver,struct cpm::ver>
 
-
 bool cpm::operator==(const struct cpm::ver& lhs, const struct cpm::ver& rhs){
     return (lhs.ineq==rhs.ineq) && (lhs.ver==rhs.ver);
 }
@@ -18,22 +17,25 @@ bool cpm::operator<(const struct cpm::ver& lhs, const struct cpm::ver& rhs){
     return cmpVer(lhs, rhs) < 0;
 }
 
-
-void print_owN(const struct cpm::ver& lhs){
-    printf("is: %s, ver: %s", cpm::is2str(lhs.ineq).c_str(), lhs.ver.c_str());
+std::string cpm::print_str(const struct cpm::ver& ver){
+    return sstd::ssprintf("ineq: %s, ver: %s", cpm::is2str(ver.ineq).c_str(), ver.ver.c_str());
 }
-void cpm::print(const struct cpm::ver& lhs){
-    print_owN(lhs);
-    printf("\n");
-}
-void cpm::print(const std::vector<struct cpm::ver>& v){
-    for(uint i=0; i<v.size(); ++i){
-        printf("[ ");
-        print_owN(v[i]);
-        printf(" ], ");
+std::string cpm::print_str(const std::vector<struct cpm::ver>& vVer){
+    std::string ret;
+    if(vVer.size()==0){ return ret; }
+    
+    for(int i=0; i<(int)vVer.size()-1; ++i){
+        ret += "[ ";
+        ret += print_str(vVer[i]);
+        ret += " ], ";
     }
-    printf("\n");
+    ret += "[ ";
+    ret += print_str(vVer[vVer.size()-1]);
+    ret += " ]";
+    return ret;
 }
+void cpm::print(const             struct cpm::ver &  ver){ printf("%s\n", cpm::print_str( ver).c_str()); }
+void cpm::print(const std::vector<struct cpm::ver>& vVer){ printf("%s\n", cpm::print_str(vVer).c_str()); }
 
 //-------------
 
@@ -93,13 +95,12 @@ uchar cpm::str2is(bool& ret, const std::string& ra){
         return 0;
     }
 }
-struct cpm::ver cpm::str2ver(const char* pStr){
+struct cpm::ver str2ver_base(bool& ret, const char* pStr){
     std::string s = sstd::stripAll(pStr, " ");
     
     std::string ra  = getWhile_c(s, "<=>!");
     std::string ver = std::string(&s[ra.size()], s.size()-ra.size());
 
-    bool ret;
     uchar ret_is = cpm::str2is(ret, ra); if(!ret){ return cpm::ver(); }
 
     struct cpm::ver r;
@@ -108,7 +109,17 @@ struct cpm::ver cpm::str2ver(const char* pStr){
 
     return r;
 }
-struct cpm::ver cpm::str2ver(const std::string& str){ return cpm::str2ver(str.c_str()); }
+            struct cpm::ver  cpm::str2ver(const                    char * pStr){ bool ret; return str2ver_base(ret, pStr        ); }
+            struct cpm::ver  cpm::str2ver(const             std::string &  str){ bool ret; return str2ver_base(ret,  str.c_str()); }
+std::vector<struct cpm::ver> cpm::str2ver(const std::vector<std::string>& vStr){
+    std::vector<struct cpm::ver> vVer(vStr.size());
+    for(uint i=0; i<vStr.size(); ++i){
+        bool ret;
+        vVer[i] = str2ver_base(ret, vStr[i].c_str());
+        if(!ret){ sstd::pdbg("ERROR: Invalid input: \"%s\". cpm::str2ver() is failed.\n", vStr[i].c_str()); return std::vector<struct cpm::ver>(); }
+    }
+    return vVer;
+}
 
 std::vector<struct cpm::ver> cpm::split_verNE(const struct cpm::ver& v){
     struct cpm::ver l;

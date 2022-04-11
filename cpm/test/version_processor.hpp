@@ -54,6 +54,16 @@ TEST(version_processor, str2ver_case04){
     ASSERT_STREQ(r.ver.c_str(), "inf");
 }
 
+TEST(version_processor, vStr2vVer_case01){
+    std::vector<std::string> vS = {">=1.0.0", "<3.0.0"};
+    std::vector<struct cpm::ver> v = cpm::str2ver(vS);
+    struct cpm::ver e1_ans = cpm::str2ver(">=1.0.0");
+    struct cpm::ver e2_ans = cpm::str2ver("<3.0.0");
+    ASSERT_EQ(v.size(), (uint)2);
+    ASSERT_TRUE(v[0]==e1_ans);
+    ASSERT_TRUE(v[1]==e2_ans);
+}
+
 TEST(version_processor, split_verNE){
     struct cpm::ver v;
     v.ineq  = CPM_NE;
@@ -65,6 +75,26 @@ TEST(version_processor, split_verNE){
     ASSERT_STREQ(v_ver[0].ver.c_str(), "1.0.0");
     ASSERT_TRUE(cpm::is2str(v_ver[1].ineq) == ">");
     ASSERT_STREQ(v_ver[1].ver.c_str(), "1.0.0");
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------
+
+TEST(version_processor, print_scalar){
+    struct cpm::ver v1 = cpm::str2ver(">=1.0.0");
+    struct cpm::ver v2 = cpm::str2ver("<3.0.0");
+    
+    std::string r1 = cpm::print_str(v1);
+    ASSERT_STREQ(r1.c_str(), "ineq: >=, ver: 1.0.0");
+    
+    std::string r2 = cpm::print_str(v2);
+    ASSERT_STREQ(r2.c_str(), "ineq: <, ver: 3.0.0");
+}
+TEST(version_processor, print_vector){
+    std::vector<std::string> vS = {">=1.0.0", "<3.0.0"};
+    std::vector<struct cpm::ver> v = cpm::str2ver(vS);
+    
+    std::string r = cpm::print_str(v);
+    ASSERT_STREQ(r.c_str(), "[ ineq: >=, ver: 1.0.0 ], [ ineq: <, ver: 3.0.0 ]");
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------

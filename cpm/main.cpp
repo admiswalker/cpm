@@ -380,7 +380,8 @@ struct install_cmd{
     
     std::string architecture;
     std::string libName;
-    std::string ver;
+//    std::string ver;
+    std::vector<cpm::ver> vVer;
     
     std::vector<std::string> vDep; // dependencies
 };
@@ -440,13 +441,15 @@ std::unordered_map<std::string, struct install_cmd> packageTxt2instGraph(bool& r
             ic.install_mode = install_mode;
             ic.architecture = architecture;
             ic.libName      = line[0];
-            ic.ver          = line[1];
+            ic.vVer         = cpm::str2ver( line && sstd::slice(1, sstd::end()) );
             
             // ライブラリを table に追加する
             auto itr = ret_table_vPkg.find( ic.libName );
             if(itr!=ret_table_vPkg.end()){
-                // solve the range of version
-                ;
+                std::vector<cpm::ver> tmp = cpm::verAND(ic.vVer, itr->second.vVer); // solve the range of version
+                if(itr->second.vVer.size()==0){
+                    sstd::pdbg("ERROR: The lib \"%s\" conflicts version. cpm::verAND() can't get and arithmetic between %s and %s.\n", itr->first.c_str(), cpm::print_str(ic.vVer).c_str(), cpm::print_str(itr->second.vVer).c_str());
+                }
             }
             ret_table_vPkg[ ic.libName ] = ic;
             
@@ -511,7 +514,7 @@ int main(int argc, char *argv[]){
     sstd::cp("cpm/set_env.sh", INST_PATH);
 
     bool ret;
-    std::unordered_map<std::string, struct install_cmd> ret_table_vPkg = packageTxt2instGraph(ret, packages_path); if(!ret){ sstd::pdbg("ERROR: packageTxt2instCmd() is failed."); }
+    std::unordered_map<std::string, struct install_cmd> table_reqPkg = packageTxt2instGraph(ret, packages_path); if(!ret){ sstd::pdbg("ERROR: packageTxt2instCmd() is failed."); }
 //    for(uint i=0; i<ret_table_vPkg.size(); ++i){
         // install here
 //    }

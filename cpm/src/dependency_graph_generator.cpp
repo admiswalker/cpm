@@ -84,16 +84,31 @@ std::unordered_map<std::string, struct cpm::install_cmd> cpm::vLine2instGraph(bo
             std::vector<std::string> ret_vPath;
             std::vector<cpm::ver> ret_vVer;
             cpm::get_available_pkg(ret_vPath, ret_vVer, p.PACKS_DIR, architecture, ic.libName);
-            sstd::printn(ret_vPath);
-            cpm::print(ret_vVer);
+            if(i<0){ sstd::pdbg("ERROR: There is no available \"%s\" library.", ic.libName.c_str()); return std::unordered_map<std::string, struct cpm::install_cmd>(); }
+//            sstd::printn(ret_vPath);
+//            cpm::print(ret_vVer);
+            
+            // 利用可能なパッケージ version と，要求 version の AND を取る
+            std::vector<cpm::ver> vVerAND = cpm::verAND(ic.vVer, ret_vVer);
+            int idx=vVerAND.size()-1;
+            for(; idx>=0; --idx){
+                if(vVerAND[idx].ineq==cpm::CPM_EQ){ break; }
+            }
+            if(idx<0){
+                sstd::pdbg("\nERROR: There is no available \"%s\" library.\n  required: %s\n  available: %s\n", ic.libName.c_str(), cpm::print_str(ic.vVer).c_str(), cpm::print_str(ret_vVer).c_str());
+                return std::unordered_map<std::string, struct cpm::install_cmd>();
+            }
+            std::string latest_ver = vVerAND[vVerAND.size()-1].ver;
+            sstd::printn(latest_ver);
             
             // パッケージの依存関係を取得する
             // 1. read packages_cpm.txt
             struct cpm::pkg pg;
             pg.name = ic.libName;
-//            pg.ver  = ic.vVer[ic.vVer.size()-1].ver;
-//            const std::string packsPkg_dir = cpm::getPath_packsPkgDir(p.PACKS_DIR, pg);
-//            const std::string depPkg_txt = cpm::getTxt_depPkg(packsPkg_dir);
+            pg.ver  = latest_ver;
+            const std::string packsPkg_dir = cpm::getPath_packsPkgDir(p.PACKS_DIR, pg);
+            const std::string depPkg_txt = cpm::getTxt_depPkg(packsPkg_dir);
+            sstd::printn(depPkg_txt);
             // 1. packages_cpm.txt の内容を vLine に追記する．
             
             // 依存グラフの作成

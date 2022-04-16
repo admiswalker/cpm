@@ -42,7 +42,7 @@ bool cpm::get_available_pkg(std::vector<std::string>& ret_vPath, std::vector<cpm
         cv.ver  = sstd::getFileName(ret_vPath[i].c_str());
         ret_vVer <<= cv;
     }
-    sstd::sort(ret_vVer);
+    sstd::sort(ret_vVer, ret_vPath);
     
     return true;
 }

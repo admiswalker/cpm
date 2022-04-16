@@ -3,6 +3,7 @@
 
 
 #include "test/version_processor.hpp"
+#include "test/dependency_graph_generator.hpp"
 
 
 int main(int argc, char *argv[]){

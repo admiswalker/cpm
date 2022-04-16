@@ -80,7 +80,12 @@ std::unordered_map<std::string, struct cpm::install_cmd> cpm::vLine2instGraph(bo
             }
             ret_table_vPkg[ ic.libName ] = ic;
             
-            // パッケージの一覧を取得する
+            // 利用可能なパッケージの一覧を取得する
+            std::vector<std::string> ret_vPath;
+            std::vector<cpm::ver> ret_vVer;
+            cpm::get_available_pkg(ret_vPath, ret_vVer, p.PACKS_DIR, architecture, ic.libName);
+            sstd::printn(ret_vPath);
+            cpm::print(ret_vVer);
             
             // パッケージの依存関係を取得する
             // 1. read packages_cpm.txt

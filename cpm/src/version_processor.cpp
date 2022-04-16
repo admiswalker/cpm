@@ -1,14 +1,15 @@
 #include "version_processor.hpp"
 
-#define CPM_NULL 0 // initial value
-#define CPM_LT 1   // <  : less than
-#define CPM_LE 2   // <= : less than or equal to
-#define CPM_EQ 3   // == : equal to
-#define CPM_GE 4   // >= : greater than or equal to
-#define CPM_GT 5   // >= : greater than
-#define CPM_NE 6   // != : not equal to
 
 #define T_verLR std::pair<struct cpm::ver,struct cpm::ver>
+
+extern const uchar cpm::CPM_NULL = 0; // initial value
+extern const uchar cpm::CPM_LT = 1;   // <  : less than
+extern const uchar cpm::CPM_LE = 2;   // <= : less than or equal to
+extern const uchar cpm::CPM_EQ = 3;   // == : equal to
+extern const uchar cpm::CPM_GE = 4;   // >= : greater than or equal to
+extern const uchar cpm::CPM_GT = 5;   // >= : greater than
+extern const uchar cpm::CPM_NE = 6;   // != : not equal to
 
 bool cpm::operator==(const struct cpm::ver& lhs, const struct cpm::ver& rhs){
     return (lhs.ineq==rhs.ineq) && (lhs.ver==rhs.ver);
@@ -142,6 +143,9 @@ int cpm::cmpVer(const std::string& lhs, const std::string& rhs){
     if(lhs== "inf"){ return  1; }
     if(rhs=="-inf"){ return  1; }
     if(rhs== "inf"){ return -1; }
+    
+    if(lhs=="latest"){ return  1; }
+    if(rhs=="latest"){ return -1; }
     
     std::vector<std::string> vL = sstd::split(lhs, '.');
     std::vector<std::string> vR = sstd::split(rhs, '.');
@@ -447,12 +451,3 @@ std::vector<struct cpm::ver> cpm::verAND(const std::vector<struct cpm::ver>& vLh
 }
 
 #undef T_verLR
-
-
-#undef CPM_NE
-#undef CPM_GT
-#undef CPM_GE
-#undef CPM_EQ
-#undef CPM_LE
-#undef CPM_LT
-#undef CPM_NULL

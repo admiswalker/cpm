@@ -1,6 +1,8 @@
 #pragma once
 #include <sstd/sstd.hpp>
 
+#include "version_processor.hpp"
+
 
 namespace cpm{
     extern const std::string baseDir_default;
@@ -50,4 +52,6 @@ namespace cpm{
     std::string getTxt_depPkg(const std::string& packsPkg_dir);
     
     //---
+    
+    bool get_available_pkg(std::vector<std::string>& ret_vPath, std::vector<cpm::ver>& ret_vVer, const std::string& PACKS_DIR, const std::string& architecture, const std::string& libName);
 }

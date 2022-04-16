@@ -1,15 +1,6 @@
 #pragma once
 #include "../src/version_processor.hpp"
 
-#define CPM_NULL 0 // initial value
-#define CPM_LT 1   // <  : less than
-#define CPM_LE 2   // <= : less than or equal to
-#define CPM_EQ 3   // == : equal to
-#define CPM_GE 4   // >= : greater than or equal to
-#define CPM_GT 5   // >= : greater than
-#define CPM_NE 6   // != : not equal to
-
-
 //sstd, >=0.0.0, <=2.0.1;
 
 //sstd, <=2.0.1;
@@ -25,7 +16,7 @@
 TEST(version_processor, str2ver_case00){
     std::string s = "";
     struct cpm::ver r1 = cpm::str2ver(s);
-    ASSERT_EQ(r1.ineq, CPM_NULL);
+    ASSERT_EQ(r1.ineq, cpm::CPM_NULL);
     std::string r2=cpm::is2str(r1.ineq);
     ASSERT_STREQ(r2.c_str(), "");
 }
@@ -66,7 +57,7 @@ TEST(version_processor, vStr2vVer_case01){
 
 TEST(version_processor, split_verNE){
     struct cpm::ver v;
-    v.ineq  = CPM_NE;
+    v.ineq  = cpm::CPM_NE;
     v.ver = "1.0.0";
     
     std::vector<struct cpm::ver> v_ver = cpm::split_verNE(v);
@@ -328,6 +319,65 @@ TEST(version_processor, sort_case04_04){
     
     struct cpm::ver e1_ans = cpm::str2ver(">0.1.0");
     struct cpm::ver e2_ans = cpm::str2ver(">0.1.0");
+    ASSERT_EQ(v.size(), (uint)2);
+    ASSERT_TRUE(v[0]==e1_ans);
+    ASSERT_TRUE(v[1]==e2_ans);
+}
+
+//---
+
+TEST(version_processor, sort_caseLatest_01a){
+    std::vector<struct cpm::ver> v;
+    struct cpm::ver e1 = cpm::str2ver("==0.1.0");
+    struct cpm::ver e2 = cpm::str2ver("==latest");
+    v = {e1, e2};
+    
+    std::sort(v.begin(), v.end());
+    
+    struct cpm::ver e1_ans = cpm::str2ver("==0.1.0");
+    struct cpm::ver e2_ans = cpm::str2ver("==latest");
+    ASSERT_EQ(v.size(), (uint)2);
+    ASSERT_TRUE(v[0]==e1_ans);
+    ASSERT_TRUE(v[1]==e2_ans);
+}
+TEST(version_processor, sort_caseLatest_01b){
+    std::vector<struct cpm::ver> v;
+    struct cpm::ver e1 = cpm::str2ver("==latest");
+    struct cpm::ver e2 = cpm::str2ver("==0.1.0");
+    v = {e1, e2};
+    
+    std::sort(v.begin(), v.end());
+    
+    struct cpm::ver e1_ans = cpm::str2ver("==0.1.0");
+    struct cpm::ver e2_ans = cpm::str2ver("==latest");
+    ASSERT_EQ(v.size(), (uint)2);
+    ASSERT_TRUE(v[0]==e1_ans);
+    ASSERT_TRUE(v[1]==e2_ans);
+}
+TEST(version_processor, sort_caseLatest_02a){
+    std::vector<struct cpm::ver> v;
+    struct cpm::ver e1 = cpm::str2ver("==9999999.1.0"); // a string "9999999" is longer than "latest"
+    struct cpm::ver e2 = cpm::str2ver("==latest");
+    v = {e1, e2};
+    
+    std::sort(v.begin(), v.end());
+    
+    struct cpm::ver e1_ans = cpm::str2ver("==9999999.1.0"); // a string "9999999" is longer than "latest"
+    struct cpm::ver e2_ans = cpm::str2ver("==latest");
+    ASSERT_EQ(v.size(), (uint)2);
+    ASSERT_TRUE(v[0]==e1_ans);
+    ASSERT_TRUE(v[1]==e2_ans);
+}
+TEST(version_processor, sort_caseLatest_02b){
+    std::vector<struct cpm::ver> v;
+    struct cpm::ver e1 = cpm::str2ver("==latest");
+    struct cpm::ver e2 = cpm::str2ver("==9999999.1.0"); // a string "9999999" is longer than "latest"
+    v = {e1, e2};
+    
+    std::sort(v.begin(), v.end());
+    
+    struct cpm::ver e1_ans = cpm::str2ver("==9999999.1.0"); // a string "9999999" is longer than "latest"
+    struct cpm::ver e2_ans = cpm::str2ver("==latest");
     ASSERT_EQ(v.size(), (uint)2);
     ASSERT_TRUE(v[0]==e1_ans);
     ASSERT_TRUE(v[1]==e2_ans);
@@ -1748,11 +1798,3 @@ TEST(version_processor, verAND_check_input_error){
 */
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------
-
-#undef CPM_NE
-#undef CPM_GT
-#undef CPM_GE
-#undef CPM_EQ
-#undef CPM_LE
-#undef CPM_LT
-#undef CPM_NULL

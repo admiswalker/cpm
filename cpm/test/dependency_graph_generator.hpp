@@ -54,12 +54,13 @@ TEST(vLine2instGraph, example_test02){
     class cpm::PATH p(cpm::baseDir_default);
     std::unordered_map<std::string, struct cpm::install_cmd> table_reqPkg = cpm::vLine2instGraph(ret, p, vLine);
     if(!ret){ sstd::pdbg("ERROR: packageTxt2instCmd() is failed."); }
-
+    /*
     for(auto pkg: table_reqPkg){
         sstd::printn(pkg.first);
         cpm::print(pkg.second);
         printf("\n");
     }
+    */
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------

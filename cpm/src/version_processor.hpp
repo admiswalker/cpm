@@ -1,10 +1,17 @@
 #pragma once
 #include <sstd/sstd.hpp>
 
-
 #define T_verLR std::pair<struct ver,struct ver>
 
 namespace cpm{
+    extern const uchar CPM_NULL; // initial value
+    extern const uchar CPM_LT;   // <  : less than
+    extern const uchar CPM_LE;   // <= : less than or equal to
+    extern const uchar CPM_EQ;   // == : equal to
+    extern const uchar CPM_GE;   // >= : greater than or equal to
+    extern const uchar CPM_GT;   // >= : greater than
+    extern const uchar CPM_NE;   // != : not equal to
+    
     struct ver{ // version inequality-sign
         uchar ineq=0; // inequality-sign
         std::string ver;

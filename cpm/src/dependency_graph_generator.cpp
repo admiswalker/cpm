@@ -13,6 +13,14 @@ void cpm::print(struct install_cmd& lhs){
     printf("]\n");
 }
 
+sstd::vvec<std::string> cpm::packagesTxt2vLine(const std::string& packages_path){
+    sstd::vec<std::string> vLine = sstd::getCommandList( packages_path );
+    sstd::vvec<std::string> vvLine;
+    for(uint i=0; i<vLine.size(); ++i){
+        vvLine <<= sstd::splitByComma( vLine[i] );
+    }
+    return vvLine;
+}
 std::unordered_map<std::string, struct cpm::install_cmd> cpm::vLine2instGraph(bool& ret_tf, class cpm::PATH& p, const sstd::vvec<std::string>& vLine){
     std::unordered_map<std::string, struct cpm::install_cmd> ret_table_vPkg; // a package list including dependency graph.
     ret_tf=true;
@@ -106,10 +114,13 @@ std::unordered_map<std::string, struct cpm::install_cmd> cpm::vLine2instGraph(bo
             struct cpm::pkg pg;
             pg.name = ic.libName;
             pg.ver  = latest_ver;
-            const std::string packsPkg_dir = cpm::getPath_packsPkgDir(p.PACKS_DIR, pg);
+            const std::string packsPkg_dir = cpm::getPath_packsPkgDir(p.PACKS_DIR, architecture, pg);
             const std::string depPkg_txt = cpm::getTxt_depPkg(packsPkg_dir);
             sstd::printn(depPkg_txt);
             // 1. packages_cpm.txt の内容を vLine に追記する．
+            sstd::vvec<std::string> vLine_dep = cpm::packagesTxt2vLine(depPkg_txt);
+            sstd::printn(vLine_dep);
+            printf("\n");
             
             // 依存グラフの作成
         }

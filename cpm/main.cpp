@@ -30,6 +30,7 @@ void sstd::for_printn(const struct cpm::pkg& rhs){ printf(" = "); sstd::print(rh
 #include <sstd/sstd.hpp> // include after "sstd::print_for_vT"
 #include <unordered_map>
 #include "src/definition.hpp"
+#include "src/dependency_graph_generator.hpp"
 #include "src/version_processor.hpp"
 
 
@@ -84,7 +85,7 @@ std::vector<struct cpm::pkg> vPkgList2vPkg(bool& ret, const sstd::vvec<std::stri
         if(vPkgList[i].size() != 2){ sstd::pdbg("ERROR: vPkgList[i].size() != 2.\n"); ret=false; return v_pkg_ret; }
         
         struct cpm::pkg r; if(!str2struct_pkg(r, vPkgList[i][0], vPkgList[i][1])){ ret=false; return v_pkg_ret; }
-//        std::string depPkg_txt = getTxt_depPkg( cpm::getPath_packsPkgDir(PACKS_DIR, p) );
+//        std::string depPkg_txt = getTxt_depPkg( cpm::getPath_packsPkgDir(PACKS_DIR, architecture, p) );
         v_pkg_ret <<= r;
     }
     return v_pkg_ret;
@@ -193,7 +194,7 @@ bool install_libs(const std::string& CACHE_DIR,
             if(sstd::fileExist(archive_baseName+'.'+archive_ext)){ continue; }
         }
         
-        std::string packsPkg_dir = cpm::getPath_packsPkgDir(PACKS_DIR, p);
+        std::string packsPkg_dir = cpm::getPath_packsPkgDir(PACKS_DIR, architecture, p);
         bool TF_useArchive = sstd::isFile(cpm::getSh_dlAcv(packsPkg_dir)) && (install_mode != cpm::cmd_INSTALL_MODE_source);
         
         std::string cachePkg_dir = (TF_useArchive ? cpm::getPath_cachePkgDir_acv(CACHE_DIR, architecture, p):cpm::getPath_cachePkgDir_src(CACHE_DIR, architecture, p));
@@ -292,17 +293,6 @@ bool install_libs(const std::string& CACHE_DIR,
     
     return true;
 }
-sstd::vvec<std::string> packagesTxt2vLine(const std::string& packages_path){
-    sstd::vec<std::string> vLine = sstd::getCommandList( packages_path );
-    sstd::vvec<std::string> vvLine;
-    for(uint i=0; i<vLine.size(); ++i){
-        vvLine <<= sstd::splitByComma( vLine[i] );
-    }
-    return vvLine;
-}
-sstd::vvec<std::string> read_packages_path(const std::string& packages_path){
-    return packagesTxt2vLine(packages_path);
-}
 sstd::vec<sstd::vvec<std::string>> split_pksList_by_scope(const sstd::vvec<std::string>& vvLine, const std::vector<std::string>& splitList){
     std::unordered_map<std::string, char> sTable;
     for(uint i=0; i<splitList.size(); ++i){
@@ -376,7 +366,7 @@ int main(int argc, char *argv[]){
     sstd::cp("cpm/set_env.sh", INST_PATH);
     
 //    bool ret;
-//    sstd::vvec<std::string> vLine = packagesTxt2vLine( packages_path );
+//    sstd::vvec<std::string> vLine = cpm::packagesTxt2vLine( packages_path );
 //    std::unordered_map<std::string, struct install_cmd> table_reqPkg = cpm::vLine2instGraph(ret, vLine); if(!ret){ sstd::pdbg("ERROR: packageTxt2instCmd() is failed."); }
 //    std::unordered_map<std::string, struct install_cmd> table_reqPkg = packageTxt2instGraph(ret, packages_path); if(!ret){ sstd::pdbg("ERROR: packageTxt2instCmd() is failed."); }
 //    for(uint i=0; i<ret_table_vPkg.size(); ++i){
@@ -390,7 +380,7 @@ int main(int argc, char *argv[]){
     std::string install_mode="auto"; // , "source" or "archive"
     std::unordered_map<std::string, std::vector<struct cpm::pkg>> table_vPkg;
     sstd::vec<std::string> v_build_env;
-    sstd::vvec<std::string> vvLine = read_packages_path( packages_path );
+    sstd::vvec<std::string> vvLine = cpm::packagesTxt2vLine( packages_path );
     sstd::vec<sstd::vvec<std::string>> v_vvLine = split_pksList_by_scope(vvLine, {cpm::cmd_ARCHITECTURE, cpm::cmd_BUILD_ENV, cpm::cmd_IMPORT, cpm::cmd_INSTALL_MODE});
     for(uint n=0; n<v_vvLine.size(); ++n){
         uint l=0;
@@ -462,7 +452,7 @@ int main(int argc, char *argv[]){
         bool ret=true;
         std::vector<struct cpm::pkg> v_pkg_requested = vPkgList2vPkg(ret, vPkgList); if(!ret){ return -1; }
         std::vector<struct cpm::pkg> v_inst_pkg      = solve_dependencies(ret, v_pkg_requested, table_vPkg); if(!ret){ return -1; }
-        install_libs(CACHE_DIR, BUILD_DIR, INST_PATH, INST_WDIR, v_build_env, architecture, PACKS_DIR+'/'+architecture, v_inst_pkg, TF_genArchive, ACV_DIR, archive_ext, TF_dl_dps2cache_only, install_mode);
+        install_libs(CACHE_DIR, BUILD_DIR, INST_PATH, INST_WDIR, v_build_env, architecture, PACKS_DIR, v_inst_pkg, TF_genArchive, ACV_DIR, archive_ext, TF_dl_dps2cache_only, install_mode);
     }
 
     printf("\n");

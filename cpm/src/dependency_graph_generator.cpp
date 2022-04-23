@@ -13,15 +13,21 @@ void cpm::print(struct install_cmd& lhs){
     printf("]\n");
 }
 
-sstd::vvec<std::string> cpm::packagesTxt2vLine(const std::string& packages_path){
+bool cpm::packagesTxt2vLine(std::vector<uint>& vLineNum, sstd::vvec<std::string>& vvLine, const std::string& packages_path){
+    
+    bool ret = sstd::txt2vCmdList(vLineNum, vvLine, packages_path);
+    
+    return ret;
+    /*
     sstd::vec<std::string> vLine = sstd::getCommandList( packages_path );
     sstd::vvec<std::string> vvLine;
     for(uint i=0; i<vLine.size(); ++i){
         vvLine <<= sstd::splitByComma( vLine[i] );
     }
     return vvLine;
+    */
 }
-std::unordered_map<std::string, struct cpm::install_cmd> cpm::vLine2instGraph(bool& ret_tf, class cpm::PATH& p, const sstd::vvec<std::string>& vLine){
+std::unordered_map<std::string, struct cpm::install_cmd> cpm::vLine2instGraph(bool& ret_tf, class cpm::PATH& p, const sstd::vvec<std::string>& vLine_in){
     std::unordered_map<std::string, struct cpm::install_cmd> ret_table_vPkg; // a package list including dependency graph.
     ret_tf=true;
     
@@ -32,6 +38,8 @@ std::unordered_map<std::string, struct cpm::install_cmd> cpm::vLine2instGraph(bo
     std::string import_libName;
     std::string import_ver;
     std::string import_URL;
+
+    sstd::vvec<std::string> vLine = vLine_in;
     
     for(uint i=0; i<vLine.size(); ++i){
         const std::vector<std::string>& line = vLine[i];
@@ -81,7 +89,11 @@ std::unordered_map<std::string, struct cpm::install_cmd> cpm::vLine2instGraph(bo
             // ライブラリを table に追加する
             auto itr = ret_table_vPkg.find( ic.libName );
             if(itr!=ret_table_vPkg.end()){
-                std::vector<cpm::ver> tmp = cpm::verAND(ic.vVer, itr->second.vVer); // solve the range of version
+                printf("00\n");
+                cpm::print(ic.vVer);
+                cpm::print(itr->second.vVer);
+                bool tf;
+                std::vector<cpm::ver> tmp = cpm::verAND(tf, ic.vVer, itr->second.vVer); // solve the range of version
                 if(itr->second.vVer.size()==0){
                     sstd::pdbg("ERROR: The lib \"%s\" is required conflicting version. cpm::verAND() can't get version between %s and %s.\n", itr->first.c_str(), cpm::print_str(ic.vVer).c_str(), cpm::print_str(itr->second.vVer).c_str());
                 }
@@ -97,14 +109,17 @@ std::unordered_map<std::string, struct cpm::install_cmd> cpm::vLine2instGraph(bo
 //            cpm::print(ret_vVer);
             
             // 利用可能なパッケージ version と，要求 version の AND を取る
-            std::vector<cpm::ver> vVerAND = cpm::verAND(ic.vVer, ret_vVer);
+            printf("01\n");
+            bool tf;
+            std::vector<cpm::ver> vVerAND = cpm::verAND(tf, ic.vVer, ret_vVer);
             int idx=vVerAND.size()-1;
             for(; idx>=0; --idx){
                 if(vVerAND[idx].ineq==cpm::CPM_EQ){ break; }
             }
             if(idx<0){
                 sstd::pdbg("\nERROR: There is no available \"%s\" library.\n  required: %s\n  available: %s\n", ic.libName.c_str(), cpm::print_str(ic.vVer).c_str(), cpm::print_str(ret_vVer).c_str());
-                return std::unordered_map<std::string, struct cpm::install_cmd>();
+//                return std::unordered_map<std::string, struct cpm::install_cmd>();
+                continue;
             }
             std::string latest_ver = vVerAND[vVerAND.size()-1].ver;
             sstd::printn(latest_ver);
@@ -118,9 +133,13 @@ std::unordered_map<std::string, struct cpm::install_cmd> cpm::vLine2instGraph(bo
             const std::string depPkg_txt = cpm::getTxt_depPkg(packsPkg_dir);
             sstd::printn(depPkg_txt);
             // 1. packages_cpm.txt の内容を vLine に追記する．
-            sstd::vvec<std::string> vLine_dep = cpm::packagesTxt2vLine(depPkg_txt);
+            sstd::vec<uint> vLineNum;
+            sstd::vvec<std::string> vLine_dep;
+            bool ret = cpm::packagesTxt2vLine(vLineNum, vLine_dep, depPkg_txt);
+//            check_format(vLine_dep);
             sstd::printn(vLine_dep);
             printf("\n");
+            vLine <<= vLine_dep;
             
             // 依存グラフの作成
         }

@@ -380,7 +380,10 @@ int main(int argc, char *argv[]){
     std::string install_mode="auto"; // , "source" or "archive"
     std::unordered_map<std::string, std::vector<struct cpm::pkg>> table_vPkg;
     sstd::vec<std::string> v_build_env;
-    sstd::vvec<std::string> vvLine = cpm::packagesTxt2vLine( packages_path );
+//    sstd::vvec<std::string> vvLine = cpm::packagesTxt2vLine( packages_path );
+    sstd::vec<uint> vLineNum;
+    sstd::vvec<std::string> vvLine;
+    cpm::packagesTxt2vLine(vLineNum, vvLine, packages_path);
     sstd::vec<sstd::vvec<std::string>> v_vvLine = split_pksList_by_scope(vvLine, {cpm::cmd_ARCHITECTURE, cpm::cmd_BUILD_ENV, cpm::cmd_IMPORT, cpm::cmd_INSTALL_MODE});
     for(uint n=0; n<v_vvLine.size(); ++n){
         uint l=0;

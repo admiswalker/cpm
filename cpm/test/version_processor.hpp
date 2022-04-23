@@ -683,8 +683,7 @@ TEST(version_processor, verAND_split_range_case01a_begin){
     v = {e1};
     
     bool tf;
-    using T_verLR = std::pair<struct cpm::ver,struct cpm::ver>;
-    std::vector<T_verLR> ret = cpm::split_by_range(tf, v);
+    std::vector<cpm::verLR> ret = cpm::split_by_range(tf, v);
 //    for(auto r: ret){ cpm::print(r.first); cpm::print(r.second); }
     
     struct cpm::ver l1_ans = cpm::str2ver(">-inf");
@@ -702,8 +701,7 @@ TEST(version_processor, verAND_split_range_case01b_end){
     v = {e1};
     
     bool tf;
-    using T_verLR = std::pair<struct cpm::ver,struct cpm::ver>;
-    std::vector<T_verLR> ret = cpm::split_by_range(tf, v);
+    std::vector<cpm::verLR> ret = cpm::split_by_range(tf, v);
 //    for(auto r: ret){ cpm::print(r.first); cpm::print(r.second); }
     
     struct cpm::ver l1_ans = cpm::str2ver(">=1.0.0");
@@ -724,8 +722,7 @@ TEST(version_processor, verAND_split_range_case02_middle01){
     v = {e1, e2, e3, e4};
     
     bool tf;
-    using T_verLR = std::pair<struct cpm::ver,struct cpm::ver>;
-    std::vector<T_verLR> ret = cpm::split_by_range(tf, v);
+    std::vector<cpm::verLR> ret = cpm::split_by_range(tf, v);
 //  for(auto r: ret){ cpm::print(r.first); cpm::print(r.second); }
     
     struct cpm::ver l1_ans = cpm::str2ver(">-inf");
@@ -752,8 +749,7 @@ TEST(version_processor, verAND_split_range_case02_middle02){
     v = {e1, e2};
     
     bool tf;
-    using T_verLR = std::pair<struct cpm::ver,struct cpm::ver>;
-    std::vector<T_verLR> ret = cpm::split_by_range(tf, v);
+    std::vector<cpm::verLR> ret = cpm::split_by_range(tf, v);
 //  for(auto r: ret){ cpm::print(r.first); cpm::print(r.second); }
     
     struct cpm::ver l1_ans = cpm::str2ver(">-inf");
@@ -774,13 +770,12 @@ TEST(version_processor, verAND_scalar_case01){
     // lhs: 1.0.0 <= ver <= 1.0.0
     // rhs: 1.0.0 <= ver <= 1.0.0
     
-    using T_verLR = std::pair<struct cpm::ver,struct cpm::ver>;
-    T_verLR L;
+    cpm::verLR L;
     struct cpm::ver l1 = cpm::str2ver(">=1.0.0");
     struct cpm::ver l2 = cpm::str2ver("<=1.0.0");
     L.first  = l1;
     L.second = l2;
-    T_verLR R;
+    cpm::verLR R;
     struct cpm::ver r1 = cpm::str2ver(">=1.0.0");
     struct cpm::ver r2 = cpm::str2ver("<=1.0.0");
     R.first  = r1;
@@ -808,10 +803,12 @@ TEST(version_processor, verAND_scalar_case02a){
     vLhs = {l1, l2};
     vRhs = {r1, r2};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
 //    cpm::print(ret);
     
     struct cpm::ver l1_ans = cpm::str2ver("==2.0.0");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)1);
     ASSERT_TRUE(ret[0]==l1_ans);
 }
@@ -828,10 +825,12 @@ TEST(version_processor, verAND_scalar_case02b){
     vLhs = {l1, l2};
     vRhs = {r1, r2};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
 //    cpm::print(ret);
     
     struct cpm::ver l1_ans = cpm::str2ver("==2.0.0");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)1);
     ASSERT_TRUE(ret[0]==l1_ans);
 }
@@ -839,13 +838,12 @@ TEST(version_processor, verAND_scalar_case03a){
     // lhs:    2.0.0 <= ver <= 3.0.0
     // rhs: 1.0.0 <=    ver    <= 4.0.0
     
-    using T_verLR = std::pair<struct cpm::ver,struct cpm::ver>;
-    T_verLR L;
+    cpm::verLR L;
     struct cpm::ver l1 = cpm::str2ver(">=2.0.0");
     struct cpm::ver l2 = cpm::str2ver("<=3.0.0");
     L.first  = l1;
     L.second = l2;
-    T_verLR R;
+    cpm::verLR R;
     struct cpm::ver r1 = cpm::str2ver(">=1.0.0");
     struct cpm::ver r2 = cpm::str2ver("<=4.0.0");
     R.first  = r1;
@@ -866,13 +864,12 @@ TEST(version_processor, verAND_scalar_case03b){
     // lhs: 1.0.0 <=    ver    <= 4.0.0
     // rhs:    2.0.0 <= ver <= 3.0.0
     
-    using T_verLR = std::pair<struct cpm::ver,struct cpm::ver>;
-    T_verLR L;
+    cpm::verLR L;
     struct cpm::ver l1 = cpm::str2ver(">=1.0.0");
     struct cpm::ver l2 = cpm::str2ver("<=4.0.0");
     L.first  = l1;
     L.second = l2;
-    T_verLR R;
+    cpm::verLR R;
     struct cpm::ver r1 = cpm::str2ver(">=2.0.0");
     struct cpm::ver r2 = cpm::str2ver("<=3.0.0");
     R.first  = r1;
@@ -893,13 +890,12 @@ TEST(version_processor, verAND_scalar_case04a){
     // lhs: 4.0.0 <= ver
     // rhs:          ver  <= 5.0.0
     
-    using T_verLR = std::pair<struct cpm::ver,struct cpm::ver>;
-    T_verLR L;
+    cpm::verLR L;
     struct cpm::ver l1 = cpm::str2ver(">=4.0.0");
     struct cpm::ver l2 = cpm::str2ver("<inf");
     L.first  = l1;
     L.second = l2;
-    T_verLR R;
+    cpm::verLR R;
     struct cpm::ver r1 = cpm::str2ver(">-inf");
     struct cpm::ver r2 = cpm::str2ver("<=5.0.0");
     R.first  = r1;
@@ -920,13 +916,12 @@ TEST(version_processor, verAND_scalar_case04a_border_case){
     // lhs: ver <= 1.0.0,
     // rhs:               2.0.0 <= ver
     
-    using T_verLR = std::pair<struct cpm::ver,struct cpm::ver>;
-    T_verLR L;
+    cpm::verLR L;
     struct cpm::ver l1 = cpm::str2ver(">-inf");
     struct cpm::ver l2 = cpm::str2ver("<=1.0.0");
     L.first  = l1;
     L.second = l2;
-    T_verLR R;
+    cpm::verLR R;
     struct cpm::ver r1 = cpm::str2ver(">=2.0.0");
     struct cpm::ver r2 = cpm::str2ver("<inf");
     R.first  = r1;
@@ -944,13 +939,12 @@ TEST(version_processor, verAND_scalar_case04b){
     // lhs:          ver  <= 5.0.0
     // rhs: 4.0.0 <= ver
     
-    using T_verLR = std::pair<struct cpm::ver,struct cpm::ver>;
-    T_verLR L;
+    cpm::verLR L;
     struct cpm::ver l1 = cpm::str2ver(">-inf");
     struct cpm::ver l2 = cpm::str2ver("<=5.0.0");
     L.first  = l1;
     L.second = l2;
-    T_verLR R;
+    cpm::verLR R;
     struct cpm::ver r1 = cpm::str2ver(">=4.0.0");
     struct cpm::ver r2 = cpm::str2ver("<inf");
     R.first  = r1;
@@ -971,13 +965,12 @@ TEST(version_processor, verAND_scalar_case04b_02){
     // lhs: 4.0.0 <= ver
     // rhs:      6.0.0 <= ver
     
-    using T_verLR = std::pair<struct cpm::ver,struct cpm::ver>;
-    T_verLR L;
+    cpm::verLR L;
     struct cpm::ver l1 = cpm::str2ver(">=4.0.0");
     struct cpm::ver l2 = cpm::str2ver("<inf");
     L.first  = l1;
     L.second = l2;
-    T_verLR R;
+    cpm::verLR R;
     struct cpm::ver r1 = cpm::str2ver(">=6.0.0");
     struct cpm::ver r2 = cpm::str2ver("<inf");
     R.first  = r1;
@@ -998,13 +991,12 @@ TEST(version_processor, verAND_scalar_case04b_border_case){
     // lhs:               2.0.0 <= ver
     // rhs: ver <= 1.0.0,
     
-    using T_verLR = std::pair<struct cpm::ver,struct cpm::ver>;
-    T_verLR L;
+    cpm::verLR L;
     struct cpm::ver l1 = cpm::str2ver(">=2.0.0");
     struct cpm::ver l2 = cpm::str2ver("<inf");
     L.first  = l1;
     L.second = l2;
-    T_verLR R;
+    cpm::verLR R;
     struct cpm::ver r1 = cpm::str2ver(">-inf");
     struct cpm::ver r2 = cpm::str2ver("<=1.0.0");
     R.first  = r1;
@@ -1028,9 +1020,11 @@ TEST(version_processor, verAND_case00){
     std::vector<struct cpm::ver> vLhs;
     std::vector<struct cpm::ver> vRhs;
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
 //    cpm::print(ret);
     
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)0);
 }
 TEST(version_processor, verAND_case01gl){
@@ -1044,10 +1038,12 @@ TEST(version_processor, verAND_case01gl){
     vLhs <<= l1;
     vRhs <<= r1;
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
     
     struct cpm::ver l_ans = cpm::str2ver(">=1.0.0");
     struct cpm::ver r_ans = cpm::str2ver("<=2.0.0");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)2);
     ASSERT_TRUE(ret[0]==l_ans);
     ASSERT_TRUE(ret[1]==r_ans);
@@ -1063,10 +1059,12 @@ TEST(version_processor, verAND_case01lg){
     vLhs <<= l1;
     vRhs <<= r1;
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
     
     struct cpm::ver l_ans = cpm::str2ver(">=1.0.0");
     struct cpm::ver r_ans = cpm::str2ver("<=2.0.0");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)2);
     ASSERT_TRUE(ret[0]==l_ans);
     ASSERT_TRUE(ret[1]==r_ans);
@@ -1082,10 +1080,12 @@ TEST(version_processor, verAND_case01ll_a){
     vLhs <<= l1;
     vRhs <<= r1;
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
     
     struct cpm::ver l1_ans = cpm::str2ver(">-inf");
     struct cpm::ver r1_ans = cpm::str2ver("<=1.0.0");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)2);
     ASSERT_TRUE(ret[0]==l1_ans);
     ASSERT_TRUE(ret[1]==r1_ans);
@@ -1101,10 +1101,12 @@ TEST(version_processor, verAND_case01ll_b){
     vLhs <<= l1;
     vRhs <<= r1;
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
     
     struct cpm::ver l1_ans = cpm::str2ver(">-inf");
     struct cpm::ver r1_ans = cpm::str2ver("<=1.0.0");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)2);
     ASSERT_TRUE(ret[0]==l1_ans);
     ASSERT_TRUE(ret[1]==r1_ans);
@@ -1120,10 +1122,12 @@ TEST(version_processor, verAND_case01gg_a){
     vLhs <<= l1;
     vRhs <<= r1;
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
     
     struct cpm::ver l1_ans = cpm::str2ver(">=2.0.0");
     struct cpm::ver r1_ans = cpm::str2ver("<inf");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)2);
     ASSERT_TRUE(ret[0]==l1_ans);
     ASSERT_TRUE(ret[1]==r1_ans);
@@ -1139,10 +1143,12 @@ TEST(version_processor, verAND_case01gg_b){
     vLhs <<= l1;
     vRhs <<= r1;
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
     
     struct cpm::ver l1_ans = cpm::str2ver(">=2.0.0");
     struct cpm::ver r1_ans = cpm::str2ver("<inf");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)2);
     ASSERT_TRUE(ret[0]==l1_ans);
     ASSERT_TRUE(ret[1]==r1_ans);
@@ -1163,10 +1169,12 @@ TEST(version_processor, verAND_case02a){
     vRhs <<= r1;
     vRhs <<= r2;
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
     
     struct cpm::ver l_ans = cpm::str2ver(">=1.0.0");
     struct cpm::ver r_ans = cpm::str2ver("<=2.0.0");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)2);
     ASSERT_TRUE(ret[0]==l_ans);
     ASSERT_TRUE(ret[1]==r_ans);
@@ -1186,10 +1194,12 @@ TEST(version_processor, verAND_case02b){
     vRhs <<= r1;
     vRhs <<= r2;
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
     
     struct cpm::ver l_ans = cpm::str2ver(">=1.0.0");
     struct cpm::ver r_ans = cpm::str2ver("<=2.0.0");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)2);
     ASSERT_TRUE(ret[0]==l_ans);
     ASSERT_TRUE(ret[1]==r_ans);
@@ -1207,10 +1217,12 @@ TEST(version_processor, verAND_case03a){
     vLhs = {l1, l2};
     vRhs = {r1, r2};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
     
     struct cpm::ver l_ans = cpm::str2ver(">=0.4.0");
     struct cpm::ver r_ans = cpm::str2ver("<=0.6.0");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)2);
     ASSERT_TRUE(ret[0]==l_ans);
     ASSERT_TRUE(ret[1]==r_ans);
@@ -1228,10 +1240,12 @@ TEST(version_processor, verAND_case03b){
     vLhs = {l1, l2};
     vRhs = {r1, r2};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
     
     struct cpm::ver l_ans = cpm::str2ver(">=0.4.0");
     struct cpm::ver r_ans = cpm::str2ver("<=0.6.0");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)2);
     ASSERT_TRUE(ret[0]==l_ans);
     ASSERT_TRUE(ret[1]==r_ans);
@@ -1249,10 +1263,12 @@ TEST(version_processor, verAND_case04_01){
     vLhs = {l1, l2};
     vRhs = {r1, r2};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
     
     struct cpm::ver l_ans = cpm::str2ver(">=1.0.0");
     struct cpm::ver r_ans = cpm::str2ver("<=2.0.0");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)2);
     ASSERT_TRUE(ret[0]==l_ans);
     ASSERT_TRUE(ret[1]==r_ans);
@@ -1270,10 +1286,12 @@ TEST(version_processor, verAND_case04_02){
     vLhs = {l1, l2};
     vRhs = {r1, r2};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
     
     struct cpm::ver l_ans = cpm::str2ver(">1.0.0");
     struct cpm::ver r_ans = cpm::str2ver("<2.0.0");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)2);
     ASSERT_TRUE(ret[0]==l_ans);
     ASSERT_TRUE(ret[1]==r_ans);
@@ -1291,13 +1309,15 @@ TEST(version_processor, verAND_case04_03){
     vLhs = {l1, l2};
     vRhs = {r1, r2};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
 //    cpm::print(ret);
     
     struct cpm::ver l1_ans = cpm::str2ver(">-inf");
     struct cpm::ver r1_ans = cpm::str2ver("<=1.0.0");
     struct cpm::ver l2_ans = cpm::str2ver(">=2.0.0");
     struct cpm::ver r2_ans = cpm::str2ver("<inf");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)4);
     ASSERT_TRUE(ret[0]==l1_ans);
     ASSERT_TRUE(ret[1]==r1_ans);
@@ -1317,10 +1337,12 @@ TEST(version_processor, verAND_case05_01){
     vLhs = {l1, l2};
     vRhs = {r1, r2};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
     
     struct cpm::ver l_ans = cpm::str2ver(">=1.0.0");
     struct cpm::ver r_ans = cpm::str2ver("<=2.0.0");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)2);
     ASSERT_TRUE(ret[0]==l_ans);
     ASSERT_TRUE(ret[1]==r_ans);
@@ -1338,10 +1360,12 @@ TEST(version_processor, verAND_case05_02){
     vLhs = {l1, l2};
     vRhs = {r1, r2};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
     
     struct cpm::ver l_ans = cpm::str2ver(">=1.0.0");
     struct cpm::ver r_ans = cpm::str2ver("<=2.0.0");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)2);
     ASSERT_TRUE(ret[0]==l_ans);
     ASSERT_TRUE(ret[1]==r_ans);
@@ -1359,12 +1383,14 @@ TEST(version_processor, verAND_case05_03){
     vLhs = {l1, l2};
     vRhs = {r1, r2};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
     
     struct cpm::ver l1_ans = cpm::str2ver(">-inf");
     struct cpm::ver r1_ans = cpm::str2ver("<=1.0.0");
     struct cpm::ver l2_ans = cpm::str2ver(">=2.0.0");
     struct cpm::ver r2_ans = cpm::str2ver("<inf");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)4);
     ASSERT_TRUE(ret[0]==l1_ans);
     ASSERT_TRUE(ret[1]==r1_ans);
@@ -1384,12 +1410,14 @@ TEST(version_processor, verAND_case06a){
     vLhs = {l1, l2};
     vRhs = {r1, r2};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
     
     struct cpm::ver l1_ans = cpm::str2ver(">=1.0.0");
     struct cpm::ver r1_ans = cpm::str2ver("<=1.4.0");
     struct cpm::ver l2_ans = cpm::str2ver(">=1.6.0");
     struct cpm::ver r2_ans = cpm::str2ver("<=2.0.0");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)4);
     ASSERT_TRUE(ret[0]==l1_ans);
     ASSERT_TRUE(ret[1]==r1_ans);
@@ -1409,12 +1437,14 @@ TEST(version_processor, verAND_case06b){
     vLhs = {l1, l2};
     vRhs = {r1, r2};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
     
     struct cpm::ver l1_ans = cpm::str2ver(">=1.0.0");
     struct cpm::ver r1_ans = cpm::str2ver("<=1.4.0");
     struct cpm::ver l2_ans = cpm::str2ver(">=1.6.0");
     struct cpm::ver r2_ans = cpm::str2ver("<=2.0.0");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)4);
     ASSERT_TRUE(ret[0]==l1_ans);
     ASSERT_TRUE(ret[1]==r1_ans);
@@ -1435,10 +1465,12 @@ TEST(version_processor, verAND_case07a){
     vLhs = {l1, l2};
     vRhs = {r1, r2};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
 //    cpm::print(ret);
     
     struct cpm::ver l1_ans = cpm::str2ver("==2.0.0");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)1);
     ASSERT_TRUE(ret[0]==l1_ans);
 }
@@ -1455,10 +1487,12 @@ TEST(version_processor, verAND_case07b){
     vLhs = {l1, l2};
     vRhs = {r1, r2};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
 //    cpm::print(ret);
     
     struct cpm::ver l1_ans = cpm::str2ver("==2.0.0");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)1);
     ASSERT_TRUE(ret[0]==l1_ans);
 }
@@ -1475,9 +1509,11 @@ TEST(version_processor, verAND_case08a){
     vLhs = {l1, l2};
     vRhs = {r1, r2};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
 //    cpm::print(ret);
     
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)0);
 }
 TEST(version_processor, verAND_case08b){
@@ -1493,9 +1529,11 @@ TEST(version_processor, verAND_case08b){
     vLhs = {l1, l2};
     vRhs = {r1, r2};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
 //    cpm::print(ret);
     
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)0);
 }
 TEST(version_processor, verAND_case09a){
@@ -1511,9 +1549,11 @@ TEST(version_processor, verAND_case09a){
     vLhs = {l1, l2};
     vRhs = {r1, r2};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
 //    cpm::print(ret);
     
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)0);
 }
 TEST(version_processor, verAND_case09b){
@@ -1529,9 +1569,11 @@ TEST(version_processor, verAND_case09b){
     vLhs = {l1, l2};
     vRhs = {r1, r2};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
 //    cpm::print(ret);
     
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)0);
 }
 TEST(version_processor, verAND_case10a){
@@ -1547,9 +1589,11 @@ TEST(version_processor, verAND_case10a){
     vLhs = {l1, l2};
     vRhs = {r1, r2};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
 //    cpm::print(ret);
     
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)2);
     struct cpm::ver l1_ans = cpm::str2ver(">1.0.0");
     struct cpm::ver r1_ans = cpm::str2ver("<2.0.0");
@@ -1569,9 +1613,11 @@ TEST(version_processor, verAND_case10b){
     vLhs = {l1, l2};
     vRhs = {r1, r2};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
 //    cpm::print(ret);
     
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)2);
     struct cpm::ver l1_ans = cpm::str2ver(">1.0.0");
     struct cpm::ver r1_ans = cpm::str2ver("<2.0.0");
@@ -1593,7 +1639,8 @@ TEST(version_processor, verAND_case11a){
     vLhs = {l1, l2, l3, l4};
     vRhs = {r1, r2};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
 //    cpm::print(ret);
     
     struct cpm::ver l1_ans = cpm::str2ver(">-inf");
@@ -1604,6 +1651,7 @@ TEST(version_processor, verAND_case11a){
     struct cpm::ver r3_ans = cpm::str2ver("<5.0.0");
     struct cpm::ver l4_ans = cpm::str2ver(">6.0.0");
     struct cpm::ver r4_ans = cpm::str2ver("<inf");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)8);
     ASSERT_TRUE(ret[0]==l1_ans);
     ASSERT_TRUE(ret[1]==r1_ans);
@@ -1629,7 +1677,8 @@ TEST(version_processor, verAND_case11b){
     vLhs = {l1, l2};
     vRhs = {r1, r2, r3, r4};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
 //    cpm::print(ret);
     
     struct cpm::ver l1_ans = cpm::str2ver(">-inf");
@@ -1640,6 +1689,7 @@ TEST(version_processor, verAND_case11b){
     struct cpm::ver r3_ans = cpm::str2ver("<5.0.0");
     struct cpm::ver l4_ans = cpm::str2ver(">6.0.0");
     struct cpm::ver r4_ans = cpm::str2ver("<inf");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)8);
     ASSERT_TRUE(ret[0]==l1_ans);
     ASSERT_TRUE(ret[1]==r1_ans);
@@ -1668,7 +1718,8 @@ TEST(version_processor, verAND_composite_case_01a){
     vLhs = {l1, l2, l3, l4};
     vRhs = {r1, r2, r3, r4};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
     
     struct cpm::ver l1_ans = cpm::str2ver(">=0.1.0");
     struct cpm::ver r1_ans = cpm::str2ver("<=0.4.0");
@@ -1678,6 +1729,7 @@ TEST(version_processor, verAND_composite_case_01a){
     struct cpm::ver r3_ans = cpm::str2ver("<=2.4.0");
     struct cpm::ver l4_ans = cpm::str2ver(">=2.6.0");
     struct cpm::ver r4_ans = cpm::str2ver("<=3.0.0");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)8);
     ASSERT_TRUE(ret[0]==l1_ans);
     ASSERT_TRUE(ret[1]==r1_ans);
@@ -1705,7 +1757,8 @@ TEST(version_processor, verAND_composite_case_01b){
     vLhs = {l1, l2, l3, l4};
     vRhs = {r1, r2, r3, r4};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
     
     struct cpm::ver l1_ans = cpm::str2ver(">=0.1.0");
     struct cpm::ver r1_ans = cpm::str2ver("<=0.4.0");
@@ -1715,6 +1768,7 @@ TEST(version_processor, verAND_composite_case_01b){
     struct cpm::ver r3_ans = cpm::str2ver("<=2.4.0");
     struct cpm::ver l4_ans = cpm::str2ver(">=2.6.0");
     struct cpm::ver r4_ans = cpm::str2ver("<=3.0.0");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)8);
     ASSERT_TRUE(ret[0]==l1_ans);
     ASSERT_TRUE(ret[1]==r1_ans);
@@ -1739,12 +1793,14 @@ TEST(version_processor, verAND_CPM_NE_case01){
     vLhs = {l1};
     vRhs = {r1};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
     
     struct cpm::ver l1_ans = cpm::str2ver(">-inf");
     struct cpm::ver r1_ans = cpm::str2ver("<1.0.0");
     struct cpm::ver l2_ans = cpm::str2ver(">1.0.0");
     struct cpm::ver r2_ans = cpm::str2ver("<inf");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)4);
     ASSERT_TRUE(ret[0]==l1_ans);
     ASSERT_TRUE(ret[1]==r1_ans);
@@ -1767,12 +1823,14 @@ TEST(version_processor, verAND_merge_same_option){ // test rm_same_ver()
     vLhs = {l1, l2};
     vRhs = {r1, r2};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
     
     struct cpm::ver l1_ans = cpm::str2ver(">-inf");
     struct cpm::ver r1_ans = cpm::str2ver("<1.0.0");
     struct cpm::ver l2_ans = cpm::str2ver(">1.0.0");
     struct cpm::ver r2_ans = cpm::str2ver("<inf");
+    ASSERT_TRUE(tf);
     ASSERT_EQ(ret.size(), (uint)4);
     ASSERT_TRUE(ret[0]==l1_ans);
     ASSERT_TRUE(ret[1]==r1_ans);
@@ -1791,7 +1849,8 @@ TEST(version_processor, verAND_check_input_error){
     vLhs = {l1, l2};
     vRhs = {};
     
-    std::vector<struct cpm::ver> ret = cpm::verAND(vLhs, vRhs);
+    bool tf;
+    std::vector<struct cpm::ver> ret = cpm::verAND(tf, vLhs, vRhs);
     
     ASSERT_EQ(ret.size(), (uint)0);
 }

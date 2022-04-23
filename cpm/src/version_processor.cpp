@@ -1,8 +1,6 @@
 #include "version_processor.hpp"
 
 
-#define T_verLR std::pair<struct cpm::ver,struct cpm::ver>
-
 extern const uchar cpm::CPM_NULL = 0; // initial value
 extern const uchar cpm::CPM_LT = 1;   // <  : less than
 extern const uchar cpm::CPM_LE = 2;   // <= : less than or equal to
@@ -17,6 +15,8 @@ bool cpm::operator==(const struct cpm::ver& lhs, const struct cpm::ver& rhs){
 bool cpm::operator<(const struct cpm::ver& lhs, const struct cpm::ver& rhs){
     return cmpVer(lhs, rhs) < 0;
 }
+
+//---
 
 std::string cpm::print_str(const struct cpm::ver& ver){
     return sstd::ssprintf("ineq: %s, ver: %s", cpm::is2str(ver.ineq).c_str(), ver.ver.c_str());
@@ -37,6 +37,30 @@ std::string cpm::print_str(const std::vector<struct cpm::ver>& vVer){
 }
 void cpm::print(const             struct cpm::ver &  ver){ printf("%s\n", cpm::print_str( ver).c_str()); }
 void cpm::print(const std::vector<struct cpm::ver>& vVer){ printf("%s\n", cpm::print_str(vVer).c_str()); }
+
+//---
+
+std::string cpm::print_str(const             cpm::verLR &  ver){
+    std::string l = cpm::print_str(ver.first );
+    std::string r = cpm::print_str(ver.second);
+    return '['+l+"], ["+r+']';
+}
+std::string cpm::print_str(const std::vector<cpm::verLR>& vVer){
+    std::string ret;
+    if(vVer.size()==0){ return ret; }
+    
+    for(int i=0; i<(int)vVer.size()-1; ++i){
+        ret += "[ ";
+        ret += print_str(vVer[i]);
+        ret += " ], ";
+    }
+    ret += "[ ";
+    ret += print_str(vVer[vVer.size()-1]);
+    ret += " ]";
+    return ret;
+}
+void cpm::print(const             cpm::verLR &  ver){ printf("%s\n", cpm::print_str( ver).c_str()); }
+void cpm::print(const std::vector<cpm::verLR>& vVer){ printf("%s\n", cpm::print_str(vVer).c_str()); }
 
 //-------------
 
@@ -237,17 +261,17 @@ void cpm::rm_same_ver(std::vector<struct cpm::ver>& v){
     
     v.resize(vi);
 }
-std::vector<T_verLR> cpm::split_by_range(bool& ret_TF, const std::vector<struct cpm::ver>& v){
+std::vector<cpm::verLR> cpm::split_by_range(bool& ret_TF, const std::vector<struct cpm::ver>& v){
     // --- NOTE: Needs to input sorted value ---
     
     ret_TF=true;
-    std::vector<T_verLR> vR;
+    std::vector<cpm::verLR> vR;
 
     // begin: case01a_begin
     if(v.size()==0){ return vR; }
     uint b=0;
     if(v[b].ineq==CPM_LT || v[b].ineq==CPM_LE){
-        T_verLR r;
+        cpm::verLR r;
         r.first.ineq  =CPM_GT;
         r.first.ver ="-inf";
         r.second.ineq =v[b].ineq;
@@ -258,7 +282,7 @@ std::vector<T_verLR> cpm::split_by_range(bool& ret_TF, const std::vector<struct 
 
     // end: case01b_end
     uint e=v.size(); // end
-    T_verLR r_end;
+    cpm::verLR r_end;
     bool TF_pushBack=false;
     if(v[e-1].ineq==CPM_GT || v[e-1].ineq==CPM_GE){
         r_end.first.ineq  =v[e-1].ineq;
@@ -271,7 +295,7 @@ std::vector<T_verLR> cpm::split_by_range(bool& ret_TF, const std::vector<struct 
 
     // middle: case02_middle01, case02_middle02
     for(uint i=b; i<e; ++i){
-        T_verLR r;
+        cpm::verLR r;
         if(v[i].ineq==CPM_EQ){
             r.first.ineq  =CPM_EQ;
             r.first.ver =v[i].ver;
@@ -294,8 +318,8 @@ std::vector<T_verLR> cpm::split_by_range(bool& ret_TF, const std::vector<struct 
     if(TF_pushBack){ vR <<= r_end; }
     return vR;
 }
-std::vector<struct cpm::ver> cpm::verAND(bool& ret_TF, const T_verLR& l, const T_verLR& r)
-{
+std::vector<struct cpm::ver> cpm::verAND(bool& ret_TF, const cpm::verLR& l, const cpm::verLR& r){
+    
     ret_TF=true;
     std::vector<struct cpm::ver> ret;
     if(l.first.ineq==CPM_NULL || l.second.ineq==CPM_NULL || r.first.ineq==CPM_NULL || r.second.ineq==CPM_NULL){ ret_TF=false; return ret; }
@@ -408,7 +432,7 @@ std::vector<struct cpm::ver> cpm::verAND(bool& ret_TF, const T_verLR& l, const T
     
     return ret;
 }
-std::vector<struct cpm::ver> cpm::verAND(const std::vector<struct cpm::ver>& vLhs_in, const std::vector<struct cpm::ver>& vRhs_in){
+std::vector<struct cpm::ver> cpm::verAND(bool& ret_TF, const std::vector<struct cpm::ver>& vLhs_in, const std::vector<struct cpm::ver>& vRhs_in){
     std::vector<struct cpm::ver> ret;
     
     std::vector<struct cpm::ver> vLhs;
@@ -435,19 +459,15 @@ std::vector<struct cpm::ver> cpm::verAND(const std::vector<struct cpm::ver>& vLh
     cpm::rm_same_ver(vLhs);
     cpm::rm_same_ver(vRhs);
     
-    bool tf;
-    std::vector<T_verLR> vL = cpm::split_by_range(tf, vLhs); if(!tf){ return ret; }
-    std::vector<T_verLR> vR = cpm::split_by_range(tf, vRhs); if(!tf){ return ret; }
+    std::vector<cpm::verLR> vL = cpm::split_by_range(ret_TF, vLhs); if(!ret_TF){ return ret; }
+    std::vector<cpm::verLR> vR = cpm::split_by_range(ret_TF, vRhs); if(!ret_TF){ return ret; }
     
     for(uint li=0; li<vL.size(); ++li){
         for(uint ri=0; ri<vR.size(); ++ri){
-            bool tf;
-            std::vector<struct cpm::ver> r = cpm::verAND(tf, vL[li], vR[ri]); if(!tf){ return std::vector<struct cpm::ver>(); }
+            std::vector<struct cpm::ver> r = cpm::verAND(ret_TF, vL[li], vR[ri]); if(!ret_TF){ return std::vector<struct cpm::ver>(); }
             ret <<= r;
         }
     }
     
     return ret;
 }
-
-#undef T_verLR

@@ -26,7 +26,7 @@ TEST(vLine2instGraph, example_test){
     bool ret;
     class cpm::PATH p(cpm::baseDir_default);
     std::unordered_map<std::string, struct cpm::install_cmd> table_reqPkg = cpm::vLine2instGraph(ret, p, vLine);
-    if(!ret){ sstd::pdbg("ERROR: packageTxt2instCmd() is failed."); }
+    if(!ret){ sstd::pdbg_err("packageTxt2instCmd() is failed."); }
 }
 */
 //-----------------------------------------------------------------------------------------------------------------------------------------------
@@ -49,11 +49,12 @@ TEST(vLine2instGraph, example_test02){
         {"sstd", "==2.0.1"},
 //        {"CPM_libExample_to_IMPORT"," ==0.1.0"}
     };
+    sstd::vec<uint> vLineNum(vLine.size()); std::iota(vLineNum.begin(), vLineNum.end(), 1);
     
     bool ret;
     class cpm::PATH p(cpm::baseDir_default);
-    std::unordered_map<std::string, struct cpm::install_cmd> table_reqPkg = cpm::vLine2instGraph(ret, p, vLine);
-    if(!ret){ sstd::pdbg("ERROR: packageTxt2instCmd() is failed."); }
+    std::unordered_map<std::string, struct cpm::install_cmd> table_reqPkg = cpm::vLine2instGraph(ret, p, vLineNum, vLine, "dummyFileNameForTest.txt");
+    if(!ret){ sstd::pdbg_err("packageTxt2instCmd() is failed."); }
     /*
     for(auto pkg: table_reqPkg){
         sstd::printn(pkg.first);

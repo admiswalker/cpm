@@ -56,9 +56,9 @@ bool str2struct_pkg(struct cpm::pkg& r, const std::string& name_in, const std::s
     
     std::vector<std::string> ver = sstd::split(ver_in, '.');
     if(ver.size()>=3){
-        if(ver[0].size()==0){ sstd::pdbg("ERROR: ver[0].size()==0.\n"); return false; }
-        if(ver[1].size()==0){ sstd::pdbg("ERROR: ver[1].size()==0.\n"); return false; }
-        if(ver[2].size()==0){ sstd::pdbg("ERROR: ver[2].size()==0.\n"); return false; }
+        if(ver[0].size()==0){ sstd::pdbg_err("ver[0].size()==0.\n"); return false; }
+        if(ver[1].size()==0){ sstd::pdbg_err("ver[1].size()==0.\n"); return false; }
+        if(ver[2].size()==0){ sstd::pdbg_err("ver[2].size()==0.\n"); return false; }
     }
     
     r.name = name_in;
@@ -82,7 +82,7 @@ std::vector<struct cpm::pkg> vPkgList2vPkg(bool& ret, const sstd::vvec<std::stri
     std::vector<struct cpm::pkg> v_pkg_ret;
     
     for(uint i=0; i<vPkgList.size(); ++i){
-        if(vPkgList[i].size() != 2){ sstd::pdbg("ERROR: vPkgList[i].size() != 2.\n"); ret=false; return v_pkg_ret; }
+        if(vPkgList[i].size() != 2){ sstd::pdbg_err("vPkgList[i].size() != 2.\n"); ret=false; return v_pkg_ret; }
         
         struct cpm::pkg r; if(!str2struct_pkg(r, vPkgList[i][0], vPkgList[i][1])){ ret=false; return v_pkg_ret; }
 //        std::string depPkg_txt = getTxt_depPkg( cpm::getPath_packsPkgDir(PACKS_DIR, architecture, p) );
@@ -98,7 +98,7 @@ bool read_packages_dir(std::unordered_map<std::string,std::vector<struct cpm::pk
         std::vector<std::string> v_ver_path; //, v_package_inst, v_package_deps;
 
         v_ver_path = sstd::glob(v_package[p]+"/*", "d");
-        if(v_ver_path.size()==0){ sstd::pdbg("ERROR: %s: number of installable package is 0.\n", v_package[p].c_str()); return false; }
+        if(v_ver_path.size()==0){ sstd::pdbg_err("%s: number of installable package is 0.\n", v_package[p].c_str()); return false; }
         
         for(uint i=0; i<v_ver_path.size(); ++i){
             std::string name    = sstd::getFileName( v_package[p].c_str() );
@@ -120,12 +120,12 @@ std::vector<struct cpm::pkg> solve_dependencies(bool& ret,
     std::vector<struct cpm::pkg> v_pkg_ret;
     
     for(uint ri=0; ri<v_pkg_requested.size(); ++ri){
-        auto itr = table_vPkg.find( v_pkg_requested[ri].name ); if(itr==table_vPkg.end()){ sstd::pdbg("ERROR: A package name of \"%s\" is not defined.\n", v_pkg_requested[ri].name.c_str()); ret=false; return std::vector<struct cpm::pkg>(); }
+        auto itr = table_vPkg.find( v_pkg_requested[ri].name ); if(itr==table_vPkg.end()){ sstd::pdbg_err("A package name of \"%s\" is not defined.\n", v_pkg_requested[ri].name.c_str()); ret=false; return std::vector<struct cpm::pkg>(); }
         std::vector<struct cpm::pkg> v_pkg_exist = itr->second;
         
         struct cpm::pkg r;
         for(uint ei=0;; ++ei){
-            if(ei == v_pkg_exist.size()){ sstd::pdbg("ERROR: Required package is not exist in `cpm/packages`.\n"); ret=false; return v_pkg_ret; }
+            if(ei == v_pkg_exist.size()){ sstd::pdbg_err("Required package is not exist in `cpm/packages`.\n"); ret=false; return v_pkg_ret; }
             if(! isSameVer(v_pkg_exist[ei], v_pkg_requested[ri]) ){ continue; }
             
             r = v_pkg_exist[ei];
@@ -150,7 +150,7 @@ void gen_archive(const std::string& save_name, const std::string& archive_ext, c
     
     if      (archive_ext=="tar.xz"){ sstd::system(sstd::ssprintf("cd %s; tar -Jcf %s *", path.c_str(), save_name.c_str()));
     }else if(archive_ext=="zip"   ){ sstd::system(sstd::ssprintf("cd %s; zip -rq %s *", path.c_str(), save_name.c_str()));
-    }else                          { sstd::pdbg("Error: Unexpected extension.");
+    }else                          { sstd::pdbg_err("Unexpected extension.");
     }
     
     uint64 size = std::stoull(sstd::system_stdout(sstd::ssprintf("ls -al %s | cut -d ' ' -f 5", save_name.c_str())));
@@ -207,13 +207,13 @@ bool install_libs(const std::string& CACHE_DIR,
         std::string cmd_env;
         std::string runner = ""; // "sh"
         std::string options;
-        if(v_build_env.size()==0){ sstd::pdbg("ERROR: BUILD_ENV is not set.\n"); }
+        if(v_build_env.size()==0){ sstd::pdbg_err("BUILD_ENV is not set.\n"); }
         if      (v_build_env[0] == cpm::cmd_CPM_ENV   ){ cmd_env += return_set_env_cmd(INST_PATH);
         }else if(v_build_env[0] == cpm::cmd_DOCKER_ENV){ runner = "sh " + v_build_env[1] + "/docker_run.sh";
                                                     options = "--env CPM_CACHE_DIR --env CPM_BUILD_DIR --env CPM_DLIB_PATH --env CPM_INST_WDIR --env CPM_INST_PATH";
         }else if(v_build_env[0] == cpm::cmd_SYSTEM_ENV){ // do nothing
         }else{
-            sstd::pdbg("ERROR: BUILD_ENV has invalid value: %s.\n", v_build_env[0].c_str());
+            sstd::pdbg_err("BUILD_ENV has invalid value: %s.\n", v_build_env[0].c_str());
             return false;
         }
         cmd_env += "export CPM_BUILD_DIR=" + buildPkg_dir + '\n';
@@ -269,18 +269,18 @@ bool install_libs(const std::string& CACHE_DIR,
             sstd::cp(INST_WDIR+"/*", INST_PATH, "pu");
 //          sstd::mv(WORK_PATH+"/*", INST_PATH); // Not implimented yet
         }else{
-            sstd::pdbg("ERROR: CPM_INST_WDIR is empty.");
+            sstd::pdbg_err("CPM_INST_WDIR is empty.");
             return false;
         }
         
         TF_isInstalled = sstd::stripAll(sstd::system_stdout(cmd_env + cpm::getSh_isInst(packsPkg_dir)), " \r\n")=="true";
         if(!TF_isInstalled){
-            sstd::pdbg("ERROR: Installation is failed.");
+            sstd::pdbg_err("Installation is failed.");
             return false;
         }
         if(TF_genArchive && !TF_useArchive){
             if(sstd::glob(INST_WDIR+"/*.la", "fr").size()!=0 && sstd::fileExist(rtxt_path)==false){
-                sstd::pdbg("ERROR: replacement_path_for_cpm_archive.txt is not found.");
+                sstd::pdbg_err("replacement_path_for_cpm_archive.txt is not found.");
                 return false;
             }
             
@@ -335,7 +335,7 @@ int main(int argc, char *argv[]){
     
     char c = ' ';
     for(int i=1; i<argc; ++i){
-        std::string s = argv[i]; if(s.size() < 2){ sstd::pdbg("ERROR: Unexpectec input: %s.\n", s.c_str()); return -1; }
+        std::string s = argv[i]; if(s.size() < 2){ sstd::pdbg_err("Unexpectec input: %s.\n", s.c_str()); return -1; }
         if(s[0] == '-'){ c=s[1]; continue; }
         
         switch(c){
@@ -367,8 +367,8 @@ int main(int argc, char *argv[]){
     
 //    bool ret;
 //    sstd::vvec<std::string> vLine = cpm::packagesTxt2vLine( packages_path );
-//    std::unordered_map<std::string, struct install_cmd> table_reqPkg = cpm::vLine2instGraph(ret, vLine); if(!ret){ sstd::pdbg("ERROR: packageTxt2instCmd() is failed."); }
-//    std::unordered_map<std::string, struct install_cmd> table_reqPkg = packageTxt2instGraph(ret, packages_path); if(!ret){ sstd::pdbg("ERROR: packageTxt2instCmd() is failed."); }
+//    std::unordered_map<std::string, struct install_cmd> table_reqPkg = cpm::vLine2instGraph(ret, vLine); if(!ret){ sstd::pdbg_err("packageTxt2instCmd() is failed."); }
+//    std::unordered_map<std::string, struct install_cmd> table_reqPkg = packageTxt2instGraph(ret, packages_path); if(!ret){ sstd::pdbg_err("packageTxt2instCmd() is failed."); }
 //    for(uint i=0; i<ret_table_vPkg.size(); ++i){
         // install here
 //    }
@@ -383,7 +383,7 @@ int main(int argc, char *argv[]){
 //    sstd::vvec<std::string> vvLine = cpm::packagesTxt2vLine( packages_path );
     sstd::vec<uint> vLineNum;
     sstd::vvec<std::string> vvLine;
-    cpm::packagesTxt2vLine(vLineNum, vvLine, packages_path);
+    sstd::txt2vCmdList(vLineNum, vvLine, packages_path);
     sstd::vec<sstd::vvec<std::string>> v_vvLine = split_pksList_by_scope(vvLine, {cpm::cmd_ARCHITECTURE, cpm::cmd_BUILD_ENV, cpm::cmd_IMPORT, cpm::cmd_INSTALL_MODE});
     for(uint n=0; n<v_vvLine.size(); ++n){
         uint l=0;
@@ -408,7 +408,7 @@ int main(int argc, char *argv[]){
                 // Nothing to do
                 
             }else{
-                sstd::pdbg("ERROR: Unexpected BUILD_ENV option.");
+                sstd::pdbg_err("Unexpected BUILD_ENV option.");
             }
             
         }else if(vCmd[0]==cpm::cmd_IMPORT){
@@ -436,13 +436,13 @@ int main(int argc, char *argv[]){
             struct cpm::pkg r; if(!str2struct_pkg(r, libName, ver)){ return false; }
             table_vPkg[ r.name ] <<= r;
         }else if(vCmd[0]==cpm::cmd_INSTALL_MODE){
-            if(vCmd.size()<2){ sstd::pdbg("ERROR: INSTALL_MODE is empty."); return -1; }
+            if(vCmd.size()<2){ sstd::pdbg_err("INSTALL_MODE is empty."); return -1; }
             
             if      (vCmd[1]==cpm::cmd_INSTALL_MODE_auto   ){ install_mode = cpm::cmd_INSTALL_MODE_auto;
             }else if(vCmd[1]==cpm::cmd_INSTALL_MODE_source ){ install_mode = cpm::cmd_INSTALL_MODE_source;
             }else if(vCmd[1]==cpm::cmd_INSTALL_MODE_archive){ install_mode = cpm::cmd_INSTALL_MODE_archive;
             }else{
-                sstd::pdbg("ERROR: Unexpected INSTALL_MODE. \"%s\" is not defined.", vCmd[1].c_str());
+                sstd::pdbg_err("Unexpected INSTALL_MODE. \"%s\" is not defined.", vCmd[1].c_str());
                 return -1;
             }
             

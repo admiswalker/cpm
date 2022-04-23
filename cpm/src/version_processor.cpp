@@ -96,14 +96,14 @@ std::string cpm::ineq2str(const uchar& ineq){
     case CPM_GE: { return std::string(">="); }
     case CPM_GT: { return std::string(">" ); }
     case CPM_NE: { return std::string("!="); }
-    default: { sstd::pdbg("ERROR: ineq2str() has invalid value.\n"); return std::string(""); }
+    default: { sstd::pdbg_err("ineq2str() has invalid value.\n"); return std::string(""); }
     }
 }
 uchar cpm::str2ineq(bool& ret, const std::string& ra){
     ret=true;
     if(ra.size()==0){ return 0; }
     if(ra.size()!=1 && ra.size()!=2){
-        sstd::pdbg("ERROR: inputted inequality-sign is invalid.\n");
+        sstd::pdbg_err("inputted inequality-sign is invalid.\n");
         ret=false;
         return 0;
     }
@@ -115,7 +115,7 @@ uchar cpm::str2ineq(bool& ret, const std::string& ra){
     }else if(sstd::strcmp(ra, ">" )){ return CPM_GT;
     }else if(sstd::strcmp(ra, "!=")){ return CPM_NE;
     }else{
-        sstd::pdbg("ERROR: inputted inequality-sign (%s) is invalid.\n", ra.c_str());
+        sstd::pdbg_err("inputted inequality-sign (%s) is invalid.\n", ra.c_str());
         ret=false;
         return 0;
     }
@@ -141,7 +141,7 @@ std::vector<struct cpm::ver> cpm::str2ver(const std::vector<std::string>& vStr){
     for(uint i=0; i<vStr.size(); ++i){
         bool ret;
         vVer[i] = str2ver_base(ret, vStr[i].c_str());
-        if(!ret){ sstd::pdbg("ERROR: Invalid input: \"%s\". cpm::str2ver() is failed.\n", vStr[i].c_str()); return std::vector<struct cpm::ver>(); }
+        if(!ret){ sstd::pdbg_err("Invalid input: \"%s\". cpm::str2ver() is failed.\n", vStr[i].c_str()); return std::vector<struct cpm::ver>(); }
     }
     return vVer;
 }
@@ -242,7 +242,7 @@ int cpm::cmpVer(const struct cpm::ver& lhs, const struct cpm::ver& rhs){
         return  1;
     }
     
-    sstd::pdbg("ERROR: lhs.ineq has unexpected value: %d.\n", lhs.ineq);
+    sstd::pdbg_err("lhs.ineq has unexpected value: %d.\n", lhs.ineq);
     return -1;
 }
 void cpm::rm_same_ver(std::vector<struct cpm::ver>& v){
@@ -302,9 +302,9 @@ std::vector<cpm::verLR> cpm::split_by_range(bool& ret_TF, const std::vector<stru
             r.second.ineq =CPM_EQ;
             r.second.ver=v[i].ver;
         }else{
-            if(i+1>=e){ ret_TF=false; sstd::pdbg("ERROR: Unexpected vec size. Inequality-sign is not closed.\n"); return vR; }
+            if(i+1>=e){ ret_TF=false; sstd::pdbg_err("Unexpected vec size. Inequality-sign is not closed.\n"); return vR; }
             if(!( (v[i  ].ineq==CPM_GT || v[i  ].ineq==CPM_GE) &&
-                  (v[i+1].ineq==CPM_LT || v[i+1].ineq==CPM_LE)    )){ ret_TF=false; sstd::pdbg("ERROR: Unexpected inequality-sign. Inequality-sign is not closed.\n"); return vR; }
+                  (v[i+1].ineq==CPM_LT || v[i+1].ineq==CPM_LE)    )){ ret_TF=false; sstd::pdbg_err("Unexpected inequality-sign. Inequality-sign is not closed.\n"); return vR; }
             
             r.first.ineq  =v[i  ].ineq;
             r.first.ver =v[i  ].ver;

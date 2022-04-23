@@ -17,31 +17,31 @@ TEST(version_processor, str2ver_case00){
     std::string s = "";
     struct cpm::ver r1 = cpm::str2ver(s);
     ASSERT_EQ(r1.ineq, cpm::CPM_NULL);
-    std::string r2=cpm::is2str(r1.ineq);
+    std::string r2=cpm::ineq2str(r1.ineq);
     ASSERT_STREQ(r2.c_str(), "");
 }
 TEST(version_processor, str2ver_case01){
     std::string s = "  <=  1.0.0  ";
     struct cpm::ver r = cpm::str2ver(s);
-    ASSERT_STREQ(cpm::is2str(r.ineq).c_str(), "<=");
+    ASSERT_STREQ(cpm::ineq2str(r.ineq).c_str(), "<=");
     ASSERT_STREQ(r.ver.c_str(), "1.0.0");
 }
 TEST(version_processor, str2ver_case02){
     std::string s = "<=";
     struct cpm::ver r = cpm::str2ver(s);
-    ASSERT_STREQ(cpm::is2str(r.ineq).c_str(), "<=");
+    ASSERT_STREQ(cpm::ineq2str(r.ineq).c_str(), "<=");
     ASSERT_STREQ(r.ver.c_str(), "");
 }
 TEST(version_processor, str2ver_case03){
     std::string s = ">=-inf";
     struct cpm::ver r = cpm::str2ver(s);
-    ASSERT_STREQ(cpm::is2str(r.ineq).c_str(), ">=");
+    ASSERT_STREQ(cpm::ineq2str(r.ineq).c_str(), ">=");
     ASSERT_STREQ(r.ver.c_str(), "-inf");
 }
 TEST(version_processor, str2ver_case04){
     std::string s = "<=inf";
     struct cpm::ver r = cpm::str2ver(s);
-    ASSERT_STREQ(cpm::is2str(r.ineq).c_str(), "<=");
+    ASSERT_STREQ(cpm::ineq2str(r.ineq).c_str(), "<=");
     ASSERT_STREQ(r.ver.c_str(), "inf");
 }
 
@@ -62,9 +62,9 @@ TEST(version_processor, split_verNE){
     
     std::vector<struct cpm::ver> v_ver = cpm::split_verNE(v);
     
-    ASSERT_TRUE(cpm::is2str(v_ver[0].ineq) == "<");
+    ASSERT_TRUE(cpm::ineq2str(v_ver[0].ineq) == "<");
     ASSERT_STREQ(v_ver[0].ver.c_str(), "1.0.0");
-    ASSERT_TRUE(cpm::is2str(v_ver[1].ineq) == ">");
+    ASSERT_TRUE(cpm::ineq2str(v_ver[1].ineq) == ">");
     ASSERT_STREQ(v_ver[1].ver.c_str(), "1.0.0");
 }
 

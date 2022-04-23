@@ -19,7 +19,7 @@ bool cpm::operator<(const struct cpm::ver& lhs, const struct cpm::ver& rhs){
 //---
 
 std::string cpm::print_str(const struct cpm::ver& ver){
-    return sstd::ssprintf("ineq: %s, ver: %s", cpm::is2str(ver.ineq).c_str(), ver.ver.c_str());
+    return sstd::ssprintf("ineq: %s, ver: %s", cpm::ineq2str(ver.ineq).c_str(), ver.ver.c_str());
 }
 std::string cpm::print_str(const std::vector<struct cpm::ver>& vVer){
     std::string ret;
@@ -87,8 +87,8 @@ std::string getWhile_c(const std::string& s, const char* cs){
 //std::string getWhile_s(const std::string& s, const std::string& while_include_this_str){
 //}
 
-std::string cpm::is2str(const uchar& is){
-    switch(is){
+std::string cpm::ineq2str(const uchar& ineq){
+    switch(ineq){
     case CPM_NULL: { return std::string(""); }
     case CPM_LT: { return std::string("<" ); }
     case CPM_LE: { return std::string("<="); }
@@ -96,10 +96,10 @@ std::string cpm::is2str(const uchar& is){
     case CPM_GE: { return std::string(">="); }
     case CPM_GT: { return std::string(">" ); }
     case CPM_NE: { return std::string("!="); }
-    default: { sstd::pdbg("ERROR: is2str() has invalid value.\n"); return std::string(""); }
+    default: { sstd::pdbg("ERROR: ineq2str() has invalid value.\n"); return std::string(""); }
     }
 }
-uchar cpm::str2is(bool& ret, const std::string& ra){
+uchar cpm::str2ineq(bool& ret, const std::string& ra){
     ret=true;
     if(ra.size()==0){ return 0; }
     if(ra.size()!=1 && ra.size()!=2){
@@ -126,10 +126,10 @@ struct cpm::ver str2ver_base(bool& ret, const char* pStr){
     std::string ra  = getWhile_c(s, "<=>!");
     std::string ver = std::string(&s[ra.size()], s.size()-ra.size());
 
-    uchar ret_is = cpm::str2is(ret, ra); if(!ret){ return cpm::ver(); }
+    uchar ret_ineq = cpm::str2ineq(ret, ra); if(!ret){ return cpm::ver(); }
 
     struct cpm::ver r;
-    r.ineq = ret_is;
+    r.ineq = ret_ineq;
     r.ver = ver;
 
     return r;

@@ -29,8 +29,8 @@ namespace cpm{
     void print(const             verLR &  ver);
     void print(const std::vector<verLR>& vVer);
     
-    uchar str2is(bool& ret, const std::string& ra);
-    std::string is2str(const uchar& is);
+    uchar str2ineq(bool& ret, const std::string& ra);
+    std::string ineq2str(const uchar& ineq);
     
                 struct ver  str2ver(const                    char*  pStr);
                 struct ver  str2ver(const             std::string&   str);

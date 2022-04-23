@@ -3,14 +3,13 @@
 
 
 void cpm::print(struct install_cmd& lhs){
-    std::vector<std::string> vDep; // dependencies
     printf("[build_env: %s, install_mode: %s, architecture: %s, libName: %s, ", lhs.build_env.c_str(), lhs.install_mode.c_str(), lhs.architecture.c_str(), lhs.libName.c_str());
     printf("vVer: %s, ", cpm::print_str(lhs.vVer).c_str());
-    printf("vDep: [ ");
-    for(uint i=0; i<vDep.size(); ++i){
-        printf("%s, ", lhs.vDep[i].c_str());
+    if(lhs.vDep.size()>=1){ printf("vDep: [ %s", lhs.vDep[0].c_str()); }
+    for(uint i=1; i<lhs.vDep.size(); ++i){
+        printf(", %s", lhs.vDep[i].c_str());
     }
-    printf("]\n");
+    printf(" ]\n");
 }
 std::unordered_map<std::string, struct cpm::install_cmd> cpm::vLine2instGraph(bool& ret_tf, class cpm::PATH& p, const sstd::vec<uint>& vLineNum_in, const sstd::vvec<std::string>& vLine_in, const char* fileName){
     std::unordered_map<std::string, struct cpm::install_cmd> ret_table_vPkg; // a package list including dependency graph.
@@ -79,13 +78,10 @@ std::unordered_map<std::string, struct cpm::install_cmd> cpm::vLine2instGraph(bo
             // ライブラリを table に追加する
             auto itr = ret_table_vPkg.find( ic.libName );
             if(itr!=ret_table_vPkg.end()){
-                printf("00\n");
-                cpm::print(ic.vVer);
-                cpm::print(itr->second.vVer);
                 bool tf;
                 itr->second.vVer = cpm::verAND(tf, ic.vVer, itr->second.vVer); // solve the range of version
                 if(! tf ){
-                    sstd::pdbg_err("cpm::verAND() is failed.\n  FileName: \"%s\"\n  LineNum: %u\n", fileName.c_str(), lineNum);
+                    sstd::pdbg_err("cpm::verAND() is failed. An error occured while reading the following line in the file:\n  FileName: \"%s\"\n  LineNum: %u.\n", fileName.c_str(), lineNum);
                     ret_tf=false;
                     return ret_table_vPkg;
                 }
@@ -94,7 +90,6 @@ std::unordered_map<std::string, struct cpm::install_cmd> cpm::vLine2instGraph(bo
                     return ret_table_vPkg;
                 }
             }
-            ret_table_vPkg[ ic.libName ] = ic;
             
             // 利用可能なパッケージの一覧を取得する
             std::vector<std::string> ret_vPath;
@@ -105,7 +100,6 @@ std::unordered_map<std::string, struct cpm::install_cmd> cpm::vLine2instGraph(bo
 //            cpm::print(ret_vVer);
             
             // 利用可能なパッケージ version と，要求 version の AND を取る
-            printf("01\n");
             bool tf;
             std::vector<cpm::ver> vVerAND = cpm::verAND(tf, ic.vVer, ret_vVer);
             int idx=vVerAND.size()-1;
@@ -117,7 +111,6 @@ std::unordered_map<std::string, struct cpm::install_cmd> cpm::vLine2instGraph(bo
                 return std::unordered_map<std::string, struct cpm::install_cmd>();
             }
             std::string latest_ver = vVerAND[vVerAND.size()-1].ver;
-            sstd::printn(latest_ver);
             
             // パッケージの依存関係を取得する
             // 1. read packages_cpm.txt
@@ -126,19 +119,22 @@ std::unordered_map<std::string, struct cpm::install_cmd> cpm::vLine2instGraph(bo
             pg.ver  = latest_ver;
             const std::string packsPkg_dir = cpm::getPath_packsPkgDir(p.PACKS_DIR, architecture, pg);
             const std::string depPkg_txt = cpm::getTxt_depPkg(packsPkg_dir);
-            sstd::printn(depPkg_txt);
             // 1. packages_cpm.txt の内容を vLine に追記する．
             sstd::vec<uint> ret_vLineNum;
             sstd::vvec<std::string> ret_vLine;
             bool ret = sstd::txt2vCmdList(ret_vLineNum, ret_vLine, depPkg_txt);
             if(!ret){ sstd::pdbg_err("Failed to read %s.", depPkg_txt.c_str()); ret_tf=false; return ret_table_vPkg; }
-            sstd::printn(ret_vLine);
-            printf("\n");
             vLine     <<= ret_vLine;
             vLineNum  <<= ret_vLineNum;
             vFileName <<= std::vector<std::string>(ret_vLine.size(), depPkg_txt);
             
             // 依存グラフの作成
+            sstd::printn(ret_vLine);
+            for(uint i=0; i<ret_vLine.size(); ++i){
+                ic.vDep <<= ret_vLine[i][0];
+            }
+            sstd::printn(ic.vDep);
+            ret_table_vPkg[ ic.libName ] = ic;
         }
     }
     

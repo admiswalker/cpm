@@ -1,4 +1,5 @@
 #pragma once
+#include "../src/pathProc.hpp"
 #include "../src/dependency_graph_generator.hpp"
 
 
@@ -32,6 +33,10 @@ TEST(vLine2instGraph, example_test){
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 
 TEST(vLine2instGraph, example_test02){
+    class cpm::PATH p(cpm::baseDir_default);
+    sstd::mkdir(p.PACKS_DIR);
+    sstd::cp(cpm::buildin_packages_dir+"/*", p.PACKS_DIR);
+    
     sstd::vvec<std::string> vLine={
         {"ARCHITECTURE", "amd64"},
 //        {"IMPORT", "CPM_libExample_to_IMPORT", "0.1.0", "https://github.com/admiswalker/CPM_libExample_to_IMPORT/raw/main/cpm_import/script/0.1.0/download_installation_scripts.sh"},
@@ -52,16 +57,15 @@ TEST(vLine2instGraph, example_test02){
     sstd::vec<uint> vLineNum(vLine.size()); std::iota(vLineNum.begin(), vLineNum.end(), 1);
     
     bool ret;
-    class cpm::PATH p(cpm::baseDir_default);
     std::unordered_map<std::string, struct cpm::install_cmd> table_reqPkg = cpm::vLine2instGraph(ret, p, vLineNum, vLine, "dummyFileNameForTest.txt");
     if(!ret){ sstd::pdbg_err("packageTxt2instCmd() is failed."); }
-    /*
+    //*
     for(auto pkg: table_reqPkg){
         sstd::printn(pkg.first);
         cpm::print(pkg.second);
         printf("\n");
     }
-    */
+    //*/
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------

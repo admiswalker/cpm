@@ -5,9 +5,11 @@
 void cpm::print(struct install_cmd& lhs){
     printf("[build_env: %s, install_mode: %s, architecture: %s, libName: %s, ", lhs.build_env.c_str(), lhs.install_mode.c_str(), lhs.architecture.c_str(), lhs.libName.c_str());
     printf("vVer: %s, ", cpm::print_str(lhs.vVer).c_str());
-    if(lhs.vDep.size()>=1){ printf("vDep: [ %s", lhs.vDep[0].c_str()); }
-    for(uint i=1; i<lhs.vDep.size(); ++i){
-        printf(", %s", lhs.vDep[i].c_str());
+
+    auto itr = lhs.vDep.begin();
+    if(lhs.vDep.size()>=1){ printf("vDep: [ %s", itr->first.c_str()); ++itr; }
+    for(; itr!=lhs.vDep.end(); ++itr){
+        printf(", %s", itr->first.c_str());
     }
     printf(" ]\n");
 }
@@ -131,7 +133,8 @@ std::unordered_map<std::string, struct cpm::install_cmd> cpm::vLine2instGraph(bo
             // 依存グラフの作成
             sstd::printn(ret_vLine);
             for(uint i=0; i<ret_vLine.size(); ++i){
-                ic.vDep <<= ret_vLine[i][0];
+//                ic.vDep <<= ret_vLine[i][0];
+                ic.vDep[ ret_vLine[i][0] ];
             }
             sstd::printn(ic.vDep);
             ret_table_vPkg[ ic.libName ] = ic;

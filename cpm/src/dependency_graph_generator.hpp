@@ -13,8 +13,8 @@ namespace cpm{
         std::string libName;
 //      std::string ver;
         std::vector<cpm::ver> vVer;
-    
-        std::vector<std::string> vDep; // dependencies
+        
+        std::unordered_map<std::string, char> vDep; // dependencies. 'char' is a dummy type (not used).
     };
     void print(struct install_cmd& lhs);
     

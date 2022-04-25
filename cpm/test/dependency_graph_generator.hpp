@@ -57,7 +57,8 @@ TEST(vLine2instGraph, example_test02){
     sstd::vec<uint> vLineNum(vLine.size()); std::iota(vLineNum.begin(), vLineNum.end(), 1);
     
     bool ret;
-    std::unordered_map<std::string, struct cpm::install_cmd> table_reqPkg = cpm::vLine2instGraph(ret, p, vLineNum, vLine, "dummyFileNameForTest.txt");
+    std::unordered_map<std::string, struct cpm::install_cmd> table_reqPkg;
+    ret = cpm::vLine2instGraph(table_reqPkg, p, vLineNum, vLine, "dummyFileNameForTest.txt");
     if(!ret){ sstd::pdbg_err("packageTxt2instCmd() is failed."); }
     //*
     for(auto pkg: table_reqPkg){

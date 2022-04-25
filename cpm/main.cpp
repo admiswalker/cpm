@@ -365,13 +365,17 @@ int main(int argc, char *argv[]){
     sstd::cp("cpm/init.sh",    INST_PATH);
     sstd::cp("cpm/set_env.sh", INST_PATH);
     
-//    bool ret;
-//    sstd::vvec<std::string> vLine = cpm::packagesTxt2vLine( packages_path );
-//    std::unordered_map<std::string, struct install_cmd> table_reqPkg = cpm::vLine2instGraph(ret, vLine); if(!ret){ sstd::pdbg_err("packageTxt2instCmd() is failed."); }
-//    std::unordered_map<std::string, struct install_cmd> table_reqPkg = packageTxt2instGraph(ret, packages_path); if(!ret){ sstd::pdbg_err("packageTxt2instCmd() is failed."); }
-//    for(uint i=0; i<ret_table_vPkg.size(); ++i){
-        // install here
-//    }
+    
+    bool ret;
+    std::unordered_map<std::string, struct cpm::install_cmd> table_reqPkg;
+    ret = cpm::txt2instGraph(table_reqPkg, p, packages_path.c_str());
+    if(!ret){ sstd::pdbg_err("packageTxt2instCmd() is failed."); }
+    
+    for(auto pkg: table_reqPkg){
+        sstd::printn(pkg.first);
+        cpm::print(pkg.second);
+        printf("\n");
+    }
     
     return -1;
     //---------------------------------------------------------------------------------------------------------------------------------

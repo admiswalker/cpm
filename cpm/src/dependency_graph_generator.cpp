@@ -183,17 +183,16 @@ bool cpm::instGraph2instOrder(std::vector<cpm::install_cmd>& ret_vInst, const st
     // 名前の修正: 
     // - vDep -> depTable
 
+
+// isInstalled は，ここでしか使っていないので，別の hash table として，
+// pkgTable は const に戻してコピーしない．
+
     cpm::print(stack);
     printf("imh\n");
     for(int i=stack.size()-1; i>=0; --i){
-//sstd::printn(stack.size());
-    cpm::print(stack[i]);
-    sstd::printn(i);
         int next_stack_idx = i;
         for(auto itr=stack[i].vDep.begin(); itr!=stack[i].vDep.end();){
             std::string libName = itr->first;
-//sstd::printn(libName);
-//sstd::printn(stack[i].vDep.size());
             
             if( pkgTable[ libName ].isInstalled ){
                 itr = stack[i].vDep.erase( itr );

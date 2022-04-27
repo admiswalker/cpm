@@ -13,6 +13,15 @@ void cpm::print(struct install_cmd& lhs){
     }
     printf(" ]\n");
 }
+void cpm::print(std::vector<struct install_cmd>& vLhs){
+    printf("[");
+    if(vLhs.size()>=1){ cpm::print(vLhs[0]); }
+    for(uint i=1; i<vLhs.size(); ++i){
+        cpm::print(vLhs[i]);
+        printf(", ");
+    }
+    printf("]\n");
+}
 bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& ret_table_reqPkg, const class cpm::PATH& p, const sstd::vec<uint>& vLineNum_in, const sstd::vvec<std::string>& vLine_in, const char* fileName){
     
     std::string build_env;
@@ -153,3 +162,63 @@ bool cpm::txt2instGraph(std::unordered_map<std::string, struct cpm::install_cmd>
     
     return true;
 }
+
+
+bool cpm::instGraph2instOrder(std::vector<cpm::install_cmd>& ret_vInst, const std::unordered_map<std::string, struct cpm::install_cmd>& table_reqPkg){
+
+    std::unordered_map<std::string, struct cpm::install_cmd> pkgTable = table_reqPkg;
+    
+    // copy table to stack
+    std::vector<cpm::install_cmd> stack;
+    for(auto itr=table_reqPkg.begin(); itr!=table_reqPkg.end(); ++itr){
+        stack <<= itr->second;
+    }
+
+    // 全部 copy しているが，最初の 1 つだけでよいのでは？
+    // → グラフとして繋がっていないものは，引っ張り出しておく必要がある．
+    // → どうせ依存関係が解決されていれば，size()==0 で次のループに遷移するだけなので，気にしなくてよいのでは？
+    // → ret_vInst に重複した値が入らない？
+    // → 重複だけチェックする
+
+    // 名前の修正: 
+    // - vDep -> depTable
+
+    cpm::print(stack);
+    printf("imh\n");
+    for(int i=stack.size()-1; i>=0; --i){
+//sstd::printn(stack.size());
+    cpm::print(stack[i]);
+    sstd::printn(i);
+        int next_stack_idx = i;
+        for(auto itr=stack[i].vDep.begin(); itr!=stack[i].vDep.end();){
+            std::string libName = itr->first;
+//sstd::printn(libName);
+//sstd::printn(stack[i].vDep.size());
+            
+            if( pkgTable[ libName ].isInstalled ){
+                itr = stack[i].vDep.erase( itr );
+                continue;
+            }
+
+            // ここで stack に積む
+            stack <<= pkgTable[ libName ];
+            next_stack_idx = stack.size();
+            ++itr;
+        }
+
+        if( stack[i].vDep.size() == 0 ){
+            if(! pkgTable[ stack[i].libName ].isInstalled ){
+                pkgTable[ stack[i].libName ].isInstalled = true;
+                ret_vInst <<= stack[i];
+            }
+            stack.erase(stack.begin()+i);
+            continue;
+        }
+
+        i = next_stack_idx;
+    }
+    
+    return true;
+}
+
+    

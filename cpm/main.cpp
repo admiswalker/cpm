@@ -377,6 +377,14 @@ int main(int argc, char *argv[]){
         printf("\n");
     }
     
+    std::vector<cpm::install_cmd> vInst;
+    ret = cpm::instGraph2instOrder(vInst, table_reqPkg);
+    
+    //cpm::print(vInst);
+    for(uint i=0; i<vInst.size(); ++i){
+        sstd::printn(vInst[i].libName);
+    }
+    
     return -1;
     //---------------------------------------------------------------------------------------------------------------------------------
     

@@ -166,7 +166,6 @@ bool cpm::txt2instGraph(std::unordered_map<std::string, struct cpm::install_cmd>
 
 bool cpm::instGraph2instOrder(std::vector<cpm::install_cmd>& ret_vInst, const std::unordered_map<std::string, struct cpm::install_cmd>& table_reqPkg){
 
-    std::unordered_map<std::string, struct cpm::install_cmd> pkgTable = table_reqPkg;
     std::unordered_map<std::string, bool> isInst;
     
     // copy table to stack
@@ -182,9 +181,6 @@ bool cpm::instGraph2instOrder(std::vector<cpm::install_cmd>& ret_vInst, const st
     // → ret_vInst に重複した値が入らない？
     // → 重複だけチェックする
 
-// isInstalled は，ここでしか使っていないので，別の hash table として，
-// pkgTable は const に戻してコピーしない．
-
     cpm::print(stack);
     printf("imh\n");
     for(int i=stack.size()-1; i>=0; --i){
@@ -192,17 +188,13 @@ bool cpm::instGraph2instOrder(std::vector<cpm::install_cmd>& ret_vInst, const st
         for(auto itr=stack[i].depTbl.begin(); itr!=stack[i].depTbl.end();){
             std::string libName = itr->first;
             
-//            if( pkgTable[ libName ].isInstalled ){
             if( isInst[ libName ] ){
                 itr = stack[i].depTbl.erase( itr );
                 continue;
             }
             
             // ここで stack に積む
-//            stack <<= pkgTable[ libName ];
             auto itr_t = table_reqPkg.find( libName );
-//            cpm::install_cmd tmp = itr_t->second;
-//            stack <<= tmp;
             stack <<= itr_t->second;
             next_stack_idx = stack.size();
             ++itr;
@@ -210,8 +202,6 @@ bool cpm::instGraph2instOrder(std::vector<cpm::install_cmd>& ret_vInst, const st
 
         if( stack[i].depTbl.size() == 0 ){
             if(! isInst[ stack[i].libName ] ){
-//            if(! pkgTable[ stack[i].libName ].isInstalled ){
-//                pkgTable[ stack[i].libName ].isInstalled = true;
                 isInst[ stack[i].libName ] = true;
                 ret_vInst <<= stack[i];
             }

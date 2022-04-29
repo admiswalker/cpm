@@ -6,9 +6,9 @@ void cpm::print(struct install_cmd& lhs){
     printf("[build_env: %s, install_mode: %s, architecture: %s, libName: %s, ", lhs.build_env.c_str(), lhs.install_mode.c_str(), lhs.architecture.c_str(), lhs.libName.c_str());
     printf("vVer: %s, ", cpm::print_str(lhs.vVer).c_str());
 
-    auto itr = lhs.vDep.begin();
-    if(lhs.vDep.size()>=1){ printf("vDep: [ %s", itr->first.c_str()); ++itr; }
-    for(; itr!=lhs.vDep.end(); ++itr){
+    auto itr = lhs.depTbl.begin();
+    if(lhs.depTbl.size()>=1){ printf("depTbl: [ %s", itr->first.c_str()); ++itr; }
+    for(; itr!=lhs.depTbl.end(); ++itr){
         printf(", %s", itr->first.c_str());
     }
     printf(" ]\n");
@@ -139,9 +139,9 @@ bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& r
             // 依存グラフの作成
 //            sstd::printn(ret_vLine);
             for(uint i=0; i<ret_vLine.size(); ++i){
-                ic.vDep[ ret_vLine[i][0] ];
+                ic.depTbl[ ret_vLine[i][0] ];
             }
-//            sstd::printn(ic.vDep);
+//            sstd::printn(ic.depTbl);
             ret_table_reqPkg[ ic.libName ] = ic;
         }
     }
@@ -180,10 +180,6 @@ bool cpm::instGraph2instOrder(std::vector<cpm::install_cmd>& ret_vInst, const st
     // → ret_vInst に重複した値が入らない？
     // → 重複だけチェックする
 
-    // 名前の修正: 
-    // - vDep -> depTable
-
-
 // isInstalled は，ここでしか使っていないので，別の hash table として，
 // pkgTable は const に戻してコピーしない．
 
@@ -191,11 +187,11 @@ bool cpm::instGraph2instOrder(std::vector<cpm::install_cmd>& ret_vInst, const st
     printf("imh\n");
     for(int i=stack.size()-1; i>=0; --i){
         int next_stack_idx = i;
-        for(auto itr=stack[i].vDep.begin(); itr!=stack[i].vDep.end();){
+        for(auto itr=stack[i].depTbl.begin(); itr!=stack[i].depTbl.end();){
             std::string libName = itr->first;
             
             if( pkgTable[ libName ].isInstalled ){
-                itr = stack[i].vDep.erase( itr );
+                itr = stack[i].depTbl.erase( itr );
                 continue;
             }
 
@@ -205,7 +201,7 @@ bool cpm::instGraph2instOrder(std::vector<cpm::install_cmd>& ret_vInst, const st
             ++itr;
         }
 
-        if( stack[i].vDep.size() == 0 ){
+        if( stack[i].depTbl.size() == 0 ){
             if(! pkgTable[ stack[i].libName ].isInstalled ){
                 pkgTable[ stack[i].libName ].isInstalled = true;
                 ret_vInst <<= stack[i];

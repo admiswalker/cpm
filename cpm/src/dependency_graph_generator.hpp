@@ -14,7 +14,7 @@ namespace cpm{
         std::vector<cpm::ver> vVer;
         bool isInstalled = false;
         
-        std::unordered_map<std::string, char> vDep; // dependencies. 'char' is a dummy type (not used).
+        std::unordered_map<std::string, char> depTbl; // dependencies table. 'char' is a dummy type (not used).
     };
     void print(            struct install_cmd & lhs);
     void print(std::vector<struct install_cmd>& lhs);

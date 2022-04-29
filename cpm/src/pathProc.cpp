@@ -35,7 +35,6 @@ std::string cpm::getTxt_depPkg(const std::string& packsPkg_dir){ return packsPkg
 bool cpm::get_available_pkg(std::vector<std::string>& ret_vPath, std::vector<cpm::ver>& ret_vVer, const std::string& PACKS_DIR, const std::string& architecture, const std::string& libName){
     ret_vPath = sstd::glob(PACKS_DIR+'/'+architecture+'/'+libName+"/*", "d");
 
-    std::vector<std::string> v_verStr;
     for(uint i=0; i<ret_vPath.size(); ++i){
         cpm::ver cv;
         cv.ineq = cpm::CPM_EQ;
@@ -43,6 +42,8 @@ bool cpm::get_available_pkg(std::vector<std::string>& ret_vPath, std::vector<cpm
         ret_vVer <<= cv;
     }
     sstd::sort(ret_vVer, ret_vPath);
+    if(ret_vVer.size() != ret_vPath.size()){ return false; }
+    if(ret_vVer.size() == 0               ){ return false; }
     
     return true;
 }

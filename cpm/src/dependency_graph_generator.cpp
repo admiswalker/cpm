@@ -22,6 +22,18 @@ void cpm::print(std::vector<struct install_cmd>& vLhs){
     }
     printf("]\n");
 }
+std::string vStr2printStr(const std::vector<std::string>& v){
+    std::string r;
+    if(v.size()>=1){
+        r += sstd::ssprintf("[ %s", v[0].c_str());
+    }
+    for(uint i=1; i<v.size(); ++i){
+        r += sstd::ssprintf(", %s", v[i].c_str());
+    }
+    r += sstd::ssprintf(" ]");
+    
+    return r;
+}
 bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& ret_table_reqPkg, const class cpm::PATH& p, const sstd::vec<uint>& vLineNum_in, const sstd::vvec<std::string>& vLine_in, const char* fileName){
     
     std::string build_env;
@@ -84,30 +96,31 @@ bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& r
             ic.libName      = line[0];
             ic.vVer         = cpm::str2ver( line && sstd::slice(1, sstd::end()) );
             
-            // ライブラリを table に追加する
+            // check the library is on the table or not.
             auto itr = ret_table_reqPkg.find( ic.libName );
             if(itr!=ret_table_reqPkg.end()){
                 bool tf;
-                itr->second.vVer = cpm::verAND(tf, ic.vVer, itr->second.vVer); // solve the range of version
+                std::vector<cpm::ver> vVer = cpm::verAND(tf, ic.vVer, itr->second.vVer); // solve the range of version
                 if(! tf ){
-                    sstd::pdbg_err("cpm::verAND() is failed. An error occured while reading the following line in the file:\n  FileName: \"%s\"\n  LineNum: %u.\n", fileName.c_str(), lineNum);
+                    sstd::pdbg_err("cpm::verAND() is failed. An error occured while reading the following line in the file:\n  FileName: \"%s\"\n  LineNum: %u\n  line: %s.\n", fileName.c_str(), lineNum, vStr2printStr(line).c_str());
                     return false;
                 }
-                if(itr->second.vVer.size()==0){
+                if(vVer.size()==0){
+                    sstd::pdbg_err("cpm::verAND() is failed. An error occured while reading the following line in the file:\n  FileName: \"%s\"\n  LineNum: %u\n  line: %s.\n", fileName.c_str(), lineNum, vStr2printStr(line).c_str());
                     sstd::pdbg_err("The lib \"%s\" is required conflicting version. cpm::verAND() can't get version between %s and %s.\n", itr->first.c_str(), cpm::print_str(ic.vVer).c_str(), cpm::print_str(itr->second.vVer).c_str());
                     return false;
                 }
+                itr->second.vVer = vVer;
+                continue;
             }
             
-            // 利用可能なパッケージの一覧を取得する
+            // get available packages list
             std::vector<std::string> ret_vPath;
             std::vector<cpm::ver> ret_vVer;
-            cpm::get_available_pkg(ret_vPath, ret_vVer, p.PACKS_DIR, architecture, ic.libName);
-            if(i<0){ sstd::pdbg_err("There is no available \"%s\" library.", ic.libName.c_str()); return false; }
-//            sstd::printn(ret_vPath);
-//            cpm::print(ret_vVer);
+            bool ret = cpm::get_available_pkg(ret_vPath, ret_vVer, p.PACKS_DIR, architecture, ic.libName);
+            if(!ret){ sstd::pdbg_err("There is no available \"%s\" library.", ic.libName.c_str()); return false; }
             
-            // 利用可能なパッケージ version と，要求 version の AND を取る
+            // get the latest package version of available packages
             bool tf;
             std::vector<cpm::ver> vVerAND = cpm::verAND(tf, ic.vVer, ret_vVer);
             int idx=vVerAND.size()-1;
@@ -118,30 +131,29 @@ bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& r
                 sstd::pdbg_err("There is no available \"%s\" library.\n  required: %s\n  available: %s\n", ic.libName.c_str(), cpm::print_str(ic.vVer).c_str(), cpm::print_str(ret_vVer).c_str());
                 return false;
             }
-            std::string latest_ver = vVerAND[vVerAND.size()-1].ver;
+            std::string latest_pkg_ver = vVerAND[vVerAND.size()-1].ver;
             
-            // パッケージの依存関係を取得する
-            // 1. read packages_cpm.txt
+            // get dependent packages
+            //   1. read packages_cpm.txt
             struct cpm::pkg pg;
             pg.name = ic.libName;
-            pg.ver  = latest_ver;
+            pg.ver  = latest_pkg_ver;
             const std::string packsPkg_dir = cpm::getPath_packsPkgDir(p.PACKS_DIR, architecture, pg);
             const std::string depPkg_txt = cpm::getTxt_depPkg(packsPkg_dir);
-            // 1. packages_cpm.txt の内容を vLine に追記する．
+            //   2. Add the contents of packages_cpm.txt to stacks (vLine, vLineNum, vFileName).
             sstd::vec<uint> ret_vLineNum;
             sstd::vvec<std::string> ret_vLine;
-            bool ret = sstd::txt2vCmdList(ret_vLineNum, ret_vLine, depPkg_txt);
+            ret = sstd::txt2vCmdList(ret_vLineNum, ret_vLine, depPkg_txt);
             if(!ret){ sstd::pdbg_err("Failed to read %s.", depPkg_txt.c_str()); return false; }
             vLine     <<= ret_vLine;
             vLineNum  <<= ret_vLineNum;
             vFileName <<= std::vector<std::string>(ret_vLine.size(), depPkg_txt);
-            
-            // 依存グラフの作成
-//            sstd::printn(ret_vLine);
+            //  3. registering dependent packages
             for(uint i=0; i<ret_vLine.size(); ++i){
                 ic.depTbl[ ret_vLine[i][0] ];
             }
-//            sstd::printn(ic.depTbl);
+            
+            // registering the package to the table
             ret_table_reqPkg[ ic.libName ] = ic;
         }
     }

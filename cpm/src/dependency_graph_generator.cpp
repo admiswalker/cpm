@@ -175,16 +175,9 @@ bool cpm::instGraph2instOrder(std::vector<cpm::install_cmd>& ret_vInst, const st
         isInst[ itr->first ] = false;
     }
 
-    // 全部 copy しているが，最初の 1 つだけでよいのでは？
-    // → グラフとして繋がっていないものは，引っ張り出しておく必要がある．
-    // → どうせ依存関係が解決されていれば，size()==0 で次のループに遷移するだけなので，気にしなくてよいのでは？
-    // → ret_vInst に重複した値が入らない？
-    // → 重複だけチェックする
-
-    cpm::print(stack);
-    printf("imh\n");
-    for(int i=stack.size()-1; i>=0; --i){
-        int next_stack_idx = i;
+    while( stack.size()!=0 ){
+        int i = stack.size()-1;
+        
         for(auto itr=stack[i].depTbl.begin(); itr!=stack[i].depTbl.end();){
             std::string libName = itr->first;
             
@@ -193,23 +186,19 @@ bool cpm::instGraph2instOrder(std::vector<cpm::install_cmd>& ret_vInst, const st
                 continue;
             }
             
-            // ここで stack に積む
             auto itr_t = table_reqPkg.find( libName );
             stack <<= itr_t->second;
-            next_stack_idx = stack.size();
             ++itr;
         }
 
         if( stack[i].depTbl.size() == 0 ){
-            if(! isInst[ stack[i].libName ] ){
-                isInst[ stack[i].libName ] = true;
+            auto itr_iI = isInst.find( stack[i].libName );
+            if(! itr_iI->second ){
+                itr_iI->second = true;
                 ret_vInst <<= stack[i];
             }
             stack.erase(stack.begin()+i);
-            continue;
         }
-
-        i = next_stack_idx;
     }
     
     return true;

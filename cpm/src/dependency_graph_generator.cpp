@@ -166,17 +166,15 @@ bool cpm::txt2instGraph(std::unordered_map<std::string, struct cpm::install_cmd>
 
 bool cpm::instGraph2instOrder(std::vector<cpm::install_cmd>& ret_vInst, const std::unordered_map<std::string, struct cpm::install_cmd>& table_reqPkg){
 
-    std::unordered_map<std::string, bool> isInst;
-    
-    // copy table to stack
     std::vector<cpm::install_cmd> stack;
+    std::unordered_map<std::string, bool> isInst;
     for(auto itr=table_reqPkg.begin(); itr!=table_reqPkg.end(); ++itr){
         stack <<= itr->second;
         isInst[ itr->first ] = false;
     }
 
     while( stack.size()!=0 ){
-        int i = stack.size()-1;
+        uint i = stack.size()-1;
         
         for(auto itr=stack[i].depTbl.begin(); itr!=stack[i].depTbl.end();){
             std::string libName = itr->first;

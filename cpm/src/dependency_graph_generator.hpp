@@ -12,7 +12,7 @@ namespace cpm{
         std::string architecture;
         std::string libName;
         std::vector<cpm::ver> vVer;
-        bool isInstalled = false;
+//        bool isInstalled = false;
         
         std::unordered_map<std::string, char> depTbl; // dependencies table. 'char' is a dummy type (not used).
     };

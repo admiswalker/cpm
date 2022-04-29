@@ -167,11 +167,13 @@ bool cpm::txt2instGraph(std::unordered_map<std::string, struct cpm::install_cmd>
 bool cpm::instGraph2instOrder(std::vector<cpm::install_cmd>& ret_vInst, const std::unordered_map<std::string, struct cpm::install_cmd>& table_reqPkg){
 
     std::unordered_map<std::string, struct cpm::install_cmd> pkgTable = table_reqPkg;
+    std::unordered_map<std::string, bool> isInst;
     
     // copy table to stack
     std::vector<cpm::install_cmd> stack;
     for(auto itr=table_reqPkg.begin(); itr!=table_reqPkg.end(); ++itr){
         stack <<= itr->second;
+        isInst[ itr->first ] = false;
     }
 
     // 全部 copy しているが，最初の 1 つだけでよいのでは？
@@ -190,11 +192,12 @@ bool cpm::instGraph2instOrder(std::vector<cpm::install_cmd>& ret_vInst, const st
         for(auto itr=stack[i].depTbl.begin(); itr!=stack[i].depTbl.end();){
             std::string libName = itr->first;
             
-            if( pkgTable[ libName ].isInstalled ){
+//            if( pkgTable[ libName ].isInstalled ){
+            if( isInst[ libName ] ){
                 itr = stack[i].depTbl.erase( itr );
                 continue;
             }
-
+            
             // ここで stack に積む
             stack <<= pkgTable[ libName ];
             next_stack_idx = stack.size();
@@ -202,8 +205,10 @@ bool cpm::instGraph2instOrder(std::vector<cpm::install_cmd>& ret_vInst, const st
         }
 
         if( stack[i].depTbl.size() == 0 ){
-            if(! pkgTable[ stack[i].libName ].isInstalled ){
-                pkgTable[ stack[i].libName ].isInstalled = true;
+            if(! isInst[ stack[i].libName ] ){
+//            if(! pkgTable[ stack[i].libName ].isInstalled ){
+//                pkgTable[ stack[i].libName ].isInstalled = true;
+                isInst[ stack[i].libName ] = true;
                 ret_vInst <<= stack[i];
             }
             stack.erase(stack.begin()+i);

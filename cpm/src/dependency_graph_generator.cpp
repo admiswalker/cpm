@@ -201,8 +201,9 @@ bool cpm::instGraph2instOrder(std::vector<cpm::install_cmd>& ret_vInst, const st
             // ここで stack に積む
 //            stack <<= pkgTable[ libName ];
             auto itr_t = table_reqPkg.find( libName );
-            cpm::install_cmd tmp = itr_t->second;
-            stack <<= tmp;
+//            cpm::install_cmd tmp = itr_t->second;
+//            stack <<= tmp;
+            stack <<= itr_t->second;
             next_stack_idx = stack.size();
             ++itr;
         }

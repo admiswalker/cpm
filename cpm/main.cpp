@@ -449,12 +449,13 @@ int main(int argc, char *argv[]){
     printf("+---------------------------------------------------+\n");
     printf("\n");
     time_m timem; sstd::measureTime_start(timem);
-    
+
     std::string packages_path = "packages_cpm.txt"; // -p packages_cpm.txt
-    bool TF_genArchive = false;
-    std::string archive_ext = "tar.xz";
-    //std::string archive_ext = "zip"; // test by zip to reduce excusion time.
-    bool TF_dl_dps2cache_only = false; // Only downloads depending files to chache directory and exits.
+    struct runTimeOptions rto;
+    rto.TF_genArchive = false;
+    rto.archive_ext = "tar.xz";
+    //rto.archive_ext = "zip"; // test by zip to reduce excusion time.
+    rto.TF_dl_dps2cache_only = false; // Only downloads depending files to chache directory and exits.
     std::string base_dir = cpm::baseDir_default;
     
     char c = ' ';
@@ -463,9 +464,9 @@ int main(int argc, char *argv[]){
         if(s[0] == '-'){ c=s[1]; continue; }
         
         switch(c){
-        case 'a': { TF_genArchive = (sstd::strcmp(s,"true") ? true:false); break; }
+        case 'a': { rto.TF_genArchive = (sstd::strcmp(s,"true") ? true:false); break; }
         case 'b': { base_dir=s; break; }
-        case 'c': { TF_dl_dps2cache_only = (sstd::strcmp(s,"true") ? true:false); break; }
+        case 'c': { rto.TF_dl_dps2cache_only = (sstd::strcmp(s,"true") ? true:false); break; }
         case 'p': { packages_path=s; break; }
         default: { break; }
         }
@@ -502,10 +503,6 @@ int main(int argc, char *argv[]){
         sstd::printn(vInst[i].libName);
     }
     
-    struct runTimeOptions rto;
-    rto.TF_genArchive        = TF_genArchive;
-    rto.archive_ext          = archive_ext;
-    rto.TF_dl_dps2cache_only = TF_dl_dps2cache_only;
     install_lib(p, rto, vInst);
     
     return -1;
@@ -590,7 +587,7 @@ int main(int argc, char *argv[]){
         bool ret=true;
         std::vector<struct cpm::pkg> v_pkg_requested = vPkgList2vPkg(ret, vPkgList); if(!ret){ return -1; }
         std::vector<struct cpm::pkg> v_inst_pkg      = solve_dependencies(ret, v_pkg_requested, table_vPkg); if(!ret){ return -1; }
-        install_libs(CACHE_DIR, BUILD_DIR, INST_PATH, INST_WDIR, v_build_env, architecture, PACKS_DIR, v_inst_pkg, TF_genArchive, ACV_DIR, archive_ext, TF_dl_dps2cache_only, install_mode);
+        install_libs(CACHE_DIR, BUILD_DIR, INST_PATH, INST_WDIR, v_build_env, architecture, PACKS_DIR, v_inst_pkg, rto.TF_genArchive, ACV_DIR, rto.archive_ext, rto.TF_dl_dps2cache_only, install_mode);
     }
 
     printf("\n");

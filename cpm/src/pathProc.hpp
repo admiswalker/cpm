@@ -43,6 +43,13 @@ namespace cpm{
     std::string getPath_cachePkgDir_src(const std::string& CACHE_DIR, const std::string& architecture, const struct pkg& p);
     std::string getPath_buildPkgDir    (const std::string& BUILD_DIR, const std::string& architecture, const struct pkg& p);
 
+    std::string getPath_acvPkgDir      (const std::string& ACV_DIR,   const std::string& architecture, const std::string& libName, const std::string& ver);
+    std::string getPath_acvBaseName    (const std::string& ACV_DIR,   const std::string& architecture, const std::string& libName, const std::string& ver);
+    std::string getPath_packsPkgDir    (const std::string& PACKS_DIR, const std::string& architecture, const std::string& libName, const std::string& ver);
+    std::string getPath_cachePkgDir_acv(const std::string& CACHE_DIR, const std::string& architecture, const std::string& libName, const std::string& ver);
+    std::string getPath_cachePkgDir_src(const std::string& CACHE_DIR, const std::string& architecture, const std::string& libName, const std::string& ver);
+    std::string getPath_buildPkgDir    (const std::string& BUILD_DIR, const std::string& architecture, const std::string& libName, const std::string& ver);
+
     std::string getSh_dlAcv  (const std::string& packsPkg_dir);
     std::string getSh_dlSrc  (const std::string& packsPkg_dir);
     std::string getSh_instAcv(const std::string& packsPkg_dir);

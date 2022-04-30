@@ -314,7 +314,131 @@ sstd::vec<sstd::vvec<std::string>> split_pksList_by_scope(const sstd::vvec<std::
     
     return v_vvLine;
 }
+///---
 
+struct runTimeOptions{
+    bool TF_genArchive;
+    std::string archive_ext;
+    bool TF_dl_dps2cache_only;
+};
+
+bool install_lib(const cpm::PATH& p,
+                 const struct runTimeOptions& rto,
+                 const cpm::install_cmd& c){
+    std::string call_path = sstd::system_stdout("pwd"); sstd::stripAll_ow(call_path, "\r\n");
+    
+    std::string archivePkg_dir;
+    std::string archive_baseName;
+    if(rto.TF_genArchive){
+        archivePkg_dir   = cpm::getPath_acvPkgDir  (p.ACV_DIR, c.architecture, c.libName, c.vVer[0].ver);
+        archive_baseName = cpm::getPath_acvBaseName(p.ACV_DIR, c.architecture, c.libName, c.vVer[0].ver);
+        if(sstd::fileExist(archive_baseName+'.'+rto.archive_ext)){ return true; }
+    }
+    
+    std::string packsPkg_dir = cpm::getPath_packsPkgDir(p.PACKS_DIR, c.architecture, c.libName, c.vVer[0].ver);
+    bool TF_useArchive = sstd::isFile(cpm::getSh_dlAcv(packsPkg_dir)) && (c.install_mode != cpm::cmd_INSTALL_MODE_source);
+    
+    std::string cachePkg_dir = (TF_useArchive ? cpm::getPath_cachePkgDir_acv(p.CACHE_DIR, c.architecture, c.libName, c.vVer[0].ver):cpm::getPath_cachePkgDir_src(p.CACHE_DIR, c.architecture, c.libName, c.vVer[0].ver));
+    std::string buildPkg_dir = cpm::getPath_buildPkgDir(p.BUILD_DIR, c.architecture, c.libName, c.vVer[0].ver);
+    sstd::mkdir(cachePkg_dir);
+    if(!TF_useArchive){
+        sstd::mkdir(buildPkg_dir);
+    }
+    
+    std::string cmd_env;
+    std::string runner = ""; // "sh"
+    std::string options;
+    if(c.build_env.size()==0){ sstd::pdbg_err("BUILD_ENV is not set.\n"); }
+    if      (c.build_env == cpm::cmd_CPM_ENV   ){ cmd_env += return_set_env_cmd(p.INST_PATH);
+    }else if(c.build_env == cpm::cmd_DOCKER_ENV){ runner = "sh " + c.build_env_path + "/docker_run.sh";
+                                                  options = "--env CPM_CACHE_DIR --env CPM_BUILD_DIR --env CPM_DLIB_PATH --env CPM_INST_WDIR --env CPM_INST_PATH";
+    }else if(c.build_env == cpm::cmd_SYSTEM_ENV){ // do nothing
+    }else{
+        sstd::pdbg_err("BUILD_ENV has invalid value: %s.\n", c.build_env.c_str());
+        return false;
+    }
+    cmd_env += "export CPM_BUILD_DIR=" + buildPkg_dir + '\n';
+    cmd_env += "export CPM_DLIB_PATH=" + p.INST_PATH + '\n'; // dependent library
+    cmd_env += "export CPM_INST_WDIR=" + p.INST_WDIR + '\n'; // working dir
+    cmd_env += "export CPM_INST_PATH=" + p.INST_PATH + '\n';
+    cmd_env += "\n";
+    std::string cmd_run;
+    if(rto.TF_dl_dps2cache_only){
+        std::string cacheDir_acv = cpm::getPath_cachePkgDir_acv(p.CACHE_DIR, c.architecture, c.libName, c.vVer[0].ver);
+        std::string cacheDir_src = cpm::getPath_cachePkgDir_src(p.CACHE_DIR, c.architecture, c.libName, c.vVer[0].ver);
+        std::string cmd_env4acv = cmd_env + "export CPM_CACHE_DIR=" + cacheDir_acv + '\n';
+        std::string cmd_env4src = cmd_env + "export CPM_CACHE_DIR=" + cacheDir_src + '\n';
+        std::string cmd_run4acv = runner + ' ' + cpm::getSh_dlAcv(packsPkg_dir) + ' ' + options + '\n';
+        std::string cmd_run4src = runner + ' ' + cpm::getSh_dlSrc(packsPkg_dir) + ' ' + options + '\n';
+        sstd::system(cmd_env4acv + cmd_run4acv); // download archive files
+        sstd::system(cmd_env4src + cmd_run4src); // download src files
+        return true;
+    }
+    cmd_env += "export CPM_CACHE_DIR=" + cachePkg_dir + '\n';
+    if(TF_useArchive){
+        cmd_run += runner + ' ' + cpm::getSh_dlAcv  (packsPkg_dir) + ' ' + options + '\n';
+        cmd_run += runner + ' ' + cpm::getSh_instAcv(packsPkg_dir) + ' ' + options + '\n';
+    }else{
+        cmd_run += runner + ' ' + cpm::getSh_dlSrc  (packsPkg_dir) + ' ' + options + '\n';
+        cmd_run += runner + ' ' + cpm::getSh_instSrc(packsPkg_dir) + ' ' + options + '\n';
+    }
+    //std::string str_isInstalled = sstd::system_stdout_stderr(cmd_env+runner+' '+cpm::getSh_isInst(packsPkg_dir)+' '+options+'\n');
+    std::string str_isInstalled = sstd::system_stdout_stderr(cmd_env + cpm::getSh_isInst(packsPkg_dir));
+    bool TF_isInstalled = sstd::strIn("true", str_isInstalled);
+    if(TF_isInstalled){ return true; }
+    sstd::mkdir(p.INST_WDIR);
+    sstd::system(cmd_env + cmd_run); // install to INST_WDIR
+    
+    std::string rtxt_path = p.INST_WDIR + "/replacement_path_for_cpm_archive.txt";
+    
+    // replace path on '*la' and 'replacement_path_for_cpm_archive.txt' file (preproc to install on INST_PATH)
+    if(sstd::fileExist(rtxt_path)){
+        std::string cmd_r;
+            
+        std::string SRC_PATH = sstd::read(rtxt_path); sstd::stripAll_ow(SRC_PATH, "\r\n");
+        std::string DST_PATH = call_path + '/' + p.INST_PATH;
+        if(c.build_env == cpm::cmd_DOCKER_ENV){ DST_PATH = sstd::read(c.build_env_path+"/docker_base_path.txt"); sstd::stripAll_ow(DST_PATH, "\r\n"); DST_PATH += '/' + p.INST_PATH; }
+            
+        replace_PATH_in_laFile(p.INST_WDIR, SRC_PATH, DST_PATH);
+        //replace_PATH_in_laFile(INST_WDIR+"/*.la", SRC_PATH, DST_PATH); 
+        sstd::write(rtxt_path, DST_PATH);
+    }
+    
+    // copy file (move INST_WDIR to INST_PATH)
+    std::vector<std::string> vPath = sstd::glob(p.INST_WDIR+"/*", "df");
+    if(vPath.size()!=0){
+        sstd::cp(p.INST_WDIR+"/*", p.INST_PATH, "pu");
+        //          sstd::mv(WORK_PATH+"/*", INST_PATH); // Not implimented yet
+    }else{
+        sstd::pdbg_err("CPM_INST_WDIR is empty.");
+        return false;
+    }
+    
+    TF_isInstalled = sstd::stripAll(sstd::system_stdout(cmd_env + cpm::getSh_isInst(packsPkg_dir)), " \r\n")=="true";
+    if(!TF_isInstalled){
+        sstd::pdbg_err("Installation is failed.");
+        return false;
+    }
+    if(rto.TF_genArchive && !TF_useArchive){
+        if(sstd::glob(p.INST_WDIR+"/*.la", "fr").size()!=0 && sstd::fileExist(rtxt_path)==false){
+            sstd::pdbg_err("replacement_path_for_cpm_archive.txt is not found.");
+            return false;
+        }
+        
+        sstd::mkdir(archivePkg_dir);
+        gen_archive(call_path+'/'+archive_baseName+'.'+rto.archive_ext, rto.archive_ext, call_path+'/'+p.INST_WDIR);
+        gen_hashFile(archivePkg_dir, archive_baseName+"-sha256sum.txt");
+    }
+    sstd::rm(p.INST_WDIR);
+    
+    return true;
+}
+bool install_lib(const cpm::PATH& p, const struct runTimeOptions& rto, const std::vector<cpm::install_cmd>& vInstCmd){
+    for(uint i=0; i<vInstCmd.size(); ++i){
+        if(!install_lib(p, rto, vInstCmd[i])){ return false; }
+    }
+    return true;
+}
 
 int main(int argc, char *argv[]){
     printf("\n");
@@ -371,19 +495,18 @@ int main(int argc, char *argv[]){
     ret = cpm::txt2instGraph(table_reqPkg, p, packages_path.c_str());
     if(!ret){ sstd::pdbg_err("packageTxt2instCmd() is failed."); }
     
-    for(auto pkg: table_reqPkg){
-        sstd::printn(pkg.first);
-        cpm::print(pkg.second);
-        printf("\n");
-    }
-    
     std::vector<cpm::install_cmd> vInst;
     ret = cpm::instGraph2instOrder(vInst, table_reqPkg);
-    
-    //cpm::print(vInst);
+
     for(uint i=0; i<vInst.size(); ++i){
         sstd::printn(vInst[i].libName);
     }
+    
+    struct runTimeOptions rto;
+    rto.TF_genArchive        = TF_genArchive;
+    rto.archive_ext          = archive_ext;
+    rto.TF_dl_dps2cache_only = TF_dl_dps2cache_only;
+    install_lib(p, rto, vInst);
     
     return -1;
     //---------------------------------------------------------------------------------------------------------------------------------

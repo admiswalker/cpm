@@ -357,8 +357,6 @@ bool install_lib(const cpm::PATH& p,
         sstd::pdbg_err("BUILD_ENV has invalid value: %s.\n", c.build_env.c_str());
         return false;
     }
-    sstd::printn(c.build_env_path);
-    sstd::printn(runner);
     cmd_env += "export CPM_BUILD_DIR=" + buildPkg_dir + '\n';
     cmd_env += "export CPM_DLIB_PATH=" + p.INST_PATH + '\n'; // dependent library
     cmd_env += "export CPM_INST_WDIR=" + p.INST_WDIR + '\n'; // working dir
@@ -396,7 +394,7 @@ bool install_lib(const cpm::PATH& p,
     // replace path on '*la' and 'replacement_path_for_cpm_archive.txt' file (preproc to install on INST_PATH)
     if(sstd::fileExist(rtxt_path)){
         std::string cmd_r;
-            
+        
         std::string SRC_PATH = sstd::read(rtxt_path); sstd::stripAll_ow(SRC_PATH, "\r\n");
         std::string DST_PATH = call_path + '/' + p.INST_PATH;
         if(c.build_env == cpm::cmd_DOCKER_ENV){ DST_PATH = sstd::read(c.build_env_path+"/docker_base_path.txt"); sstd::stripAll_ow(DST_PATH, "\r\n"); DST_PATH += '/' + p.INST_PATH; }
@@ -408,8 +406,6 @@ bool install_lib(const cpm::PATH& p,
     
     // copy file (move INST_WDIR to INST_PATH)
     std::vector<std::string> vPath = sstd::glob(p.INST_WDIR+"/*", "df");
-    sstd::printn(p.INST_WDIR);
-    sstd::printn(vPath);
     if(vPath.size()!=0){
         sstd::cp(p.INST_WDIR+"/*", p.INST_PATH, "pu");
 //      sstd::mv(p.WORK_PATH+"/*", p.INST_PATH); // Not implimented yet

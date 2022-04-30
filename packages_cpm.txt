@@ -1,7 +1,7 @@
 ARCHITECTURE, amd64;
 //INSTALL_MODE, source;
 //INSTALL_MODE, archive;
-//IMPORT, CPM_libExample_to_IMPORT, 0.1.0, "https://github.com/admiswalker/CPM_libExample_to_IMPORT/raw/main/cpm_import/script/0.1.0/download_installation_scripts.sh";
+IMPORT, CPM_libExample_to_IMPORT, 0.1.0, "https://github.com/admiswalker/CPM_libExample_to_IMPORT/raw/main/cpm_import/script/0.1.0/download_installation_scripts.sh";
 //IMPORT, CPM_libExample_to_IMPORT, latest, "https://github.com/admiswalker/CPM_libExample_to_IMPORT/raw/main/cpm_import/script/download_latest_installation_scripts.sh";
 
 //*
@@ -19,7 +19,7 @@ isl, ==0.18; // need: gmp
 gcc, ==11.2.0;
 //*/
 
-/*
+//*
 INSTALL_MODE, source;
 BUILD_ENV, CPM_ENV;
 //cmake, ==3.20.1;

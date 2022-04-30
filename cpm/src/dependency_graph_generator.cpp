@@ -51,9 +51,6 @@ bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& r
     std::string install_mode;
     
     std::string architecture;
-    std::string import_libName;
-    std::string import_ver;
-    std::string import_URL;
 
     sstd::vec<uint> vLineNum;
     sstd::vvec<std::string> vLine;
@@ -97,17 +94,26 @@ bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& r
         }else if(line[0]==cpm::cmd_IMPORT){
             if(line.size()!=4){ sstd::pdbg_err("The \"IMPORT\" command requires 3 args."); return false; }
             
-            import_libName = line[1];
-            import_ver     = line[2];
-            import_URL     = line[3];
+            std::string libName = line[1];
+            std::string ver     = line[2];
+            std::string URL     = sstd::stripAll(line[3], "\"");
             
-            // import するライブラリを table に追加する
+            std::string cacheIptScr_dir = p.CACHE_DIR+"/import/"+libName+'/'+ver;
+            std::string cachePkg_dir    = p.CACHE_DIR+"/packages/"+libName+'/'+ver;
+            std::string packsPkg_dir    = p.PACKS_DIR + '/' + architecture + '/' + libName + '/' + ver;
+            sstd::mkdir(cacheIptScr_dir);
+            sstd::mkdir(cachePkg_dir);
+            sstd::mkdir(packsPkg_dir);
+            std::string dl_script = cacheIptScr_dir + '/' + sstd::getFileName( URL.c_str() );
+            if(!sstd::fileExist(dl_script)){
+                sstd::system("wget -P "+cacheIptScr_dir+' '+URL);
+            }
             
-            // パッケージの依存関係を取得する
-            // ここでダウンロードする
-            // - ダウンロードした packages_cpm.txt を stack に積む
-            //     - ダウンロードした依存ライブラリを stack に積む
-            //     - ダウンロードした IMPORT 命令を stack に積む
+            std::string cmd;
+            cmd += "export CPM_CACHE_DIR=" + cachePkg_dir + '\n';
+            cmd += "./" + dl_script;
+            sstd::system(cmd);
+            sstd::cp(cachePkg_dir+"/*", packsPkg_dir, "pu");
             
         }else if(line[0]==cpm::cmd_INSTALL_MODE){
             if(line.size()!=2){ sstd::pdbg_err("The \"INSTALL_MODE\" command requires 1 args."); return false; }

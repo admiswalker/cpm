@@ -6,7 +6,7 @@
 
 namespace cpm{
     struct install_cmd{
-        int readOrder;
+        uint readOrder;
         
         std::string build_env;
         std::string build_env_path;

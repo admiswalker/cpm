@@ -232,7 +232,7 @@ bool cpm::instGraph2instOrder(std::vector<cpm::install_cmd>& ret_vInst, const st
         stack <<= itr->second;
         isInst[ itr->first ] = false;
     }
-    std::sort(stack.begin(), stack.end(), std::greater<cpm::install_cmd>());
+    sstd::sort_gr(stack);
     
     while( stack.size()!=0 ){
         uint i = stack.size()-1;

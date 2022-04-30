@@ -1,7 +1,17 @@
+#include <algorithm>
+#include <functional>
+#include <iostream>
+
 #include "dependency_graph_generator.hpp"
 #include "definition.hpp"
 
 
+bool cpm::operator<(const struct cpm::install_cmd& lhs, const struct cpm::install_cmd& rhs){
+    return lhs.readOrder < rhs.readOrder;
+}
+bool cpm::operator>(const struct cpm::install_cmd& lhs, const struct cpm::install_cmd& rhs){
+    return lhs.readOrder > rhs.readOrder;
+}
 void cpm::print(struct install_cmd& lhs){
     printf("[build_env: %s, install_mode: %s, architecture: %s, libName: %s, ", lhs.build_env.c_str(), lhs.install_mode.c_str(), lhs.architecture.c_str(), lhs.libName.c_str());
     printf("vVer: %s, ", cpm::print_str(lhs.vVer).c_str());
@@ -61,8 +71,9 @@ bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& r
     vLineNum  <<= vLineNum_in;
     vLine     <<= vLine_in;
     vFileName <<= sstd::vec<std::string>(vLine.size(), fileName);
-    
-    for(uint i=0; i<vLine.size(); ++i){
+
+    uint readOrder=0;
+    for(uint i=0; i<vLine.size(); ++i, ++readOrder){
         const uint lineNum = vLineNum[i];
         const std::vector<std::string>& line = vLine[i];
         const std::string& fileName = vFileName[i];
@@ -125,6 +136,7 @@ bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& r
             if(line.size()!=2){ sstd::pdbg_err("When specifing the library, version needs to be defined."); return false; }
             
             struct cpm::install_cmd ic;
+            ic.readOrder      = readOrder;
             ic.build_env      = build_env;
             ic.build_env_path = build_env_path;
             ic.install_mode   = install_mode;
@@ -220,7 +232,8 @@ bool cpm::instGraph2instOrder(std::vector<cpm::install_cmd>& ret_vInst, const st
         stack <<= itr->second;
         isInst[ itr->first ] = false;
     }
-
+    std::sort(stack.begin(), stack.end(), std::greater<cpm::install_cmd>());
+    
     while( stack.size()!=0 ){
         uint i = stack.size()-1;
         

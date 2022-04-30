@@ -195,7 +195,7 @@ int main(int argc, char *argv[]){
     printf("\n");
     printf("+---------------------------------------------------+\n");
     printf("|                                                   |\n");
-    printf("|      Welcome to Cpp Package Manager (CPM) !       |\n");
+    printf("|      Welcome to C++ Package Manager (CPM) !       |\n");
     printf("|                                                   |\n");
     printf("+---------------------------------------------------+\n");
     printf("\n");
@@ -251,6 +251,7 @@ int main(int argc, char *argv[]){
     ret = cpm::instGraph2instOrder(vInst, table_reqPkg);
     //*
     for(uint i=0; i<vInst.size(); ++i){
+        sstd::printn(vInst[i].readOrder);
         sstd::printn(vInst[i].libName);
     }
     //*/

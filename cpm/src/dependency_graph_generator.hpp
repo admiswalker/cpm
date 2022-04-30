@@ -6,16 +6,20 @@
 
 namespace cpm{
     struct install_cmd{
+        int readOrder;
+        
         std::string build_env;
         std::string build_env_path;
         std::string install_mode;
-    
+        
         std::string architecture;
         std::string libName;
         std::vector<cpm::ver> vVer;
-        
+
         std::unordered_map<std::string, char> depTbl; // dependencies table. 'char' is a dummy type (not used).
     };
+    bool operator<(const struct install_cmd& lhs, const struct install_cmd& rhs);
+    bool operator>(const struct install_cmd& lhs, const struct install_cmd& rhs);
     void print(            struct install_cmd & lhs);
     void print(std::vector<struct install_cmd>& lhs);
     

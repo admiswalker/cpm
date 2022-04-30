@@ -24,25 +24,6 @@ namespace cpm{
 
     //---
     
-    struct pkg{
-    private:
-    public:
-        std::string name; // for dbg
-        std::string ver;
-        uint ver100=0; // v_major
-        uint ver010=0; // v_minor
-        uint ver001=0; // v_patch
-        std::string verExtra;
-        std::vector<struct pkg> v_depend;
-    };
-    
-    std::string getPath_acvPkgDir      (const std::string& ACV_DIR,   const std::string& architecture, const struct pkg& p);
-    std::string getPath_acvBaseName    (const std::string& ACV_DIR,   const std::string& architecture, const struct pkg& p);
-    std::string getPath_packsPkgDir    (const std::string& PACKS_DIR, const std::string& architecture, const struct pkg& p);
-    std::string getPath_cachePkgDir_acv(const std::string& CACHE_DIR, const std::string& architecture, const struct pkg& p);
-    std::string getPath_cachePkgDir_src(const std::string& CACHE_DIR, const std::string& architecture, const struct pkg& p);
-    std::string getPath_buildPkgDir    (const std::string& BUILD_DIR, const std::string& architecture, const struct pkg& p);
-
     std::string getPath_acvPkgDir      (const std::string& ACV_DIR,   const std::string& architecture, const std::string& libName, const std::string& ver);
     std::string getPath_acvBaseName    (const std::string& ACV_DIR,   const std::string& architecture, const std::string& libName, const std::string& ver);
     std::string getPath_packsPkgDir    (const std::string& PACKS_DIR, const std::string& architecture, const std::string& libName, const std::string& ver);

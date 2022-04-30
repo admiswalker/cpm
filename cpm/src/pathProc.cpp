@@ -16,13 +16,6 @@ cpm::PATH::~PATH(){}
 
 const std::string cpm::buildin_packages_dir = "cpm/packages";
 
-std::string cpm::getPath_acvPkgDir      (const std::string& ACV_DIR,   const std::string& architecture, const struct cpm::pkg& p){ return ACV_DIR + '/' + architecture + '/' + p.name + '/' + p.ver; }
-std::string cpm::getPath_acvBaseName    (const std::string& ACV_DIR,   const std::string& architecture, const struct cpm::pkg& p){ return getPath_acvPkgDir(ACV_DIR, architecture, p) + '/' + architecture + '-' + p.name + '-' + p.ver; }
-std::string cpm::getPath_packsPkgDir    (const std::string& PACKS_DIR, const std::string& architecture, const struct cpm::pkg& p){ return PACKS_DIR + '/' + architecture + '/' + p.name + '/' + p.ver; }
-std::string cpm::getPath_cachePkgDir_acv(const std::string& CACHE_DIR, const std::string& architecture, const struct cpm::pkg& p){ return CACHE_DIR + "/archive/" + architecture + '-' + p.name + '-' + p.ver; }
-std::string cpm::getPath_cachePkgDir_src(const std::string& CACHE_DIR, const std::string& architecture, const struct cpm::pkg& p){ return CACHE_DIR + "/src/"     + architecture + '-' + p.name + '-' + p.ver; }
-std::string cpm::getPath_buildPkgDir    (const std::string& BUILD_DIR, const std::string& architecture, const struct cpm::pkg& p){ return BUILD_DIR + '/' + architecture + '-' + p.name + '-' + p.ver; }
-
 std::string cpm::getPath_acvPkgDir      (const std::string& ACV_DIR,   const std::string& architecture, const std::string& libName, const std::string& ver){ return ACV_DIR + '/' + architecture + '/' + libName + '/' + ver; }
 std::string cpm::getPath_acvBaseName    (const std::string& ACV_DIR,   const std::string& architecture, const std::string& libName, const std::string& ver){ return getPath_acvPkgDir(ACV_DIR, architecture, libName, ver) + '/' + architecture + '-' + libName + '-' + ver; }
 std::string cpm::getPath_packsPkgDir    (const std::string& PACKS_DIR, const std::string& architecture, const std::string& libName, const std::string& ver){ return PACKS_DIR + '/' + architecture + '/' + libName + '/' + ver; }

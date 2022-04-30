@@ -2,7 +2,7 @@
 #include <string>
 #include "src/pathProc.hpp"
 
-
+/*
 namespace sstd{
     void print(const struct cpm::pkg& rhs);
     void print_for_vT(const struct cpm::pkg& rhs);
@@ -23,7 +23,7 @@ void sstd::print_for_vT(const struct cpm::pkg& rhs){
     printf("]]");
 }
 void sstd::for_printn(const struct cpm::pkg& rhs){ printf(" = "); sstd::print(rhs); }
-
+*/
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -33,10 +33,10 @@ void sstd::for_printn(const struct cpm::pkg& rhs){ printf(" = "); sstd::print(rh
 #include "src/dependency_graph_generator.hpp"
 #include "src/version_processor.hpp"
 
-
+/*
 bool isSameVer(const struct cpm::pkg& lhs, const struct cpm::pkg& rhs){
     return ((lhs.ver100==rhs.ver100) && (lhs.ver010==rhs.ver010) && (lhs.ver001==rhs.ver001) && (lhs.ver==rhs.ver));
-}
+}*/
 /*
 void split_tag_ver(std::string& tag_ret, std::string& ver_ret, const std::string& ver_in, const char splitter){
     std::vector<std::string> v = sstd::split(ver_in, splitter);
@@ -48,6 +48,7 @@ void split_tag_ver(std::string& tag_ret, std::string& ver_ret, const std::string
     }
 }
 */
+/*
 bool is_ver_num(const std::vector<std::string>& ver){
     return ( ver.size()>=3 && sstd::isNum(ver[0]) && sstd::isNum(ver[1]) && sstd::isNum(ver[2]) );
 }
@@ -74,9 +75,11 @@ bool str2struct_pkg(struct cpm::pkg& r, const std::string& name_in, const std::s
     
     return true;
 }
+*/
 //bool struct_pkg2str(std::string& s, const struct cpm::pkg& ret){
 //    return true;
 //}
+/*
 std::vector<struct cpm::pkg> vPkgList2vPkg(bool& ret, const sstd::vvec<std::string>& vPkgList){
     ret=true;
     std::vector<struct cpm::pkg> v_pkg_ret;
@@ -113,6 +116,8 @@ bool read_packages_dir(std::unordered_map<std::string,std::vector<struct cpm::pk
     
     return true;
 }
+*/
+/*
 std::vector<struct cpm::pkg> solve_dependencies(bool& ret,
                                            const std::vector<struct cpm::pkg>& v_pkg_requested,
                                            const std::unordered_map<std::string, std::vector<struct cpm::pkg>>& table_vPkg){
@@ -136,6 +141,7 @@ std::vector<struct cpm::pkg> solve_dependencies(bool& ret,
     
     return v_pkg_ret;
 }
+*/
 std::string return_set_env_cmd(const std::string& INST_PATH){
     return sstd::read(INST_PATH+"/set_env.sh");
 }
@@ -169,6 +175,7 @@ void gen_hashFile(const std::string& ACV_DIR, const std::string& save_name){
     sstd::write(save_name, w_str);
     return;
 }
+/*
 bool install_libs(const std::string& CACHE_DIR,
                   const std::string& BUILD_DIR,
                   const std::string& INST_PATH,
@@ -293,6 +300,8 @@ bool install_libs(const std::string& CACHE_DIR,
     
     return true;
 }
+*/
+/*
 sstd::vec<sstd::vvec<std::string>> split_pksList_by_scope(const sstd::vvec<std::string>& vvLine, const std::vector<std::string>& splitList){
     std::unordered_map<std::string, char> sTable;
     for(uint i=0; i<splitList.size(); ++i){
@@ -314,6 +323,7 @@ sstd::vec<sstd::vvec<std::string>> split_pksList_by_scope(const sstd::vvec<std::
     
     return v_vvLine;
 }
+*/
 ///---
 
 struct runTimeOptions{
@@ -498,16 +508,17 @@ int main(int argc, char *argv[]){
     
     std::vector<cpm::install_cmd> vInst;
     ret = cpm::instGraph2instOrder(vInst, table_reqPkg);
-
+    //*
     for(uint i=0; i<vInst.size(); ++i){
         sstd::printn(vInst[i].libName);
     }
-    
+    //*/
     install_lib(p, rto, vInst);
     
-    return -1;
-    //---------------------------------------------------------------------------------------------------------------------------------
+    return 0;
     
+    //---------------------------------------------------------------------------------------------------------------------------------
+    /*
     std::string architecture;
     std::string install_mode="auto"; // , "source" or "archive"
     std::unordered_map<std::string, std::vector<struct cpm::pkg>> table_vPkg;
@@ -593,4 +604,5 @@ int main(int argc, char *argv[]){
     printf("\n");
     sstd::measureTime_stop_print(timem);
     return 0;
+    */
 }

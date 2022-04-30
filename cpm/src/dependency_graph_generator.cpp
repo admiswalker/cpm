@@ -119,11 +119,12 @@ bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& r
             if(line.size()!=2){ sstd::pdbg_err("When specifing the library, version needs to be defined."); return false; }
             
             struct cpm::install_cmd ic;
-            ic.build_env    = build_env;
-            ic.install_mode = install_mode;
-            ic.architecture = architecture;
-            ic.libName      = line[0];
-            ic.vVer         = cpm::str2ver( line && sstd::slice(1, sstd::end()) );
+            ic.build_env      = build_env;
+            ic.build_env_path = build_env_path;
+            ic.install_mode   = install_mode;
+            ic.architecture   = architecture;
+            ic.libName        = line[0];
+            ic.vVer           = cpm::str2ver( line && sstd::slice(1, sstd::end()) );
             
             // check the library is on the table or not.
             auto itr = ret_table_reqPkg.find( ic.libName );

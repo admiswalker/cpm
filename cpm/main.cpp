@@ -357,6 +357,8 @@ bool install_lib(const cpm::PATH& p,
         sstd::pdbg_err("BUILD_ENV has invalid value: %s.\n", c.build_env.c_str());
         return false;
     }
+    sstd::printn(c.build_env_path);
+    sstd::printn(runner);
     cmd_env += "export CPM_BUILD_DIR=" + buildPkg_dir + '\n';
     cmd_env += "export CPM_DLIB_PATH=" + p.INST_PATH + '\n'; // dependent library
     cmd_env += "export CPM_INST_WDIR=" + p.INST_WDIR + '\n'; // working dir
@@ -398,7 +400,7 @@ bool install_lib(const cpm::PATH& p,
         std::string SRC_PATH = sstd::read(rtxt_path); sstd::stripAll_ow(SRC_PATH, "\r\n");
         std::string DST_PATH = call_path + '/' + p.INST_PATH;
         if(c.build_env == cpm::cmd_DOCKER_ENV){ DST_PATH = sstd::read(c.build_env_path+"/docker_base_path.txt"); sstd::stripAll_ow(DST_PATH, "\r\n"); DST_PATH += '/' + p.INST_PATH; }
-            
+        
         replace_PATH_in_laFile(p.INST_WDIR, SRC_PATH, DST_PATH);
         //replace_PATH_in_laFile(INST_WDIR+"/*.la", SRC_PATH, DST_PATH); 
         sstd::write(rtxt_path, DST_PATH);
@@ -406,22 +408,24 @@ bool install_lib(const cpm::PATH& p,
     
     // copy file (move INST_WDIR to INST_PATH)
     std::vector<std::string> vPath = sstd::glob(p.INST_WDIR+"/*", "df");
+    sstd::printn(p.INST_WDIR);
+    sstd::printn(vPath);
     if(vPath.size()!=0){
         sstd::cp(p.INST_WDIR+"/*", p.INST_PATH, "pu");
-        //          sstd::mv(WORK_PATH+"/*", INST_PATH); // Not implimented yet
+//      sstd::mv(p.WORK_PATH+"/*", p.INST_PATH); // Not implimented yet
     }else{
-        sstd::pdbg_err("CPM_INST_WDIR is empty.");
+        sstd::pdbg_err("CPM_INST_WDIR is empty. installation of \"%s\" (ver: %s) is faild.\n", c.libName.c_str(), c.vVer[0].ver.c_str());
         return false;
     }
     
     TF_isInstalled = sstd::stripAll(sstd::system_stdout(cmd_env + cpm::getSh_isInst(packsPkg_dir)), " \r\n")=="true";
     if(!TF_isInstalled){
-        sstd::pdbg_err("Installation is failed.");
+        sstd::pdbg_err("Installation is failed.\n");
         return false;
     }
     if(rto.TF_genArchive && !TF_useArchive){
         if(sstd::glob(p.INST_WDIR+"/*.la", "fr").size()!=0 && sstd::fileExist(rtxt_path)==false){
-            sstd::pdbg_err("replacement_path_for_cpm_archive.txt is not found.");
+            sstd::pdbg_err("replacement_path_for_cpm_archive.txt is not found.\n");
             return false;
         }
         
@@ -494,7 +498,7 @@ int main(int argc, char *argv[]){
     bool ret;
     std::unordered_map<std::string, struct cpm::install_cmd> table_reqPkg;
     ret = cpm::txt2instGraph(table_reqPkg, p, packages_path.c_str());
-    if(!ret){ sstd::pdbg_err("packageTxt2instCmd() is failed."); }
+    if(!ret){ sstd::pdbg_err("packageTxt2instCmd() is failed.\n"); return -1; }
     
     std::vector<cpm::install_cmd> vInst;
     ret = cpm::instGraph2instOrder(vInst, table_reqPkg);

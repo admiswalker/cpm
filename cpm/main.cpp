@@ -100,8 +100,7 @@ bool install_lib(const cpm::PATH& p,
     std::string options;
     if(c.build_env.size()==0){ sstd::pdbg_err("BUILD_ENV is not set.\n"); }
     if      (c.build_env == cpm::cmd_CPM_ENV   ){ cmd_env += return_set_env_cmd(p.INST_PATH);
-    }else if(c.build_env == cpm::cmd_DOCKER_ENV){ sstd::system_stdout_stderr(c.build_env_path+"/docker_build.sh");
-                                                  runner = "sh " + c.build_env_path + "/docker_run.sh";
+    }else if(c.build_env == cpm::cmd_DOCKER_ENV){ runner = "sh " + c.build_env_path + "/docker_run.sh";
                                                   options = "--env CPM_CACHE_DIR --env CPM_BUILD_DIR --env CPM_DLIB_PATH --env CPM_INST_WDIR --env CPM_INST_PATH";
     }else if(c.build_env == cpm::cmd_SYSTEM_ENV){ // do nothing
     }else{
@@ -258,7 +257,6 @@ int main(int argc, char *argv[]){
     
     std::string cmd;
     cmd += "find ./" + base_dir + " | xargs chmod +x\n";
-    sstd::printn(cmd);
     sstd::system(cmd);
     
     install_lib(p, rto, vInst);

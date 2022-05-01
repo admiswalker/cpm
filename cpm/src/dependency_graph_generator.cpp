@@ -95,6 +95,10 @@ bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& r
             
             if      (line[1]==cpm::cmd_CPM_ENV   ){ // do nothing
             }else if(line[1]==cpm::cmd_DOCKER_ENV){ build_env_path = line[2];
+                                                    std::string cmd;
+                                                    cmd += "chmod +x "+build_env_path+"/docker_build.sh\n";
+                                                    cmd += build_env_path+"/docker_build.sh\n";
+                                                    sstd::system(cmd);
             }else if(line[1]==cpm::cmd_SYSTEM_ENV){ // do nothing
             }else{
                 sstd::pdbg_err("Unexpected BUILD_ENV option.");

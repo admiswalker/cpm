@@ -96,11 +96,11 @@ bool install_lib(const cpm::PATH& p,
     }
     
     std::string cmd_env;
-    std::string runner = ""; // "sh"
+    std::string runner = "bash";
     std::string options;
     if(c.build_env.size()==0){ sstd::pdbg_err("BUILD_ENV is not set.\n"); }
     if      (c.build_env == cpm::cmd_CPM_ENV   ){ cmd_env += return_set_env_cmd(p.INST_PATH);
-    }else if(c.build_env == cpm::cmd_DOCKER_ENV){ runner = "sh " + c.build_env_path + "/docker_run.sh";
+    }else if(c.build_env == cpm::cmd_DOCKER_ENV){ runner = "bash " + c.build_env_path + "/docker_run.sh";
                                                   options = "--env CPM_CACHE_DIR --env CPM_BUILD_DIR --env CPM_DLIB_PATH --env CPM_INST_WDIR --env CPM_INST_PATH";
     }else if(c.build_env == cpm::cmd_SYSTEM_ENV){ // do nothing
     }else{
@@ -118,8 +118,8 @@ bool install_lib(const cpm::PATH& p,
         std::string cacheDir_src = cpm::getPath_cachePkgDir_src(p.CACHE_DIR, c.architecture, c.libName, c.vVer[0].ver);
         std::string cmd_env4acv = cmd_env + "export CPM_CACHE_DIR=" + cacheDir_acv + '\n';
         std::string cmd_env4src = cmd_env + "export CPM_CACHE_DIR=" + cacheDir_src + '\n';
-        std::string cmd_run4acv = runner + ' ' + cpm::getSh_dlAcv(packsPkg_dir) + ' ' + options + '\n';
-        std::string cmd_run4src = runner + ' ' + cpm::getSh_dlSrc(packsPkg_dir) + ' ' + options + '\n';
+        std::string cmd_run4acv = "bash " + cpm::getSh_dlAcv(packsPkg_dir) + ' ' + options + '\n';
+        std::string cmd_run4src = "bash " + cpm::getSh_dlSrc(packsPkg_dir) + ' ' + options + '\n';
         sstd::system(cmd_env4acv + cmd_run4acv); // download archive files
         sstd::system(cmd_env4src + cmd_run4src); // download src files
         return true;
@@ -133,7 +133,7 @@ bool install_lib(const cpm::PATH& p,
         cmd_run += runner + ' ' + cpm::getSh_instSrc(packsPkg_dir) + ' ' + options + '\n';
     }
     //std::string str_isInstalled = sstd::system_stdout_stderr(cmd_env+runner+' '+cpm::getSh_isInst(packsPkg_dir)+' '+options+'\n');
-    std::string str_isInstalled = sstd::system_stdout_stderr(cmd_env + cpm::getSh_isInst(packsPkg_dir));
+    std::string str_isInstalled = sstd::system_stdout_stderr(cmd_env + "bash "+cpm::getSh_isInst(packsPkg_dir));
     bool TF_isInstalled = sstd::strIn("true", str_isInstalled);
     if(TF_isInstalled){ return true; }
     sstd::mkdir(p.INST_WDIR);
@@ -160,11 +160,11 @@ bool install_lib(const cpm::PATH& p,
         sstd::cp(p.INST_WDIR+"/*", p.INST_PATH, "pu");
 //      sstd::mv(p.WORK_PATH+"/*", p.INST_PATH); // Not implimented yet
     }else{
-        sstd::pdbg_err("CPM_INST_WDIR is empty. installation of \"%s\" (ver: %s) is faild.\n", c.libName.c_str(), c.vVer[0].ver.c_str());
-        return false;
+//        sstd::pdbg_err("CPM_INST_WDIR is empty. installation of \"%s\" (ver: %s) is faild.\n", c.libName.c_str(), c.vVer[0].ver.c_str());
+//        return false;
     }
     
-    TF_isInstalled = sstd::stripAll(sstd::system_stdout(cmd_env + cpm::getSh_isInst(packsPkg_dir)), " \r\n")=="true";
+    TF_isInstalled = sstd::stripAll(sstd::system_stdout(cmd_env + "bash "+cpm::getSh_isInst(packsPkg_dir)), " \r\n")=="true";
     if(!TF_isInstalled){
         sstd::pdbg_err("Installation is failed.\n");
         return false;
@@ -254,10 +254,6 @@ int main(int argc, char *argv[]){
         sstd::printn(vInst[i].libName);
     }
     //*/
-    
-    std::string cmd;
-    cmd += "find ./" + base_dir + " -name '*.sh' | xargs chmod +x\n";
-    sstd::system(cmd);
     
     install_lib(p, rto, vInst);
     

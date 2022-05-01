@@ -255,6 +255,12 @@ int main(int argc, char *argv[]){
         sstd::printn(vInst[i].libName);
     }
     //*/
+    
+    std::string cmd;
+    cmd += "find ./" + base_dir + " | xargs chmod +x\n";
+    sstd::printn(cmd);
+    sstd::system(cmd);
+    
     install_lib(p, rto, vInst);
     
     return 0;

@@ -256,7 +256,7 @@ int main(int argc, char *argv[]){
     //*/
     
     std::string cmd;
-    cmd += "find ./" + base_dir + " | xargs chmod +x\n";
+    cmd += "find ./" + base_dir + " -name '*.sh' | xargs chmod +x\n";
     sstd::system(cmd);
     
     install_lib(p, rto, vInst);

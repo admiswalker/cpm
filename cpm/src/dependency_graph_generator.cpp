@@ -122,6 +122,7 @@ bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& r
             
             std::string cmd;
             cmd += "export CPM_CACHE_DIR=" + cachePkg_dir + '\n';
+            cmd += "chmod +x ./" + dl_script + '\n';
             cmd += "./" + dl_script;
             sstd::system(cmd);
             sstd::cp(cachePkg_dir+"/*", packsPkg_dir, "pu");

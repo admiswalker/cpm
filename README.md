@@ -3,6 +3,16 @@
 CPM is a toy package manager for C++.
 
 ## Usage
+### Setting
+#### docker engine installation
+When using `DOCKER_ENV` option in `BUILD_ENV` command in the `packages_cpm.txt` file, docker engine should be installed in the local system.
+
+NOTE: Installing docker engine requires that you have `sudo` (root privileges).
+If you don't have `sudo`, you should get the privileges, request your system admin to install docker engine, or avoid using the `DOCKER_ENV` option.
+
+[docker installation](./doc/docker.md)
+
+### local package installation
 1. Set required packages to `packages_cpm.txt`
 2. Run installation commands
    ```

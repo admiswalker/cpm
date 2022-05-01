@@ -20,8 +20,8 @@
       ```
       sudo groupadd docker
       ```
-   2. add users who use docker without `sudo` to the docker group
-      ここではログインユーザを追加する．
+   2. add users who use docker without `sudo` to the docker group  
+      In this example, login user is added to the docker group.
       ```
       sudo gpasswd -a $USER docker
       ```

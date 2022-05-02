@@ -123,7 +123,8 @@ bool install_lib(const cpm::PATH& p,
     bool TF_isInstalled = sstd::strIn("true", str_isInstalled);
     if(TF_isInstalled){ return true; }
     sstd::mkdir(p.INST_WDIR);
-    sstd::system(cmd_env + cmd_run); // install to INST_WDIR
+    int r = sstd::system(cmd_env + cmd_run); // install to INST_WDIR
+    if(r){ sstd::pdbg_err(""); return false; }
     
     std::string rtxt_path = p.INST_WDIR + "/replacement_path_for_cpm_archive.txt";
     
@@ -245,7 +246,6 @@ int main(int argc, char *argv[]){
         std::string ver     = vInst[i].vVer[0].ver;
         printf("  %d/%d (%.1lf %% -> %.1lf %%):  %s, %s\n", i+1, numOfLib, 100*(((double)(i))/((double)numOfLib)), 100*(((double)(i+1))/((double)numOfLib)), libName.c_str(), ver.c_str());
         if(!install_lib(p, rto, vInst[i])){ return false; }
-        printf("\n");
     }
     printf("End installation\n");
     printf("\n");

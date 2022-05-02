@@ -1,40 +1,6 @@
 #!/bin/bash
 
 
-cfn_echo_download_begin(){
-    local libName=$1
-    local ver=$2
-    
-    title='download'
-    begin_string='--- begin: '$title' '$libName'/'$ver' ------------------------------------------------------------------'
-    echo ${begin_string:0:80}
-}
-cfn_echo_download_end(){
-    local libName=$1
-    local ver=$2
-    
-    title='download'
-    end_string='-------------------------------------------------------------------- end: '$title' '$libName'/'$ver' ---'
-    echo ${end_string: -80:80}
-}
-cfn_echo_install_begin(){
-    local libName=$1
-    local ver=$2
-    
-    title='install'
-    begin_string='--- begin: '$title' '$libName'/'$ver' ------------------------------------------------------------------'
-    echo ${begin_string:0:80}
-}
-cfn_echo_install_end(){
-    local libName=$1
-    local ver=$2
-    
-    title='install'
-    end_string='-------------------------------------------------------------------- end: '$title' '$libName'/'$ver' ---'
-    echo ${end_string: -80:80}
-}
-
-
 cfn_download_archive(){
     # SET: fName, fName_base, arcName, libName, ver
     fName=''
@@ -53,9 +19,6 @@ cfn_download_archive(){
     libName=${tmp#*-}          # <libName>
     ver=${fName_base#*-*-}     # <version>
     fName_hash=${URL_hash##*/} # <architecture>-<libName>-<version>-sha256sum.txt
-
-
-    cfn_echo_download_begin $libName $ver
 
 
     # downloading archive file
@@ -92,9 +55,6 @@ cfn_download_archive(){
 	wget -P $CPM_CACHE_DIR $URL_hash
     fi
     cfn_check_hash_value
-
-
-    cfn_echo_download_end $libName $ver
 }
 cfn_check_hash_value(){
     if ([[ $fName_hash == *"sha"* ]] || [[ $fName_hash == *"SHA"* ]]) && [[ $fName_hash == *"256"* ]]; then
@@ -120,15 +80,8 @@ cfn_install_archive(){
     libName=${tmp#*-}         # <libName>
     ver=${fName_base#*-*-}    # <version>
 
-
-    cfn_echo_install_begin $libName $ver
-
-
     # installation
     if [ `cfn_isInstalled` = 'false' ]; then
 	tar -Jxf $CPM_CACHE_DIR/$fName -C $CPM_INST_WDIR # tar.xz
     fi
-    
-
-    cfn_echo_install_end $libName $ver
 }

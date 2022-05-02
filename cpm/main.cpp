@@ -126,12 +126,24 @@ bool install_lib(const cpm::PATH& p,
         return true;
     }
     cmd_env += "export CPM_CACHE_DIR=" + cachePkg_dir + '\n';
+    std::string b_DL = sstd::ssprintf("--- begin: download %s/%s ---", c.libName.c_str(), ver.c_str()); b_DL = b_DL + std::string(80-b_DL.size(), '-');
+    std::string e_DL = sstd::ssprintf("--- end: download %s/%s ---",   c.libName.c_str(), ver.c_str()); e_DL = std::string(80-e_DL.size(), '-') + e_DL;
+    std::string b_IT = sstd::ssprintf("--- begin: install %s/%s ---",  c.libName.c_str(), ver.c_str()); b_IT = b_IT + std::string(80-b_IT.size(), '-');
+    std::string e_IT = sstd::ssprintf("--- end: install %s/%s ---",    c.libName.c_str(), ver.c_str()); e_IT = std::string(80-e_IT.size(), '-') + e_IT;
     if(TF_useArchive){
+        cmd_run += "echo '"+b_DL+"'\n";
         cmd_run += runner + ' ' + cpm::getSh_dlAcv  (packsPkg_dir) + ' ' + options + '\n';
+        cmd_run += "echo '"+e_DL+"'\n";
+        cmd_run += "echo '"+b_IT+"'\n";
         cmd_run += runner + ' ' + cpm::getSh_instAcv(packsPkg_dir) + ' ' + options + '\n';
+        cmd_run += "echo '"+e_IT+"'\n";
     }else{
+        cmd_run += "echo '"+b_DL+"'\n";
         cmd_run += runner + ' ' + cpm::getSh_dlSrc  (packsPkg_dir) + ' ' + options + '\n';
+        cmd_run += "echo '"+e_DL+"'\n";
+        cmd_run += "echo '"+b_IT+"'\n";
         cmd_run += runner + ' ' + cpm::getSh_instSrc(packsPkg_dir) + ' ' + options + '\n';
+        cmd_run += "echo '"+e_IT+"'\n";
     }
     //std::string str_isInstalled = sstd::system_stdout_stderr(cmd_env+runner+' '+cpm::getSh_isInst(packsPkg_dir)+' '+options+'\n');
     std::string str_isInstalled = sstd::system_stdout_stderr(cmd_env + "bash "+cpm::getSh_isInst(packsPkg_dir));
@@ -184,13 +196,14 @@ bool install_lib(const cpm::PATH& p,
     
     return true;
 }
+/*
 bool install_lib(const cpm::PATH& p, const struct runTimeOptions& rto, const std::vector<cpm::install_cmd>& vInstCmd){
     for(uint i=0; i<vInstCmd.size(); ++i){
         if(!install_lib(p, rto, vInstCmd[i])){ return false; }
     }
     return true;
 }
-
+*/
 int main(int argc, char *argv[]){
     printf("\n");
     printf("+---------------------------------------------------+\n");
@@ -256,12 +269,17 @@ int main(int argc, char *argv[]){
     for(uint i=0; i<vInst.size(); ++i){
         std::string libName = vInst[i].libName;
         std::string ver     = vInst[i].vVer[0].ver;
-        printf("  %d/%d:  %s  (%s)\n", i+1, numOfLib, libName.c_str(), ver.c_str());
+        printf("  %d/%d:  %s, %s\n", i+1, numOfLib, libName.c_str(), ver.c_str());
     }
     printf("\n");
     
     printf("Begin installation\n");
-    install_lib(p, rto, vInst);
+    for(uint i=0; i<vInst.size(); ++i){
+        std::string libName = vInst[i].libName;
+        std::string ver     = vInst[i].vVer[0].ver;
+        printf("  %d/%d (%.1lf %%):  %s, %s\n", i+1, numOfLib, 100*(((double)(i))/((double)numOfLib)), libName.c_str(), ver.c_str());
+        if(!install_lib(p, rto, vInst[i])){ return false; }
+    }
     printf("End installation\n");
     printf("\n");
     

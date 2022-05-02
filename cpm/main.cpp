@@ -196,14 +196,7 @@ bool install_lib(const cpm::PATH& p,
     
     return true;
 }
-/*
-bool install_lib(const cpm::PATH& p, const struct runTimeOptions& rto, const std::vector<cpm::install_cmd>& vInstCmd){
-    for(uint i=0; i<vInstCmd.size(); ++i){
-        if(!install_lib(p, rto, vInstCmd[i])){ return false; }
-    }
-    return true;
-}
-*/
+
 int main(int argc, char *argv[]){
     printf("\n");
     printf("+---------------------------------------------------+\n");

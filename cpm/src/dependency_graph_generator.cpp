@@ -44,6 +44,7 @@ std::string vStr2printStr(const std::vector<std::string>& v){
     
     return r;
 }
+
 void add_defalutSettings(sstd::vec<uint>& vLineNum, sstd::vvec<std::string>& vLine, sstd::vec<std::string>& vFileName){
     // refresh the settings to the default whenever cpm read a new packages_cpm.txt
     vLine     <<= std::vector<std::string>({"INSTALL_MODE", "auto"});
@@ -237,7 +238,7 @@ bool cpm::instGraph2instOrder(std::vector<cpm::install_cmd>& ret_vInst, const st
         stack <<= itr->second;
         isInst[ itr->first ] = false;
     }
-    sstd::sort_gr(stack);
+    sstd::sort_gr(stack); // constrain the installation order by list (packages_cpm.txt) order
     
     while( stack.size()!=0 ){
         uint i = stack.size()-1;

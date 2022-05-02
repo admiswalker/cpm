@@ -76,20 +76,21 @@ bool install_lib(const cpm::PATH& p,
                  const struct runTimeOptions& rto,
                  const cpm::install_cmd& c){
     std::string call_path = sstd::system_stdout("pwd"); sstd::stripAll_ow(call_path, "\r\n");
+    std::string ver = c.vVer[0].ver;
     
     std::string archivePkg_dir;
     std::string archive_baseName;
     if(rto.TF_genArchive){
-        archivePkg_dir   = cpm::getPath_acvPkgDir  (p.ACV_DIR, c.architecture, c.libName, c.vVer[0].ver);
-        archive_baseName = cpm::getPath_acvBaseName(p.ACV_DIR, c.architecture, c.libName, c.vVer[0].ver);
+        archivePkg_dir   = cpm::getPath_acvPkgDir  (p.ACV_DIR, c.architecture, c.libName, ver);
+        archive_baseName = cpm::getPath_acvBaseName(p.ACV_DIR, c.architecture, c.libName, ver);
         if(sstd::fileExist(archive_baseName+'.'+rto.archive_ext)){ return true; }
     }
     
-    std::string packsPkg_dir = cpm::getPath_packsPkgDir(p.PACKS_DIR, c.architecture, c.libName, c.vVer[0].ver);
+    std::string packsPkg_dir = cpm::getPath_packsPkgDir(p.PACKS_DIR, c.architecture, c.libName, ver);
     bool TF_useArchive = sstd::isFile(cpm::getSh_dlAcv(packsPkg_dir)) && (c.install_mode != cpm::cmd_INSTALL_MODE_source);
     
-    std::string cachePkg_dir = (TF_useArchive ? cpm::getPath_cachePkgDir_acv(p.CACHE_DIR, c.architecture, c.libName, c.vVer[0].ver):cpm::getPath_cachePkgDir_src(p.CACHE_DIR, c.architecture, c.libName, c.vVer[0].ver));
-    std::string buildPkg_dir = cpm::getPath_buildPkgDir(p.BUILD_DIR, c.architecture, c.libName, c.vVer[0].ver);
+    std::string cachePkg_dir = (TF_useArchive ? cpm::getPath_cachePkgDir_acv(p.CACHE_DIR, c.architecture, c.libName, ver):cpm::getPath_cachePkgDir_src(p.CACHE_DIR, c.architecture, c.libName, ver));
+    std::string buildPkg_dir = cpm::getPath_buildPkgDir(p.BUILD_DIR, c.architecture, c.libName, ver);
     sstd::mkdir(cachePkg_dir);
     if(!TF_useArchive){
         sstd::mkdir(buildPkg_dir);
@@ -114,8 +115,8 @@ bool install_lib(const cpm::PATH& p,
     cmd_env += "\n";
     std::string cmd_run;
     if(rto.TF_dl_dps2cache_only){
-        std::string cacheDir_acv = cpm::getPath_cachePkgDir_acv(p.CACHE_DIR, c.architecture, c.libName, c.vVer[0].ver);
-        std::string cacheDir_src = cpm::getPath_cachePkgDir_src(p.CACHE_DIR, c.architecture, c.libName, c.vVer[0].ver);
+        std::string cacheDir_acv = cpm::getPath_cachePkgDir_acv(p.CACHE_DIR, c.architecture, c.libName, ver);
+        std::string cacheDir_src = cpm::getPath_cachePkgDir_src(p.CACHE_DIR, c.architecture, c.libName, ver);
         std::string cmd_env4acv = cmd_env + "export CPM_CACHE_DIR=" + cacheDir_acv + '\n';
         std::string cmd_env4src = cmd_env + "export CPM_CACHE_DIR=" + cacheDir_src + '\n';
         std::string cmd_run4acv = "bash " + cpm::getSh_dlAcv(packsPkg_dir) + ' ' + options + '\n';
@@ -160,8 +161,8 @@ bool install_lib(const cpm::PATH& p,
         sstd::cp(p.INST_WDIR+"/*", p.INST_PATH, "pu");
 //      sstd::mv(p.WORK_PATH+"/*", p.INST_PATH); // Not implimented yet
     }else{
-//        sstd::pdbg_err("CPM_INST_WDIR is empty. installation of \"%s\" (ver: %s) is faild.\n", c.libName.c_str(), c.vVer[0].ver.c_str());
-//        return false;
+        sstd::pdbg_err("CPM_INST_WDIR is empty. installation of \"%s\" (ver: %s) is faild.\n", c.libName.c_str(), ver.c_str());
+        return false;
     }
     
     TF_isInstalled = sstd::stripAll(sstd::system_stdout(cmd_env + "bash "+cpm::getSh_isInst(packsPkg_dir)), " \r\n")=="true";
@@ -248,14 +249,21 @@ int main(int argc, char *argv[]){
     
     std::vector<cpm::install_cmd> vInst;
     ret = cpm::instGraph2instOrder(vInst, table_reqPkg);
-    //*
-    for(uint i=0; i<vInst.size(); ++i){
-        sstd::printn(vInst[i].readOrder);
-        sstd::printn(vInst[i].libName);
-    }
-    //*/
+    printf("\n");
     
+    printf("Installation order\n");
+    uint numOfLib = vInst.size();
+    for(uint i=0; i<vInst.size(); ++i){
+        std::string libName = vInst[i].libName;
+        std::string ver     = vInst[i].vVer[0].ver;
+        printf("  %d/%d:  %s  (%s)\n", i+1, numOfLib, libName.c_str(), ver.c_str());
+    }
+    printf("\n");
+    
+    printf("Begin installation\n");
     install_lib(p, rto, vInst);
+    printf("End installation\n");
+    printf("\n");
     
     return 0;
 }

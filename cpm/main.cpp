@@ -1,37 +1,10 @@
-#include <vector>
-#include <string>
+#include <sstd/sstd.hpp>
+
 #include "src/pathProc.hpp"
-
-/*
-namespace sstd{
-    void print(const struct cpm::pkg& rhs);
-    void print_for_vT(const struct cpm::pkg& rhs);
-    void for_printn(const struct cpm::pkg& rhs);
-}
-void sstd::print(const struct cpm::pkg& rhs){
-    printf("name: %s, verStr: %s, ver: %d.%d.%d, verExtra: %s, v_depend: [ ", rhs.name.c_str(), rhs.ver.c_str(), rhs.ver100, rhs.ver010, rhs.ver001, rhs.verExtra.c_str());
-    for(uint i=0; i<rhs.v_depend.size(); ++i){
-        sstd::print_for_vT(rhs.v_depend[i]);
-    }
-    printf("]\n");
-}
-void sstd::print_for_vT(const struct cpm::pkg& rhs){
-    printf("[name: %s, verStr: %s, ver: %d.%d.%d, verExtra: %s, v_depend: [", rhs.name.c_str(), rhs.ver.c_str(), rhs.ver100, rhs.ver010, rhs.ver001, rhs.verExtra.c_str());
-    for(uint i=0; i<rhs.v_depend.size(); ++i){
-        sstd::print_for_vT((const struct cpm::pkg&)rhs.v_depend[i]);
-    }
-    printf("]]");
-}
-void sstd::for_printn(const struct cpm::pkg& rhs){ printf(" = "); sstd::print(rhs); }
-*/
-//-----------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------
-
-#include <sstd/sstd.hpp> // include after "sstd::print_for_vT"
-#include <unordered_map>
 #include "src/definition.hpp"
 #include "src/dependency_graph_generator.hpp"
 #include "src/version_processor.hpp"
+
 
 std::string return_set_env_cmd(const std::string& INST_PATH){
     return sstd::read(INST_PATH+"/set_env.sh");
@@ -270,8 +243,9 @@ int main(int argc, char *argv[]){
     for(uint i=0; i<vInst.size(); ++i){
         std::string libName = vInst[i].libName;
         std::string ver     = vInst[i].vVer[0].ver;
-        printf("  %d/%d (%.1lf %%):  %s, %s\n", i+1, numOfLib, 100*(((double)(i))/((double)numOfLib)), libName.c_str(), ver.c_str());
+        printf("  %d/%d (%.1lf %% -> %.1lf %%):  %s, %s\n", i+1, numOfLib, 100*(((double)(i))/((double)numOfLib)), 100*(((double)(i+1))/((double)numOfLib)), libName.c_str(), ver.c_str());
         if(!install_lib(p, rto, vInst[i])){ return false; }
+        printf("\n");
     }
     printf("End installation\n");
     printf("\n");

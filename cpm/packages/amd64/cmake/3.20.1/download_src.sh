@@ -17,9 +17,6 @@ URL_hash=https://github.com/Kitware/CMake/releases/download/v3.20.1/cmake-3.20.1
 fName_hash=${URL_hash##*/} # xxx-x.x.x-sha256sum.txt
 
 
-cfn_echo_download_begin $libName $ver
-
-
 # downloading source file
 if [ ! -e $CPM_CACHE_DIR/$fName ]; then
     wget -P $CPM_CACHE_DIR $URL
@@ -28,6 +25,3 @@ if [ ! -e $CPM_CACHE_DIR/$fName_hash ]; then
     wget -P $CPM_CACHE_DIR $URL_hash
 fi
 cfn_check_hash_value
-
-
-cfn_echo_download_end $libName $ver

@@ -8,11 +8,6 @@ CPM_CALL_DIR=`pwd -P`
 . $CPM_CALL_DIR/cpm/set_env.sh
 
 
-libName='mpfr'
-ver='3.1.4'
-cfn_echo_install_begin $libName $ver
-
-
 fName='mpfr-3.1.4.tar.bz2'
 fName_base=${fName%.*.*} # mpfr-3.1.4
 
@@ -38,6 +33,3 @@ if [ `cfn_isInstalled` = 'false' ]; then
     
     cd $CPM_CALL_DIR
 fi
-
-
-cfn_echo_install_end $libName $ver

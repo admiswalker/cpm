@@ -8,11 +8,6 @@ CPM_CALL_DIR=`pwd -P`
 . $CPM_CALL_DIR/cpm/set_env.sh
 
 
-libName='mpc'
-ver='1.0.3'
-cfn_echo_install_begin $libName $ver
-
-
 fName='mpc-1.0.3.tar.gz'
 fName_base=${fName%.*.*} # mpc-1.0.3.tar.gz
 
@@ -38,6 +33,3 @@ if [ `cfn_isInstalled` = 'false' ]; then
 
     cd $CPM_CALL_DIR
 fi
-
-
-cfn_echo_install_end $libName $ver

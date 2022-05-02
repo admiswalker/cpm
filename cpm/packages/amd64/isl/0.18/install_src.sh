@@ -8,11 +8,6 @@ CPM_CALL_DIR=`pwd -P`
 . $CPM_CALL_DIR/cpm/set_env.sh
 
 
-libName='isl'
-ver='0.18'
-cfn_echo_install_begin $libName $ver
-
-
 fName='isl-0.18.tar.bz2'
 fName_base=${fName%.*.*} # mpfr-3.1.4
 
@@ -38,6 +33,3 @@ if [ `cfn_isInstalled` = 'false' ]; then
     
     cd $CPM_CALL_DIR
 fi
-
-
-cfn_echo_install_end $libName $ver

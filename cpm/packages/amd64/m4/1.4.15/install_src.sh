@@ -8,11 +8,6 @@ CPM_CALL_DIR=`pwd -P`
 . $CPM_CALL_DIR/cpm/set_env.sh
 
 
-libName='m4'
-ver='1.4.15'
-cfn_echo_install_begin $libName $ver
-
-
 fName='m4-1.4.15.tar.gz'
 fName_base=${fName%.*.*} # m4-1.4.15
 
@@ -41,6 +36,3 @@ if [ `cfn_isInstalled` = 'false' ]; then
 
     cd $CPM_CALL_DIR
 fi
-
-
-cfn_echo_install_end $libName $ver

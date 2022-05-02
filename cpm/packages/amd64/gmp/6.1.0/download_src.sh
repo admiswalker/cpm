@@ -18,9 +18,6 @@ ver='6.1.0'
 fName_hash='gmp-6.1.0-sha256sum.txt' # xxx-x.x.x-sha256sum.txt
 
 
-cfn_echo_download_begin $libName $ver
-
-
 # downloading source file
 if [ ! -e $CPM_CACHE_DIR/$fName ]; then
     mkdir -p $CPM_CACHE_DIR
@@ -31,6 +28,3 @@ if [ ! -e $CPM_CACHE_DIR/$fName_hash ]; then
     echo '498449a994efeba527885c10405993427995d3f86b8768d8cdf8d9dd7c6b73e8  gmp-6.1.0.tar.bz2' > $CPM_CACHE_DIR/$fName_hash
 fi
 cfn_check_hash_value
-
-
-cfn_echo_download_end $libName $ver

@@ -20,9 +20,6 @@ ver='1.11'
 fName_hash='googletest-1.11.0-sha256sum.txt'
 
 
-cfn_echo_download_begin $libName $ver
-
-
 # downloading source file
 if [ ! -e $CPM_CACHE_DIR/$fName ]; then
     mkdir -p $CPM_CACHE_DIR
@@ -33,6 +30,3 @@ if [ ! -e $CPM_CACHE_DIR/$fName_hash ]; then
     echo 'b4870bf121ff7795ba20d20bcdd8627b8e088f2d1dab299a031c1034eddc93d5  googletest-1.11.0.tar.gz' > $CPM_CACHE_DIR/$fName_hash
 fi
 cfn_check_hash_value
-
-
-cfn_echo_download_end $libName $ver

@@ -17,9 +17,6 @@ URL_hash='http://ftp.tsukuba.wide.ad.jp/software/gcc/releases/gcc-8.4.0/sha512.s
 fName_hash=${URL_hash##*/} # sha512.sum
 
 
-cfn_echo_download_begin $libName $ver
-
-
 # downloading source file
 if [ ! -e $CPM_CACHE_DIR/$fName ]; then
     mkdir -p $CPM_CACHE_DIR
@@ -30,6 +27,3 @@ if [ ! -e $CPM_CACHE_DIR/$fName_hash ]; then
 #    echo 'xxxxxxxxxxxxxxxxxxx  gcc-8.4.0.tar.xz' > $CPM_CACHE_DIR/$fName_hash
 fi
 cfn_check_hash_value
-
-
-cfn_echo_download_end $libName $ver

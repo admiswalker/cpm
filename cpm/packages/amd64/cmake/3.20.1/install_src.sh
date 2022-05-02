@@ -8,11 +8,6 @@ CPM_CALL_DIR=`pwd -P`
 . $CPM_CALL_DIR/cpm/set_env.sh
 
 
-libName='cmake'
-ver='3.20.1'
-cfn_echo_install_begin $libName $ver
-
-
 fName='cmake-3.20.1.tar.gz'
 fName_base=${fName%.*.*} # cmake-3.20.1
 
@@ -32,6 +27,3 @@ if [ `cfn_isInstalled` = 'false' ]; then
     make -j
     make install
 fi
-
-
-cfn_echo_install_end $libName $ver

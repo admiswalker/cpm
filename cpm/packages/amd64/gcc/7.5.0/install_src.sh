@@ -12,7 +12,6 @@ fName='gcc-7.5.0.tar.xz'
 fName_base=${fName%.*.*} # <libName>-<version>
 libName=${fName_base%-*} # <libName>
 ver=${fName_base#*-}     # <version>
-cfn_echo_install_begin $libName $ver
 
 
 # unpacking the archive file
@@ -43,6 +42,3 @@ if [ `cfn_isInstalled` = 'false' ]; then
     
     cd $CPM_CALL_DIR
 fi
-
-
-cfn_echo_install_end $libName $ver

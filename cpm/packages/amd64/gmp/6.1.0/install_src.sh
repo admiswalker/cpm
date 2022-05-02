@@ -8,11 +8,6 @@ CPM_CALL_DIR=`pwd -P`
 . $CPM_CALL_DIR/cpm/set_env.sh
 
 
-libName='gmp'
-ver='6.1.0'
-cfn_echo_install_begin $libName $ver
-
-
 fName='gmp-6.1.0.tar.bz2'
 fName_base=${fName%.*.*} # gmp-6.1.0
 
@@ -40,6 +35,3 @@ if [ `cfn_isInstalled` = 'false' ]; then
 
     cd $CPM_CALL_DIR
 fi
-
-
-cfn_echo_install_end $libName $ver

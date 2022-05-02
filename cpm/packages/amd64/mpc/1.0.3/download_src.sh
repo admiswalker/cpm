@@ -18,9 +18,6 @@ ver='1.0.3'
 fName_hash='mpc-1.0.3-sha256sum.txt' # xxx-x.x.x-sha256sum.txt
 
 
-cfn_echo_download_begin $libName $ver
-
-
 # downloading source file
 if [ ! -e $CPM_CACHE_DIR/$fName ]; then
     mkdir -p $CPM_CACHE_DIR
@@ -31,6 +28,3 @@ if [ ! -e $CPM_CACHE_DIR/$fName_hash ]; then
     echo '617decc6ea09889fb08ede330917a00b16809b8db88c29c31bfbb49cbf88ecc3  mpc-1.0.3.tar.gz' > $CPM_CACHE_DIR/$fName_hash
 fi
 cfn_check_hash_value
-
-
-cfn_echo_download_end $libName $ver

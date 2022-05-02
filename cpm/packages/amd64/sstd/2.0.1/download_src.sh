@@ -18,9 +18,6 @@ ver=${fName_base#*-}     # <version>
 fName_hash=$libName-$ver-sha256sum.txt # <libName>-<version>-sha256sum.txt
 
 
-cfn_echo_download_begin $libName $ver
-
-
 # downloading source file
 if [ ! -e $CPM_CACHE_DIR/$fName ]; then
     mkdir -p $CPM_CACHE_DIR
@@ -31,6 +28,3 @@ if [ ! -e $CPM_CACHE_DIR/$fName_hash ]; then
     echo 'a9ce6f68e1c8bc710d1db9565a97989e29934fa0195eb852b9a76c19200b9cb2  sstd-2.0.1.tar.gz' > $CPM_CACHE_DIR/$fName_hash
 fi
 cfn_check_hash_value
-
-
-cfn_echo_download_end $libName $ver

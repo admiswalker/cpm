@@ -8,11 +8,6 @@ CPM_CALL_DIR=`pwd -P`
 . $CPM_CALL_DIR/cpm/set_env.sh
 
 
-libName='googletest'
-ver='1.11.0'
-cfn_echo_install_begin $libName $ver
-
-
 fName='googletest-1.11.0.tar.gz'
 fName_base=${fName%.*.*} # mpfr-3.1.4
 
@@ -36,5 +31,3 @@ if [ `cfn_isInstalled` = 'false' ]; then
     cd ../googletest; cp -r include/* -t $CPM_INST_WDIR/include
 fi
 
-
-cfn_echo_install_end $libName $ver

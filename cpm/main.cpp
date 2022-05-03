@@ -86,7 +86,8 @@ bool install_lib(const cpm::PATH& p,
     cmd_env += "export CPM_INST_WDIR=" + p.INST_WDIR + '\n'; // working dir
     cmd_env += "export CPM_INST_PATH=" + p.INST_PATH + '\n';
     cmd_env += "\n";
-    std::string cmd_run;
+    std::string cmd_runDL;
+    std::string cmd_runIT;
     if(rto.TF_dl_dps2cache_only){
         std::string cacheDir_acv = cpm::getPath_cachePkgDir_acv(p.CACHE_DIR, c.architecture, c.libName, ver);
         std::string cacheDir_src = cpm::getPath_cachePkgDir_src(p.CACHE_DIR, c.architecture, c.libName, ver);
@@ -104,27 +105,24 @@ bool install_lib(const cpm::PATH& p,
     std::string b_IT = sstd::ssprintf("--- begin: install %s/%s ---",  c.libName.c_str(), ver.c_str()); b_IT = b_IT + std::string(80-b_IT.size(), '-');
     std::string e_IT = sstd::ssprintf("--- end: install %s/%s ---",    c.libName.c_str(), ver.c_str()); e_IT = std::string(80-e_IT.size(), '-') + e_IT;
     if(TF_useArchive){
-        cmd_run += "echo '"+b_DL+"'\n";
-        cmd_run += runner + ' ' + cpm::getSh_dlAcv  (packsPkg_dir) + ' ' + options + '\n';
-        cmd_run += "echo '"+e_DL+"'\n";
-        cmd_run += "echo '"+b_IT+"'\n";
-        cmd_run += runner + ' ' + cpm::getSh_instAcv(packsPkg_dir) + ' ' + options + '\n';
-        cmd_run += "echo '"+e_IT+"'\n";
+        cmd_runDL += runner + ' ' + cpm::getSh_dlAcv  (packsPkg_dir) + ' ' + options + '\n';
+        cmd_runIT += runner + ' ' + cpm::getSh_instAcv(packsPkg_dir) + ' ' + options + '\n';
     }else{
-        cmd_run += "echo '"+b_DL+"'\n";
-        cmd_run += runner + ' ' + cpm::getSh_dlSrc  (packsPkg_dir) + ' ' + options + '\n';
-        cmd_run += "echo '"+e_DL+"'\n";
-        cmd_run += "echo '"+b_IT+"'\n";
-        cmd_run += runner + ' ' + cpm::getSh_instSrc(packsPkg_dir) + ' ' + options + '\n';
-        cmd_run += "echo '"+e_IT+"'\n";
+        cmd_runDL += runner + ' ' + cpm::getSh_dlSrc  (packsPkg_dir) + ' ' + options + '\n';
+        cmd_runIT += runner + ' ' + cpm::getSh_instSrc(packsPkg_dir) + ' ' + options + '\n';
     }
     //std::string str_isInstalled = sstd::system_stdout_stderr(cmd_env+runner+' '+cpm::getSh_isInst(packsPkg_dir)+' '+options+'\n');
     std::string str_isInstalled = sstd::system_stdout_stderr(cmd_env + "bash "+cpm::getSh_isInst(packsPkg_dir));
     bool TF_isInstalled = sstd::strIn("true", str_isInstalled);
     if(TF_isInstalled){ return true; }
     sstd::mkdir(p.INST_WDIR);
-    int r = sstd::system(cmd_env + cmd_run); // install to INST_WDIR
-    if(r){ sstd::pdbg_err(""); return false; }
+    int r;
+    printf("%s\n", b_DL.c_str());
+    r = sstd::system(cmd_env + cmd_runDL); if(r!=0){ sstd::pdbg_err("download command is failed.\n"); return false; } // download to CACHE_DIR
+    printf("%s\n", e_DL.c_str());
+    printf("%s\n", b_IT.c_str());
+    r = sstd::system(cmd_env + cmd_runIT); if(r!=0){ sstd::pdbg_err("installation command is failed.\n"); return false; } // install to INST_WDIR
+    printf("%s\n", e_IT.c_str());
     
     std::string rtxt_path = p.INST_WDIR + "/replacement_path_for_cpm_archive.txt";
     

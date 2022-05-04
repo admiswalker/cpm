@@ -185,6 +185,7 @@ bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& r
                 sstd::pdbg_err("There is no available \"%s\" library.\n  required: %s\n  available: %s\n", ic.libName.c_str(), cpm::print_str(ic.vVer).c_str(), cpm::print_str(ret_vVer).c_str());
                 return false;
             }
+            ic.vVer = vVerAND;
             std::string latest_pkg_ver = vVerAND[vVerAND.size()-1].ver;
 
             // refresh the settings to the default whenever cpm read a new packages_cpm.txt

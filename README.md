@@ -1,11 +1,36 @@
 # CPM (C++ Package Manager)
 
-CPM is a toy package manager for C++.
+CPM is a toy package manager for C++, works on Ubuntu OS.
 
 NOTE: Every time CPM users should check the safety of installation scripts and packages at their own risk.
 
+## Initial setting
+### Installing CPM in your project direcotry
+1. Download the CPM
+   ```
+   git clone git@github.com:admiswalker/cpm.git
+   ```
+2. build CPM
+   ```
+   cd cpm
+   make
+   ```
+   NOTE. Building CPM requires build-essential at least.
+3. Copy all of under cpm to <Your project directory>
+   ```
+   cp -ra cpm <Your project directory>
+   ```
+
+### Docker engine installation
+When using `DOCKER_ENV` option in `BUILD_ENV` command in the `packages_cpm.txt` file, docker engine should be installed in the local system.
+
+NOTE: Installing docker engine requires that you have `sudo` (root privileges).
+If you don't have `sudo`, you should get the privileges, request your system admin to install docker engine, or avoid using the `DOCKER_ENV` option.
+
+[docker engine installation](./doc/docker.md)
+
 ## Usage
-### Local package installation
+### Local package installation (Online installation)
 1. Set requiring packages to `packages_cpm.txt`  
    The command needs to split by `,` and end by `;`. Comments rules of `//` and `/* ~ */` are available.  
    
@@ -79,15 +104,10 @@ NOTE: Every time CPM users should check the safety of installation scripts and p
       ```
       ./a.out
       ```
+### Local package installation (Offline installation)
 
-### Setting
-#### Docker engine installation
-When using `DOCKER_ENV` option in `BUILD_ENV` command in the `packages_cpm.txt` file, docker engine should be installed in the local system.
+WIP
 
-NOTE: Installing docker engine requires that you have `sudo` (root privileges).
-If you don't have `sudo`, you should get the privileges, request your system admin to install docker engine, or avoid using the `DOCKER_ENV` option.
-
-[docker engine installation](./doc/docker.md)
 
 ## File and Directory descriptions
 

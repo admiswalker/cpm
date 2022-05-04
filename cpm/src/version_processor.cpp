@@ -323,6 +323,20 @@ std::vector<cpm::verLR> cpm::split_by_range(bool& ret_TF, const std::vector<stru
     if(TF_pushBack){ vR <<= r_end; }
     return vR;
 }
+std::string getMoreConcrete(const std::string& lhs, const std::string& rhs){
+    // returning more concrete version string
+    // - Example1. When compareing a) 1.0.0 and b) 1.*.*, a) is more concrete.
+    // - Example2. When compareing a) 1.0.? and b) 1.*.*, a) is more concrete.
+
+    
+    // The following is a minimal implementation, 
+    // just selects and returns a string without wildcard.
+    if(sstd::charIn('*', lhs) || sstd::charIn('?', lhs)){
+        return rhs;
+    }else{
+        return lhs;
+    }
+}
 std::vector<struct cpm::ver> cpm::verAND(bool& ret_TF, const cpm::verLR& l, const cpm::verLR& r){
     
     ret_TF=true;
@@ -334,75 +348,109 @@ std::vector<struct cpm::ver> cpm::verAND(bool& ret_TF, const cpm::verLR& l, cons
     // lr: l.second
     // rl: r.first
     // rr: r.second
+
+// NOTE: case01 contained in the other cases, os no longer needed to implimenting.
+//
+//    // case01, case01wc_a, case01wc_b
+//    // ll == rl && lr == rr && ll.ver == lr.ver
+//    // l: ll <---> lr
+//    // r: rl <---> rr
+//    if(cmpVer(l.first, r.first)==0){ // ll == rl
+//        if(cmpVer(l.second, r.second)==0){ // lr == rr
+//            if(cmpVer(l.first.ver, r.second.ver)==0){ // ll == rr
+//                struct cpm::ver v;
+//                v.ineq  = CPM_EQ;
+//                v.ver = getMoreConcrete(l.first.ver, r.first.ver);
+//                ret <<= v;
+//                return ret;
+//            }
+//        }
+//    }
     
-    // s_case01
-    // ll == rl && lr == rr && ll.ver == lr.ver
-    // l: ll <---> lr
-    // r: rl <---> rr
-    if(cmpVer(l.first, r.first)==0){ // ll == rl
-        if(cmpVer(l.second, r.second)==0){ // lr == rr
-            if(l.first.ver==l.second.ver){ // ll == rr
-                struct cpm::ver r;
-                r.ineq  = CPM_EQ;
-                r.ver = l.first.ver;
-                ret <<= r;
-                return ret;
-            }
-        }
-    }
-    
-    // case02a
+    // case02a, case02a_wc
     // lr.ineq=='<=' && rl.ineq=='>=' && lr.ver == rl.ver
     // l: ll <---> lr
     // r:          rl <---> rr
-    if(l.second.ver == r.first.ver){ // lr.ver == rl.ver
+    if(cmpVer(l.second.ver, r.first.ver)==0){ // lr.ver == rl.ver
         if(l.second.ineq==CPM_LE){ // lr.ineq=='<='
             if(r.first.ineq==CPM_GE){ // rl.ineq=='>='
-                struct cpm::ver r;
-                r.ineq  = CPM_EQ;
-                r.ver = l.second.ver;
-                ret <<= r;
+                struct cpm::ver v;
+                v.ineq  = CPM_EQ;
+                v.ver = getMoreConcrete(l.second.ver, r.first.ver);
+                ret <<= v;
                 return ret;
             }
         }
     }
     
-    // case02b
+    // case02b, case02b_wc
     // rr.ineq=='<=' && ll.ineq=='>=' && rr.ver == ll.ver
     // l:          ll <---> lr
     // r: rl <---> rr
-    if(r.second.ver == l.first.ver){ // rr.ver == ll.ver
+    if(cmpVer(r.second.ver, l.first.ver)==0){ // rr.ver == ll.ver
         if(r.second.ineq==CPM_LE){ // rr.ineq=='<='
             if(l.first.ineq==CPM_GE){ // ll.ineq=='>='
-                struct cpm::ver r;
-                r.ineq  = CPM_EQ;
-                r.ver = l.first.ver;
-                ret <<= r;
+                struct cpm::ver v;
+                v.ineq  = CPM_EQ;
+                v.ver = getMoreConcrete(l.first.ver, r.second.ver);
+                ret <<= v;
                 return ret;
             }
         }
     }
     
-    // case03a, case03a_02
+    // case03a, case03a_wcLR01, case03a_wcLR02, case03b_wcLR02 (is on border between case03a and case03b)
     // l ⊂ r: rl <= ll && lr <= rr
     // l:       ll <---> lr
     // r: rl <---------------> rr
     if(cmpVer(l.first, r.first)>=-1){ // ll >= rl
         if(cmpVer(l.second, r.second)<=1){ // lr <= rr
-            ret <<= l.first;
-            ret <<= l.second;
+            struct cpm::ver vr;
+            if(cmpVer(l.first.ver, r.first.ver)==0){ // ll.ver == rl.ver
+                vr.ineq = l.first.ineq;
+                vr.ver  = getMoreConcrete(l.first.ver, r.first.ver);
+            }else{
+                vr = l.first;
+            }
+            
+            struct cpm::ver vl;
+            if(cmpVer(l.second.ver, r.second.ver)==0){ // lr.ver == rr.ver
+                vl.ineq = l.second.ineq;
+                vl.ver  = getMoreConcrete(l.second.ver, r.second.ver);
+            }else{
+                vl = l.second;
+            }
+            
+            ret <<= vr;
+            ret <<= vl;
             return ret;
         }
     }
     
-    // case03b, case03b_02
+    // case03b, case03b_wcLR01, case03b_wcL
     // l ⊃ r
     // l: ll <---------------> lr
     // r:       rl <---> rr
     if(cmpVer(l.first, r.first)<=1){ // ll <= rl
         if(cmpVer(l.second, r.second)>=-1){ // lr >= rr
-            ret <<= r.first;
-            ret <<= r.second;
+            struct cpm::ver vr;
+            if(cmpVer(l.first.ver, r.first.ver)==0){ // ll.ver == rl.ver
+                vr.ineq = r.first.ineq;
+                vr.ver  = getMoreConcrete(l.first.ver, r.first.ver);
+            }else{
+                vr = r.first;
+            }
+            
+            struct cpm::ver vl;
+            if(cmpVer(l.second.ver, r.second.ver)==0){ // lr.ver == rr.ver
+                vl.ineq = r.second.ineq;
+                vl.ver  = getMoreConcrete(l.second.ver, r.second.ver);
+            }else{
+                vl = r.second;
+            }
+            
+            ret <<= vr;
+            ret <<= vl;
             return ret;
         }
     }

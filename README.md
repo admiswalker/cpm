@@ -10,7 +10,7 @@ NOTE: Every time CPM users should check the safety of installation scripts and p
    ```
    git clone git@github.com:admiswalker/cpm.git
    ```
-2. build CPM
+2. Build CPM
    ```
    cd cpm
    make
@@ -67,7 +67,7 @@ If you don't have `sudo`, you should get the privileges, request your system adm
    ```
    cpm/exe
    ```
-   options:
+   Options:
    - -a: a flag to switch whether generagte packages archive or not. This option can take `true` or `false` and the default setting is `false`.
    - -b: Set base directory for the CPM environment. `CACHE_DIR`, `PACKS_DIR`, `BUILD_DIR`, `INST_WDIR`, `INST_PATH` and `ACV_DIR` are generated under base directory. (Default setting is `./cpm_env`)
    - -c: a flag to select whether only download installation requirements to cache and not installing packages or not. This option can take `true` or `false` and the default setting is `false`.

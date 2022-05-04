@@ -113,6 +113,7 @@ If you don't have `sudo`, you should get the privileges, request your system adm
 | cpm_env/local_work/           | Temporary directory for installation |
 | doc/                          | Document file for development |
 | .git/                         | git files          |
+| LICENSE                       | License file |
 | Makefile                      | Makefile to call `cpm/Makefile` |
 | READMD.md                     | This file          |
 | packages_cpm.txt              | Packages list to install by `cpm/exe` |

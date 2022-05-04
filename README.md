@@ -2,12 +2,42 @@
 
 CPM is a toy package manager for C++.
 
+NOTE: Every time CPM users should check the safety of installation scripts and packages at their own risk.
+
 ## Usage
 ### Setting
 #### Local package installation
 1. Set requiring packages to `packages_cpm.txt`  
-   example:
+   The command needs to split by `,` and end by `;`. Comments rules of `//` and `/* ~ */` are available.  
+   
+   A example of `packages_cpm.txt`:
    ```
+   ARCHITECTURE, amd64; // must define
+   INSTALL_MODE, auto; // select `src`, `archive` or `auto`.
+   BUILD_ENV, SYSTEM_ENV; // select `SYSTEM_ENV`, `CPM_ENV` or `DOCKER_ENV`.
+   
+   /*
+    * select base compiler in order not to depend on local system compiler
+    * As a default, gcc 7.5.0, 8.4.0, 9.4.0, 10.3.0 and 11.2.0 are defined at `cpm/cpm/packages/amd64/gcc`
+    */
+   gcc, >=11.*.*;
+   
+   /*
+    * select installation environment which is initialized at above line
+    */
+   BUILD_ENV, CPM_ENV;
+   
+   /*
+    * CPM user can install packages defined at `cpm/cpm/packages/amd64/gcc`.
+    */
+   sstd, ==2.*.*;
+   
+   /*
+    * CPM user can install packages using user defined installation scripts on the Internet.
+    * NOTE: Users should check the safety of installation scripts and packages at their own risk.
+    */
+   IMPORT, CPM_libExample_to_IMPORT, 0.1.0, "https://github.com/admiswalker/CPM_libExample_to_IMPORT/raw/main/cpm_import/script/0.1.0/download_installation_scripts.sh";
+   CPM_libExample_to_IMPORT, ==0.1.0;
    ```
 2. Run installation commands
    ```
@@ -15,7 +45,7 @@ CPM is a toy package manager for C++.
    ```
    options:
    - -a: a flag to switch whether generagte packages archive or not. This option can take `true` or `false` and the default setting is `false`.
-   - -b: Set base directory for CPM environment. `CACHE_DIR`, `PACKS_DIR`, `BUILD_DIR`, `INST_WDIR`, `INST_PATH` and `ACV_DIR` are generated under base directory. (Default setting is `./cpm_env`)
+   - -b: Set base directory for the CPM environment. `CACHE_DIR`, `PACKS_DIR`, `BUILD_DIR`, `INST_WDIR`, `INST_PATH` and `ACV_DIR` are generated under base directory. (Default setting is `./cpm_env`)
    - -c: a flag to select whether only download installation requirements to cache and not installing packages or not. This option can take `true` or `false` and the default setting is `false`.
    - -p: a path to the package list. The default setting is `./packages_cpm.txt`.
    
@@ -63,21 +93,29 @@ If you don't have `sudo`, you should get the privileges, request your system adm
 
 | File or directory name        | Description Origin |
 | ----------------------------- | ------------------ |
-| cpm/                          | Files that make up CPM |
-| cpm/packages/                 | Installation scripts for CPM packages |
-| cpm/exe                       | Entry point of CPM. (Build from `cpm/main.cpp`) |
-| cpm/main.cpp                  | Entry point of CPM |
-| env_cpm/                      | Default destination path of CPM |
-| env_cpm/archive/              | Destination directory to archive package files of installation packages with running `./cpm/exe` using `a` option |
-| env_cpm/build/                | Temporary directory for build |
-| env_cpm/cache/                | Cache directory for installation files to download |
-| env_cpm/local/                | Destination directory for installation |
-| env_cpm/local_archive/        | Temporary directory for generate archive |
-| test/                         | Test files for programming installation scripts |
+| cpm/                          | Files that make up the CPM |
+| cpm/build_env/docker/         | Dockerfile to build gcc and generate gcc archives |
+| cpm/packages/                 | Installation scripts for the CPM packages |
+| cpm/src/                      | Source files for the CPM |
+| cpm/test/                     | Test files for the CPM |
+| cpm/Makefile                  | Makefile to build `cpm/main.cpp` and `cpm/main_test.cpp` |
+| cpm/SubStandardLibrary-SSTD--master.zip | Depending library |
+| cpm/exe                       | Entry point of the CPM. (Build from `cpm/main.cpp`) |
+| cpm/exe_test                  | Entry point of the tests. (Build from `cpm/main_test.cpp`) |
+| cpm/googletest-master.zip | Depending library |
+| cpm/main.cpp                  | Entry point of the CPM |
+| cpm/main_test.cpp             | Entry point of the tests for the functions at `cpm/src/` |
+| cpm_env/                      | Default destination path of the CPM |
+| cpm_env/archive/              | Destination directory to archive package files of installation packages with running `cpm/exe` using `a` option |
+| cpm_env/build/                | Temporary directory for build |
+| cpm_env/cache/                | Cache directory for installation files to download |
+| cpm_env/local/                | Destination directory for installation |
+| cpm_env/local_work/           | Temporary directory for installation |
+| doc/                          | Document file for development |
 | .git/                         | git files          |
-| Makefile                      | Makefile to build `./cpm/main.cpp` |
+| Makefile                      | Makefile to call `cpm/Makefile` |
 | READMD.md                     | This file          |
-| packages_cpm.txt              | Packages list to install by `./cpm/exe` |
+| packages_cpm.txt              | Packages list to install by `cpm/exe` |
 | .gitignore                    | Ignoring list not to track files on git |
 
 

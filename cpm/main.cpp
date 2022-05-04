@@ -246,7 +246,8 @@ int main(int argc, char *argv[]){
         if(!install_lib(p, rto, vInst[i])){ return false; }
     }
     printf("End installation\n");
-    printf("\n");
     
+    printf("\n");
+    sstd::measureTime_stop_print(timem);
     return 0;
 }

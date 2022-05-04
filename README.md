@@ -5,8 +5,7 @@ CPM is a toy package manager for C++.
 NOTE: Every time CPM users should check the safety of installation scripts and packages at their own risk.
 
 ## Usage
-### Setting
-#### Local package installation
+### Local package installation
 1. Set requiring packages to `packages_cpm.txt`  
    The command needs to split by `,` and end by `;`. Comments rules of `//` and `/* ~ */` are available.  
    
@@ -81,6 +80,7 @@ NOTE: Every time CPM users should check the safety of installation scripts and p
       ./a.out
       ```
 
+### Setting
 #### Docker engine installation
 When using `DOCKER_ENV` option in `BUILD_ENV` command in the `packages_cpm.txt` file, docker engine should be installed in the local system.
 

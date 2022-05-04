@@ -216,8 +216,8 @@ int main(int argc, char *argv[]){
     sstd::mkdir(INST_WDIR);
     sstd::mkdir(INST_PATH);
     sstd::cp(cpm::buildin_packages_dir+"/*", PACKS_DIR);
-    sstd::cp("cpm/init.sh",    INST_PATH);
-    sstd::cp("cpm/set_env.sh", INST_PATH);
+    sstd::cp("cpm/src/scripts/init.sh",    INST_PATH);
+    sstd::cp("cpm/src/scripts/set_env.sh", INST_PATH);
     
     
     bool ret;

@@ -1,55 +1,26 @@
-ARCHITECTURE, amd64;
-//INSTALL_MODE, source;
-//INSTALL_MODE, archive;
-IMPORT, CPM_libExample_to_IMPORT, 0.1.0, "https://github.com/admiswalker/CPM_libExample_to_IMPORT/raw/main/cpm_import/script/0.1.0/download_installation_scripts.sh";
-//IMPORT, CPM_libExample_to_IMPORT, latest, "https://github.com/admiswalker/CPM_libExample_to_IMPORT/raw/main/cpm_import/script/download_latest_installation_scripts.sh";
+ARCHITECTURE, amd64; // must define
+INSTALL_MODE, auto;
+BUILD_ENV, SYSTEM_ENV;
 
-//*
-INSTALL_MODE, archive;
-BUILD_ENV, DOCKER_ENV, ./cpm/build_env/docker/ubuntu18.04_for_build_gcc;
-//m4, ==1.4.15; // need: ---
-//gmp, ==6.1.0; // need: m4
-//mpfr, ==3.1.4; // need: gmp
-//mpc, ==1.0.3; // need: gmp, mpfr
-//isl, ==0.18; // need: gmp
-//gcc, ==7.5.0; // need: gmp, mpfr, mpc, isl
-//gcc, ==8.4.0;
-//gcc, ==9.4.0;
-//gcc, ==10.3.0;
-gcc, ==11.2.0;
-//*/
+/*
+ * select base compiler in order not to depend on local system compiler
+ * As a default, gcc 7.5.0, 8.4.0, 9.4.0, 10.3.0 and 11.2.0 are defined at `cpm/cpm/packages/amd64/gcc`
+ */
+gcc, >=11.*.*;
 
-//*
-INSTALL_MODE, source;
+/*
+ * select installation environment which is initialized at above line
+ */
 BUILD_ENV, CPM_ENV;
-//cmake, ==3.20.1;
-//googletest, ==1.11.0;
-sstd, ==2.0.1;
-//sstd, ==latest;
+
+/*
+ * CPM user can install packages defined at `cpm/cpm/packages/amd64/gcc`.
+ */
+sstd, ==2.*.*;
+
+/*
+ * CPM user can install packages using user defined installation scripts.
+ * NOTE: Users should check the safety of installation packages at their own risk.
+ */
+IMPORT, CPM_libExample_to_IMPORT, 0.1.0, "https://github.com/admiswalker/CPM_libExample_to_IMPORT/raw/main/cpm_import/script/0.1.0/download_installation_scripts.sh";
 CPM_libExample_to_IMPORT, ==0.1.0;
-//CPM_libExample_to_IMPORT, ==latest;
-//*/
-
-
-
-
-//sstd, ==2.0.*;
-//sstd, ==2.?.*;
-//sstd, ==2.*.*;
-//sstd, ==2.0.1;
-
-//sstd, >=0.0.0, <=2.0.1;
-
-//sstd, <=2.0.1;
-//sstd, >-inf, <=2.0.1;
-
-//sstd, >=2.0.1;
-//sstd, >=2.0.1, <inf;
-
-//------------------------
-
-// nuexpected_package, 1.0.0;
-
-// memo
-// - package.json のチルダ(~) とキャレット(^), https://tver.jp/corner/f0095078
-

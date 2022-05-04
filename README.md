@@ -1,40 +1,63 @@
-# CPM (Cpp Package Manager)
+# CPM (C++ Package Manager)
 
 CPM is a toy package manager for C++.
 
 ## Usage
 ### Setting
-#### docker engine installation
+#### Local package installation
+1. Set requiring packages to `packages_cpm.txt`  
+   example:
+   ```
+   ```
+2. Run installation commands
+   ```
+   cpm/exe
+   ```
+   options:
+   - -a: a flag to switch whether generagte packages archive or not. This option can take `true` or `false` and the default setting is `false`.
+   - -b: Set base directory for CPM environment. `CACHE_DIR`, `PACKS_DIR`, `BUILD_DIR`, `INST_WDIR`, `INST_PATH` and `ACV_DIR` are generated under base directory. (Default setting is `./cpm_env`)
+   - -c: a flag to select whether only download installation requirements to cache and not installing packages or not. This option can take `true` or `false` and the default setting is `false`.
+   - -p: a path to the package list. The default setting is `./packages_cpm.txt`.
+   
+   Note: 
+   - Running `cpm_env/local/set_env.sh` set environmental variables.
+   - Whenever the base directory of the CPM environment changes, the user should run `cpm_env/local/init.sh` to solve the path dependency of installed packages.
+3. Set environmental variables
+   1. Running a script to set environmental variables
+      ```
+      source cpm_env/local/set_env.sh
+      ```
+   2. Make sure the environment variables are valid by checking the installed packages are valid
+      ```
+      gcc --version
+      ```
+4. Run what you want  
+   example:
+   1. Generate a main.cpp file
+      ```
+      echo -e '#include <iostream>'                                                 >> main.cpp
+      echo -e 'int main(){'                                                         >> main.cpp
+      echo -e '    std::cout << "Hello CPM!" << std::endl;'                         >> main.cpp
+      echo -e '    std::cout << "GCC version is " << __GNUC__ << "." << std::endl;' >> main.cpp
+      echo -e '    return 0;'                                                       >> main.cpp
+      echo -e '}'                                                                   >> main.cpp
+      ```
+   2. Compile the main.cpp file
+      ```
+      g++ main.cpp
+      ```
+   3. Run generated binary
+      ```
+      ./a.out
+      ```
+
+#### Docker engine installation
 When using `DOCKER_ENV` option in `BUILD_ENV` command in the `packages_cpm.txt` file, docker engine should be installed in the local system.
 
 NOTE: Installing docker engine requires that you have `sudo` (root privileges).
 If you don't have `sudo`, you should get the privileges, request your system admin to install docker engine, or avoid using the `DOCKER_ENV` option.
 
-[docker installation](./doc/docker.md)
-
-### local package installation
-1. Set required packages to `packages_cpm.txt`
-2. Run installation commands
-   ```
-   ./cpm/exe
-   ```
-   options:
-   - a: Set `true` or `false` to switch whether generagte packages archive or not. (Default is `false`)
-   - b: Set installation directory (`BUILD_DIR`). (Default setting is `./env_cpm/build`)
-   - i: Set installation path (`INST_PATH`). (Default setting is `./env_cpm/local`)
-   - p: Set path to the package list. (Default setting is `./packages_cpm.txt`)
-3. Set environmental variables
-   ```
-   source ./cpm/set_env.sh
-   ```
-   Note: Whenever you use cpm, you needs to run `./cpm/set_env.sh` before running what you want.
-4. Run what you want.  
-   Ex:
-   ```
-   echo -e '#include <iostream>\n\nint main(){\n    std::cout << "Hello CPM!" << std::endl;\n    return 0;\n}' >> main.cpp
-   g++ main.cpp
-   ./a.out
-   ```
+[docker engine installation](./doc/docker.md)
 
 ## File and Directory descriptions
 

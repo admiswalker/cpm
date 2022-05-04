@@ -146,17 +146,6 @@ std::vector<struct cpm::ver> cpm::str2ver(const std::vector<std::string>& vStr){
     return vVer;
 }
 
-//std::vector<struct cpm::ver> cpm::split_verEQ(const struct cpm::ver& v){
-//    struct cpm::ver l;
-//    l.ineq  = CPM_GE;
-//    l.ver = v.ver;
-//    
-//    struct cpm::ver r;
-//    r.ineq  = CPM_LE;
-//    r.ver = v.ver;
-//    
-//    return std::vector<struct cpm::ver>({l, r});
-//}
 std::vector<struct cpm::ver> cpm::split_verNE(const struct cpm::ver& v){
     struct cpm::ver l;
     l.ineq  = CPM_LT;
@@ -454,11 +443,6 @@ std::vector<struct cpm::ver> cpm::verAND(bool& ret_TF, const std::vector<struct 
     std::vector<struct cpm::ver> vLhs;
     std::vector<struct cpm::ver> vRhs;
     for(uint i=0; i<vLhs_in.size(); ++i){
-//        if(vLhs_in[i].ineq==CPM_EQ){
-//            std::vector<struct cpm::ver> r = cpm::split_verEQ(vLhs_in[i]);
-//            vLhs <<= r;
-//            continue;
-//        }
         if(vLhs_in[i].ineq==CPM_NE){
             std::vector<struct cpm::ver> r = cpm::split_verNE(vLhs_in[i]);
             vLhs <<= r;
@@ -467,11 +451,6 @@ std::vector<struct cpm::ver> cpm::verAND(bool& ret_TF, const std::vector<struct 
         vLhs <<= vLhs_in[i];
     }
     for(uint i=0; i<vRhs_in.size(); ++i){
-//        if(vLhs_in[i].ineq==CPM_EQ){
-//            std::vector<struct cpm::ver> r = cpm::split_verEQ(vRhs_in[i]);
-//            vRhs <<= r;
-//            continue;
-//        }
         if(vRhs_in[i].ineq==CPM_NE){
             std::vector<struct cpm::ver> r = cpm::split_verNE(vRhs_in[i]);
             vRhs <<= r;

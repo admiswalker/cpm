@@ -36,7 +36,6 @@ namespace cpm{
                 struct ver  str2ver(const             std::string&   str);
     std::vector<struct ver> str2ver(const std::vector<std::string>& vStr);
     
-//    std::vector<struct ver> split_verEQ(const struct ver& ver);
     std::vector<struct ver> split_verNE(const struct ver& ver);
     
     int cmpVer(const std::string& lhs, const std::string& rhs);

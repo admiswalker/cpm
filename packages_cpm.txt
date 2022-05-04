@@ -11,16 +11,16 @@ gcc, >=11.*.*;
 /*
  * select installation environment which is initialized at above line
  */
-BUILD_ENV, CPM_ENV;
+//BUILD_ENV, CPM_ENV;
 
 /*
  * CPM user can install packages defined at `cpm/cpm/packages/amd64/gcc`.
  */
-sstd, ==2.*.*;
+//sstd, ==2.*.*;
 
 /*
  * CPM user can install packages using user defined installation scripts.
  * NOTE: Users should check the safety of installation packages at their own risk.
  */
-IMPORT, CPM_libExample_to_IMPORT, 0.1.0, "https://github.com/admiswalker/CPM_libExample_to_IMPORT/raw/main/cpm_import/script/0.1.0/download_installation_scripts.sh";
-CPM_libExample_to_IMPORT, ==0.1.0;
+//IMPORT, CPM_libExample_to_IMPORT, 0.1.0, "https://github.com/admiswalker/CPM_libExample_to_IMPORT/raw/main/cpm_import/script/0.1.0/download_installation_scripts.sh";
+//CPM_libExample_to_IMPORT, ==0.1.0;

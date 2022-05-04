@@ -5,7 +5,7 @@ CPM_OWN_DIR=`dirname $0`
 . $CPM_OWN_DIR/common_fn.sh
 . $CPM_OWN_DIR/common_fn_envDependents.sh
 CPM_CALL_DIR=`pwd -P`
-. $CPM_CALL_DIR/cpm/set_env.sh
+. $CPM_CALL_DIR/cpm/src/scripts/set_env.sh
 
 
 fName='gcc-9.4.0.tar.xz'

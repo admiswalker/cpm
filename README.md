@@ -15,7 +15,7 @@ NOTE: Every time CPM users should check the safety of installation scripts and p
    cd cpm
    make
    ```
-   NOTE. Building CPM requires build-essential at least.
+   NOTE: Building CPM requires build-essential at least.
 3. Copy all of under cpm to <Your project directory>
    ```
    cp -ra cpm <Your project directory>
@@ -63,7 +63,7 @@ If you don't have `sudo`, you should get the privileges, request your system adm
    IMPORT, CPM_libExample_to_IMPORT, 0.1.0, "https://github.com/admiswalker/CPM_libExample_to_IMPORT/raw/main/cpm_import/script/0.1.0/download_installation_scripts.sh";
    CPM_libExample_to_IMPORT, ==0.1.0;
    ```
-2. Run installation commands
+2. Install packages on `packages_cpm.txt` to your local project directory
    ```
    cpm/exe
    ```
@@ -106,8 +106,35 @@ If you don't have `sudo`, you should get the privileges, request your system adm
       ```
 ### Local package installation (Offline installation)
 
-WIP
+An online machine is required for offline installation.
+First, download the required packages to your online machine.
+Then copy the CPM containing the downloaded package files to your offline machine.
+Finally, run the CPM installation process.
 
+1. Set requiring packages to `packages_cpm.txt`  
+   This process is same as the online installation.
+2. Download source and archive files
+   ```
+   Online-machine$ cpm/exe -a ture
+   ```
+3. Copy files from online machine to the offline machine
+   1. Copy files from online machine to USB flash drive or something similar
+      ```
+      Online-machine$ cp -ra cpm <USB flash drive>
+      Online-machine$ cp -ra cpm_env <USB flash drive>
+      ```
+      The `cpm` directory contains CPM binary files and dependent files. The `cpm_env` direcotry contains `cpm_env/cache/` direcotry where the source and archive files are collected.
+   2. Copy files from USB flash drive to offline machine
+      ```
+      Offline-machine$ cp -ra <USB flash drive>/cpm <Project directory>
+      Offline-machine$ cp -ra <USB flash drive>/cpm_env <Project directory>
+      ```
+4. Install packages on `packages_cpm.txt` to your local project directory  
+   This process is same as the online installation.
+5. Set environmental variables  
+   This process is same as the online installation.
+6. Run what you want  
+   This process is same as the online installation.
 
 ## File and Directory descriptions
 
@@ -139,6 +166,8 @@ WIP
 | packages_cpm.txt              | Packages list to install by `cpm/exe` |
 | .gitignore                    | Ignoring list not to track files on git |
 
+## License
+See [license file](./LICENSE)
 
 ## Build time
 

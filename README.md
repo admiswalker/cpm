@@ -46,7 +46,7 @@ NOTE: Every time CPM users should check the safety of installation scripts and p
    make
    ```
    NOTE: Building CPM requires build-essential at least.
-3. Copy all of under cpm to <Your project directory>
+3. Copy all of under cpm to \<Your project directory\>
    ```
    cp -ra cpm <Your project directory>
    ```

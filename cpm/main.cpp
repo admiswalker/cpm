@@ -62,12 +62,7 @@ bool install_lib(const cpm::PATH& p,
     std::string packsPkg_dir = cpm::getPath_packsPkgDir(p.PACKS_DIR, c.architecture, c.libName, ver);
     bool TF_useArchive = sstd::isFile(cpm::getSh_dlAcv(packsPkg_dir)) && (c.install_mode != cpm::cmd_INSTALL_MODE_source);
     
-//    std::string cachePkg_dir = (TF_useArchive ? cpm::getPath_cachePkgDir_acv(p.CACHE_DIR, c.architecture, c.libName, ver):cpm::getPath_cachePkgDir_src(p.CACHE_DIR, c.architecture, c.libName, ver));
     std::string buildPkg_dir = cpm::getPath_buildPkgDir(p.BUILD_DIR, c.architecture, c.libName, ver);
-//    sstd::mkdir(cachePkg_dir);
-//    if(!TF_useArchive){
-//        sstd::mkdir(buildPkg_dir);
-//    }
     
     std::string cmd_env;
     std::string runner = "bash";
@@ -86,18 +81,12 @@ bool install_lib(const cpm::PATH& p,
     cmd_env += "export CPM_INST_WDIR=" + p.INST_WDIR + '\n'; // working dir
     cmd_env += "export CPM_INST_PATH=" + p.INST_PATH + '\n';
     cmd_env += "\n";
-//    if(rto.TF_dl_dps2cache_only){
-        std::string cacheDir_acv = cpm::getPath_cachePkgDir_acv(p.CACHE_DIR, c.architecture, c.libName, ver);
-        std::string cacheDir_src = cpm::getPath_cachePkgDir_src(p.CACHE_DIR, c.architecture, c.libName, ver);
-        std::string cmd_env4acv = "export CPM_CACHE_DIR=" + cacheDir_acv + '\n';
-        std::string cmd_env4src = "export CPM_CACHE_DIR=" + cacheDir_src + '\n';
-        std::string cmd_run4acv = "bash " + cpm::getSh_dlAcv(packsPkg_dir) + ' ' + options + '\n';
-        std::string cmd_run4src = "bash " + cpm::getSh_dlSrc(packsPkg_dir) + ' ' + options + '\n';
-//        sstd::system(cmd_env4acv + cmd_run4acv); // download archive files
-//        sstd::system(cmd_env4src + cmd_run4src); // download src files
-//        return true;
-//    }
-//    cmd_env += "export CPM_CACHE_DIR=" + cachePkg_dir + '\n';
+    std::string cacheDir_acv = cpm::getPath_cachePkgDir_acv(p.CACHE_DIR, c.architecture, c.libName, ver);
+    std::string cacheDir_src = cpm::getPath_cachePkgDir_src(p.CACHE_DIR, c.architecture, c.libName, ver);
+    std::string cmd_env4acv = "export CPM_CACHE_DIR=" + cacheDir_acv + '\n';
+    std::string cmd_env4src = "export CPM_CACHE_DIR=" + cacheDir_src + '\n';
+    std::string cmd_run4acv = "bash " + cpm::getSh_dlAcv(packsPkg_dir) + ' ' + options + '\n';
+    std::string cmd_run4src = "bash " + cpm::getSh_dlSrc(packsPkg_dir) + ' ' + options + '\n';
     std::string b_DL = sstd::ssprintf("--- begin: download %s/%s ---", c.libName.c_str(), ver.c_str()); b_DL = b_DL + std::string(80-b_DL.size(), '-');
     std::string e_DL = sstd::ssprintf("--- end: download %s/%s ---",   c.libName.c_str(), ver.c_str()); e_DL = std::string(80-e_DL.size(), '-') + e_DL;
     std::string b_IT = sstd::ssprintf("--- begin: install %s/%s ---",  c.libName.c_str(), ver.c_str()); b_IT = b_IT + std::string(80-b_IT.size(), '-');
@@ -115,13 +104,11 @@ bool install_lib(const cpm::PATH& p,
     std::string cmd_runDL;
     std::string cmd_runIT;
     if(TF_useArchive){
-//        cmd_runDL += runner + ' ' + cpm::getSh_dlAcv  (packsPkg_dir) + ' ' + options + '\n';
         sstd::mkdir(cacheDir_acv);
         cmd_env   += cmd_env4acv;
         cmd_runDL += cmd_run4acv;
         cmd_runIT += runner + ' ' + cpm::getSh_instAcv(packsPkg_dir) + ' ' + options + '\n';
     }else{
-//        cmd_runDL += runner + ' ' + cpm::getSh_dlSrc  (packsPkg_dir) + ' ' + options + '\n';
         sstd::mkdir(buildPkg_dir);
         sstd::mkdir(cacheDir_src);
         cmd_env   += cmd_env4src;

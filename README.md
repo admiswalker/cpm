@@ -115,7 +115,7 @@ Finally, run the CPM installation process.
    This process is same as the online installation.
 2. Download source and archive files
    ```
-   Online-machine$ cpm/exe -a ture
+   Online-machine$ cpm/exe -c ture
    ```
 3. Copy files from online machine to the offline machine
    1. Copy files from online machine to USB flash drive or something similar

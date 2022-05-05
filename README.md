@@ -4,6 +4,36 @@ CPM is a toy package manager for C++, works on Ubuntu OS.
 
 NOTE: Every time CPM users should check the safety of installation scripts and packages at their own risk.
 
+## File and Directory descriptions
+
+| File or directory name        | Description Origin |
+| ----------------------------- | ------------------ |
+| cpm/                          | Files that make up the CPM |
+| cpm/build_env/docker/         | Dockerfile to build gcc and generate gcc archives |
+| cpm/packages/                 | Installation scripts for the CPM packages |
+| cpm/src/                      | Source files for the CPM |
+| cpm/test/                     | Test files for the CPM |
+| cpm/Makefile                  | Makefile to build `cpm/main.cpp` and `cpm/main_test.cpp` |
+| cpm/SubStandardLibrary-SSTD--master.zip | Depending library |
+| cpm/exe                       | Entry point of the CPM. (Build from `cpm/main.cpp`) |
+| cpm/exe_test                  | Entry point of the tests. (Build from `cpm/main_test.cpp`) |
+| cpm/googletest-master.zip | Depending library |
+| cpm/main.cpp                  | Entry point of the CPM |
+| cpm/main_test.cpp             | Entry point of the tests for the functions at `cpm/src/` |
+| cpm_env/                      | Default destination path of the CPM |
+| cpm_env/archive/              | Destination directory to archive package files of installation packages with running `cpm/exe` using `a` option |
+| cpm_env/build/                | Temporary directory for build |
+| cpm_env/cache/                | Cache directory for installation files to download |
+| cpm_env/local/                | Destination directory for installation |
+| cpm_env/local_work/           | Temporary directory for installation |
+| doc/                          | Document file for development |
+| .git/                         | git files          |
+| LICENSE                       | License file |
+| Makefile                      | Makefile to call `cpm/Makefile` |
+| READMD.md                     | This file          |
+| packages_cpm.txt              | Packages list to install by `cpm/exe` |
+| .gitignore                    | Ignoring list not to track files on git |
+
 ## Initial setting
 ### Installing CPM in your project direcotry
 1. Download the CPM
@@ -32,8 +62,8 @@ If you don't have `sudo`, you should get the privileges, request your system adm
 ## Usage
 ### Local package installation (Online installation)
 1. Set requiring packages to `packages_cpm.txt`  
-   The command needs to split by `,` and end by `;`. Comments rules of `//` and `/* ~ */` are available.  
-   
+   `packages_cpm.txt` is a file to request install packages to CPM. The command needs to split by `,` and end by `;`. And comments rules of `//` and `/* ~ */` are available. For more information, see [packages_cpm.txt-file-format](./doc/packages_cpm.txt-file-format.md).
+
    A example of `packages_cpm.txt`:
    ```
    ARCHITECTURE, amd64; // must define
@@ -111,8 +141,7 @@ First, download the required packages to your online machine.
 Then copy the CPM containing the downloaded package files to your offline machine.
 Finally, run the CPM installation process.
 
-1. Set requiring packages to `packages_cpm.txt`  
-   This process is same as the online installation.
+1. Set requiring packages to `packages_cpm.txt`. (Same as the online installation)
 2. Download source and archive files
    ```
    Online-machine$ cpm/exe -c ture
@@ -129,47 +158,37 @@ Finally, run the CPM installation process.
       Offline-machine$ cp -ra <USB flash drive>/cpm <Project directory>
       Offline-machine$ cp -ra <USB flash drive>/cpm_env <Project directory>
       ```
-4. Install packages on `packages_cpm.txt` to your local project directory  
-   This process is same as the online installation.
-5. Set environmental variables  
-   This process is same as the online installation.
-6. Run what you want  
-   This process is same as the online installation.
+4. Install packages on `packages_cpm.txt` to your local project directory. (Same as the online installation)
+5. Set environmental variables. (Same as the online installation)
+6. Run what you want. (Same as the online installation)
 
-## File and Directory descriptions
+## Use your own package using IMPORT command
 
-| File or directory name        | Description Origin |
-| ----------------------------- | ------------------ |
-| cpm/                          | Files that make up the CPM |
-| cpm/build_env/docker/         | Dockerfile to build gcc and generate gcc archives |
-| cpm/packages/                 | Installation scripts for the CPM packages |
-| cpm/src/                      | Source files for the CPM |
-| cpm/test/                     | Test files for the CPM |
-| cpm/Makefile                  | Makefile to build `cpm/main.cpp` and `cpm/main_test.cpp` |
-| cpm/SubStandardLibrary-SSTD--master.zip | Depending library |
-| cpm/exe                       | Entry point of the CPM. (Build from `cpm/main.cpp`) |
-| cpm/exe_test                  | Entry point of the tests. (Build from `cpm/main_test.cpp`) |
-| cpm/googletest-master.zip | Depending library |
-| cpm/main.cpp                  | Entry point of the CPM |
-| cpm/main_test.cpp             | Entry point of the tests for the functions at `cpm/src/` |
-| cpm_env/                      | Default destination path of the CPM |
-| cpm_env/archive/              | Destination directory to archive package files of installation packages with running `cpm/exe` using `a` option |
-| cpm_env/build/                | Temporary directory for build |
-| cpm_env/cache/                | Cache directory for installation files to download |
-| cpm_env/local/                | Destination directory for installation |
-| cpm_env/local_work/           | Temporary directory for installation |
-| doc/                          | Document file for development |
-| .git/                         | git files          |
-| LICENSE                       | License file |
-| Makefile                      | Makefile to call `cpm/Makefile` |
-| READMD.md                     | This file          |
-| packages_cpm.txt              | Packages list to install by `cpm/exe` |
-| .gitignore                    | Ignoring list not to track files on git |
+### Generate installation scripts with source option
 
-## License
-See [license file](./LICENSE)
+### Generate installation scripts with archive option
+#### Generate archive files and put on the Internet
+#### Generate installation scripts
 
-## Build time
+### Generate download script and put on the Internet
+
+## Internal process of CPM
+
+### Data flow
+
+### Version processing
+
+## Archive files of libraries
+### Archive files
+
+#### Repository
+[cpm_archive](https://github.com/admiswalker/cpm_archive)
+
+#### Compression format and its compression ratio
+tar.gz, zip, ...
+
+
+### Build time
 
 | build target | environment                                           | build time     |
 | ------------ | ----------------------------------------------------- | -------------- |
@@ -178,3 +197,6 @@ See [license file](./LICENSE)
 | cmake-3.20.1 | 8 core, 32 GB / gcc-8.4.0 / Ubuntu 20.04 LTS          | 45 mins        |
 
 Note. Building gcc and cmake may require a lot of memory. In this case, we recommend to use 32 or 64 GB RAM machine and adding a swap memory as insurance.
+
+## License
+See [license file](./LICENSE)

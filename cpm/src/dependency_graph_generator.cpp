@@ -68,7 +68,7 @@ bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& r
     sstd::vec<std::string> vFileName;
     add_defalutSettings(vLineNum, vLine, vFileName);
     
-    if(vLineNum_in.size() != vLine_in.size()){ sstd::pdbg_err("vector size of \"vLineNum\" and \"vLine\" is not match."); return false; }
+    if(vLineNum_in.size() != vLine_in.size()){ sstd::pdbg_err("vector size of \"vLineNum\" and \"vLine\" is not match.\n"); return false; }
     vLineNum  <<= vLineNum_in;
     vLine     <<= vLine_in;
     vFileName <<= sstd::vec<std::string>(vLine.size(), fileName);
@@ -80,7 +80,7 @@ bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& r
         const std::string& fileName = vFileName[i];
         
         if(line[0]==cpm::cmd_ARCHITECTURE){
-            if(line.size()!=2){ sstd::pdbg_err("The \"ARCHITECTURE\" command requires 1 args."); return false; }
+            if(line.size()!=2){ sstd::pdbg_err("The \"ARCHITECTURE\" command requires 1 args.\n"); return false; }
             
             architecture = line[1];
             
@@ -102,13 +102,13 @@ bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& r
                                                     sstd::system(cmd);
             }else if(line[1]==cpm::cmd_SYSTEM_ENV){ // do nothing
             }else{
-                sstd::pdbg_err("Unexpected BUILD_ENV option.");
+                sstd::pdbg_err("Unexpected BUILD_ENV option.\n");
                 sstd::pdbg_err("An error occured while reading the following line in the file:\n  FileName: \"%s\"\n  LineNum: %u\n  line: %s.\n", fileName.c_str(), lineNum, vStr2printStr(line).c_str());
                 return false;
             }
             
         }else if(line[0]==cpm::cmd_IMPORT){
-            if(line.size()!=4){ sstd::pdbg_err("The \"IMPORT\" command requires 3 args."); return false; }
+            if(line.size()!=4){ sstd::pdbg_err("The \"IMPORT\" command requires 3 args.\n"); return false; }
             
             std::string libName = line[1];
             std::string ver     = line[2];
@@ -133,13 +133,13 @@ bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& r
             sstd::cp(cachePkg_dir+"/*", packsPkg_dir, "pu");
             
         }else if(line[0]==cpm::cmd_INSTALL_MODE){
-            if(line.size()!=2){ sstd::pdbg_err("The \"INSTALL_MODE\" command requires 1 args."); return false; }
-            if(! (line[1]==cpm::cmd_INSTALL_MODE_auto || line[1]==cpm::cmd_INSTALL_MODE_source || line[1]==cpm::cmd_INSTALL_MODE_archive) ){ sstd::pdbg_err("Unexpected INSTALL_MODE option."); }
+            if(line.size()!=2){ sstd::pdbg_err("The \"INSTALL_MODE\" command requires 1 args.\n"); return false; }
+            if(! (line[1]==cpm::cmd_INSTALL_MODE_auto || line[1]==cpm::cmd_INSTALL_MODE_source || line[1]==cpm::cmd_INSTALL_MODE_archive) ){ sstd::pdbg_err("\"%s\" is unexpected INSTALL_MODE option.\n", line[1].c_str()); return false; }
             
             install_mode = line[1];
             
         }else{
-            if(line.size()!=2){ sstd::pdbg_err("When specifing the library, version needs to be defined."); return false; }
+            if(line.size()!=2){ sstd::pdbg_err("When specifing the library, version needs to be defined.\n"); return false; }
             
             struct cpm::install_cmd ic;
             ic.readOrder      = readOrder;
@@ -172,7 +172,7 @@ bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& r
             std::vector<std::string> ret_vPath;
             std::vector<cpm::ver> ret_vVer;
             bool ret = cpm::get_available_pkg(ret_vPath, ret_vVer, p.PACKS_DIR, architecture, ic.libName);
-            if(!ret){ sstd::pdbg_err("There is no available \"%s\" library.", ic.libName.c_str()); return false; }
+            if(!ret){ sstd::pdbg_err("There is no available \"%s\" library.\n", ic.libName.c_str()); return false; }
             
             // get the latest package version of available packages
             bool tf;
@@ -199,7 +199,7 @@ bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& r
             sstd::vec<uint> ret_vLineNum;
             sstd::vvec<std::string> ret_vLine;
             ret = sstd::txt2vCmdList(ret_vLineNum, ret_vLine, depPkg_txt);
-            if(!ret){ sstd::pdbg_err("Failed to read %s.", depPkg_txt.c_str()); return false; }
+            if(!ret){ sstd::pdbg_err("Failed to read %s.\n", depPkg_txt.c_str()); return false; }
             vLine     <<= ret_vLine;
             vLineNum  <<= ret_vLineNum;
             vFileName <<= std::vector<std::string>(ret_vLine.size(), depPkg_txt);

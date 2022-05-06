@@ -62,7 +62,7 @@ If you don't have `sudo`, you should get the privileges, request your system adm
 ## Usage
 ### Local package installation (Online installation)
 1. Set requiring packages to `packages_cpm.txt`  
-   `packages_cpm.txt` is a file to request install packages to CPM. The command needs to split by `,` and end by `;`. And comments rules of `//` and `/* ~ */` are available. For more information, see [packages_cpm.txt-file-format](./doc/packages_cpm.txt-file-format.md).
+   `packages_cpm.txt` is a file to request install packages to CPM. The command needs to split by `,` and end by `;`. And comments rules of `//` and `/* ~ */` are available. For more information, see [packages file format](./doc/packages_file_format.md).
 
    A example of `packages_cpm.txt`:
    ```
@@ -161,6 +161,18 @@ Finally, run the CPM installation process.
 4. Install packages on `packages_cpm.txt` to your local project directory. (Same as the online installation)
 5. Set environmental variables. (Same as the online installation)
 6. Run what you want. (Same as the online installation)
+
+## Data formats and their method of construction
+- Packages file (`packages_cpm.txt`)
+  - [file format](./doc/packages_file_format.md)
+  - [method of construction]()
+- Installation scripts (`xxx.sh`, )
+  - [file format](./doc/inst_script_format.md)
+  - [method of construction]()
+- Import script for `IMPORT` command (`.sh`)
+  - [file format](./doc/import_script_format.md)
+  - [method of construction]()
+
 
 ## Use your own package using IMPORT command
 

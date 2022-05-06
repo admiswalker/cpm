@@ -1,3 +1,27 @@
+// build gcc only
+
+ARCHITECTURE, amd64;
+BUILD_ENV, DOCKER_ENV, ./cpm/build_env/docker/ubuntu18.04_for_build_gcc;
+
+INSTALL_MODE, archive;
+m4, ==1.4.15; // dependents: ---
+gmp, ==6.1.0; // dependents: m4
+mpfr, ==3.1.4; // dependents: gmp
+mpc, ==1.0.3; // dependents: gmp, mpfr
+isl, ==0.18; // dependents: gmp
+
+INSTALL_MODE, source;
+//gcc, ==7.5.0; // dependents: gmp, mpfr, mpc, isl
+//gcc, ==8.4.0;
+//gcc, ==9.4.0;
+//gcc, ==10.3.0;
+//gcc, ==11.2.0;
+gcc, ==12.1.0;
+
+
+/*
+// build all
+
 ARCHITECTURE, amd64;
 INSTALL_MODE, source;
 BUILD_ENV, DOCKER_ENV, ./cpm/build_env/docker/ubuntu18.04_for_build_gcc;
@@ -11,4 +35,5 @@ isl, ==0.18; // dependents: gmp
 //gcc, ==9.4.0;
 //gcc, ==10.3.0;
 gcc, ==11.2.0;
+*/
 

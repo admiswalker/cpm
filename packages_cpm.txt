@@ -6,7 +6,7 @@ BUILD_ENV, SYSTEM_ENV;
  * select base compiler in order not to depend on local system compiler
  * As a default, gcc 7.5.0, 8.4.0, 9.4.0, 10.3.0 and 11.2.0 are defined at `cpm/cpm/packages/amd64/gcc`
  */
-gcc, >=11.*.*;
+gcc, >=12.*.*;
 
 /*
  * select installation environment which is initialized at above line

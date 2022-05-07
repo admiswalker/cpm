@@ -1,6 +1,6 @@
 # CPM (C++ Package Manager)
 
-CPM is a toy package manager for C++, works on Ubuntu OS.
+CPM is a toy package manager for C++, works on Ubuntu OS, without using `sudo` (root privileges).
 
 NOTE: Every time CPM users should check the safety of installation scripts and packages at their own risk.
 
@@ -82,7 +82,7 @@ If you don't have `sudo`, you should get the privileges, request your system adm
    BUILD_ENV, CPM_ENV;
    
    /*
-    * CPM user can install packages defined at `cpm/cpm/packages/amd64/gcc`.
+    * CPM user can install packages defined at `cpm/cpm/packages/`.
     */
    sstd, ==2.*.*;
    
@@ -158,19 +158,19 @@ Finally, run the CPM installation process.
       Offline-machine$ cp -ra <USB flash drive>/cpm <Project directory>
       Offline-machine$ cp -ra <USB flash drive>/cpm_env <Project directory>
       ```
-4. Install packages on `packages_cpm.txt` to your local project directory. (Same as the online installation)
+4. Install packages on `packages_cpm.txt` to your local project directory. (Same as the online installation)  
 5. Set environmental variables. (Same as the online installation)
 6. Run what you want. (Same as the online installation)
 
 ## Data formats and their method of construction
 - Packages file (`packages_cpm.txt`)
-  - [file format](./doc/packages_file_format.md)
+  - [file format](./doc/file_format/packages_cpm.txt.md)
   - [method of construction]()
-- Installation scripts (`xxx.sh`, )
-  - [file format](./doc/inst_script_format.md)
+- Installation scripts (`download_archive.sh`, `download_src.sh`, `install_archive.sh`, `install_src.sh`, `is_installed.sh`,  `packages_cpm.txt`)
+  - [file format](./doc/file_format/installation_script.md)
   - [method of construction]()
-- Import script for `IMPORT` command (`.sh`)
-  - [file format](./doc/import_script_format.md)
+- Import script for `IMPORT` command (`download_installation_scripts.sh`)
+  - [file format](./doc/file_format/import_script.md)
   - [method of construction]()
 
 

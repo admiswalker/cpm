@@ -162,10 +162,10 @@ Finally, run the CPM installation process.
 5. Set environmental variables. (Same as the online installation)
 6. Run what you want. (Same as the online installation)
 
-## Data formats and their method of construction
+## File descriptions and their method of construction
 - Packages file (`packages_cpm.txt`)
-  - [file format](./doc/file_format/packages_cpm.txt.md)
-  - [method of construction]()
+  - [file descriptions](./doc/file_format/packages_cpm.txt.md)
+  - [method of construction](./doc/method_of_construction/packages_cpm.txt.md)
 - Installation scripts (`download_archive.sh`, `download_src.sh`, `install_archive.sh`, `install_src.sh`, `is_installed.sh`,  `packages_cpm.txt`)
   - [file descriptions](./doc/file_format/installation_script.md)
   - [method of construction]()
@@ -188,22 +188,7 @@ See []()
 #### Generate installation scripts
 ### Generate download script and put on the Internet
 
-## Archive files of libraries
-### Archive files
-#### Repository
-[cpm_archive](https://github.com/admiswalker/cpm_archive)
-#### Compression format and its compression ratio
-tar.gz, zip, ...
 
-
-### Build time
-| build target | environment                                           | build time     |
-| ------------ | ----------------------------------------------------- | -------------- |
-| sstd-1.0.0   | 8 core, 32 GB / gcc-8.4.0 / Ubuntu 20.04 LTS          |  0 mins 20 sec |
-| gcc-8.4.0    | 8 core, 32 GB / gcc-7.5.0 / Ubuntu 18.04 LTS (Docker) | 70 mins        |
-| cmake-3.20.1 | 8 core, 32 GB / gcc-8.4.0 / Ubuntu 20.04 LTS          | 45 mins        |
-
-Note. Building gcc and cmake may require a lot of memory. In this case, we recommend to use 32 or 64 GB RAM machine and adding a swap memory as insurance.
 
 ## License
 See [license file](./LICENSE)

@@ -1,4 +1,4 @@
-# `packages_cpm.txt` file format
+# File descriptions of `packages_cpm.txt`
 
 The `packages_cpm.txt` file is used to indicate the libraries that user will install or to indicate the dependent libraries of the installation library.
 

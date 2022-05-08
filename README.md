@@ -167,7 +167,7 @@ Finally, run the CPM installation process.
   - [file format](./doc/file_format/packages_cpm.txt.md)
   - [method of construction]()
 - Installation scripts (`download_archive.sh`, `download_src.sh`, `install_archive.sh`, `install_src.sh`, `is_installed.sh`,  `packages_cpm.txt`)
-  - [file organization](./doc/file_format/installation_script.md)
+  - [file descriptions](./doc/file_format/installation_script.md)
   - [method of construction]()
 - Import script for `IMPORT` command (`download_installation_scripts.sh`)
   - [file format](./doc/file_format/import_script.md)

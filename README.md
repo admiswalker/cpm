@@ -62,7 +62,7 @@ If you don't have `sudo`, you should get the privileges, request your system adm
 ## Usage
 ### Local package installation (Online installation)
 1. Set requiring packages to `packages_cpm.txt`  
-   `packages_cpm.txt` is a file to request install packages to CPM. The command needs to split by `,` and end by `;`. And comments rules of `//` and `/* ~ */` are available. For more information, see [packages file format](./doc/packages_file_format.md).
+   `packages_cpm.txt` is a file to request install packages to CPM. The command needs to split by `,` and end by `;`. And comments rules of `//` and `/* ~ */` are available. For more information, see [packages file format](./doc/file_format/packages_cpm.txt.md).
 
    A example of `packages_cpm.txt`:
    ```
@@ -167,41 +167,36 @@ Finally, run the CPM installation process.
   - [file format](./doc/file_format/packages_cpm.txt.md)
   - [method of construction]()
 - Installation scripts (`download_archive.sh`, `download_src.sh`, `install_archive.sh`, `install_src.sh`, `is_installed.sh`,  `packages_cpm.txt`)
-  - [file format](./doc/file_format/installation_script.md)
+  - [file organization](./doc/file_format/installation_script.md)
   - [method of construction]()
 - Import script for `IMPORT` command (`download_installation_scripts.sh`)
   - [file format](./doc/file_format/import_script.md)
   - [method of construction]()
 
 
+## Internal process of CPM
+### Data flow
+See [CPM data flow](./doc/data_flow.md)
+### Version processing
+See []()
+
+
 ## Use your own package using IMPORT command
-
 ### Generate installation scripts with source option
-
 ### Generate installation scripts with archive option
 #### Generate archive files and put on the Internet
 #### Generate installation scripts
-
 ### Generate download script and put on the Internet
-
-## Internal process of CPM
-
-### Data flow
-
-### Version processing
 
 ## Archive files of libraries
 ### Archive files
-
 #### Repository
 [cpm_archive](https://github.com/admiswalker/cpm_archive)
-
 #### Compression format and its compression ratio
 tar.gz, zip, ...
 
 
 ### Build time
-
 | build target | environment                                           | build time     |
 | ------------ | ----------------------------------------------------- | -------------- |
 | sstd-1.0.0   | 8 core, 32 GB / gcc-8.4.0 / Ubuntu 20.04 LTS          |  0 mins 20 sec |

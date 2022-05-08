@@ -170,7 +170,7 @@ Finally, run the CPM installation process.
   - [file descriptions](./doc/file_format/installation_script.md)
   - [method of construction]()
 - Import script for `IMPORT` command (`download_installation_scripts.sh`)
-  - [file format](./doc/file_format/import_script.md)
+  - [file descriptions](./doc/file_format/import_script.md)
   - [method of construction]()
 
 

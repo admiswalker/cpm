@@ -5,3 +5,4 @@ gcc, ==12.1.0;
 
 cmake, ==3.*.*;
 googletest, ==1.*.*;
+sstd;

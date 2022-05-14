@@ -139,7 +139,7 @@ bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& r
             install_mode = line[1];
             
         }else{
-            if(line.size()<2){
+            if(line.size()==0){
                 sstd::pdbg_err("When specifing the library, version needs to be defined.\n");
                 printf("  An error occured while reading the following line in the file:\n    FileName: \"%s\"\n    LineNum: %u\n    line: %s.\n", fileName.c_str(), lineNum, vStr2printStr(line).c_str());
                 return false;
@@ -153,6 +153,7 @@ bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& r
             ic.architecture   = architecture;
             ic.libName        = line[0];
             ic.vVer           = cpm::str2ver( line && sstd::slice(1, sstd::end()) );
+            if(ic.vVer.size()==0){ ic.vVer<<=cpm::str2ver(std::vector<std::string>({">-inf","<inf"})); }
             
             // check the library is on the table or not.
             auto itr = ret_table_reqPkg.find( ic.libName );

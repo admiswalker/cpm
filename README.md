@@ -166,13 +166,12 @@ Finally, run the CPM installation process.
 - Packages file (`packages_cpm.txt`)
   - [file descriptions](./doc/file_format/packages_cpm.txt.md)
   - [method of construction](./doc/method_of_construction/packages_cpm.txt.md)
-- Installation scripts (`download_archive.sh`, `download_src.sh`, `install_archive.sh`, `install_src.sh`, `is_installed.sh`,  `packages_cpm.txt`)
+- Installation scripts (`download_archive.sh`, `download_src.sh`, `install_archive.sh`, `install_src.sh`, `is_installed.sh`, `packages_cpm.txt`)
   - [file descriptions](./doc/file_format/installation_script.md)
-  - [method of construction]()
+  - [method of construction](./doc/method_of_construction/installation_script.md)
 - Import script for `IMPORT` command (`download_installation_scripts.sh`)
   - [file descriptions](./doc/file_format/import_script.md)
   - [method of construction]()
-
 
 ## Internal process of CPM
 ### Data flow

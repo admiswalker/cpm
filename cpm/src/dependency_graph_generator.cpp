@@ -47,12 +47,12 @@ std::string vStr2printStr(const std::vector<std::string>& v){
 
 void add_defalutSettings(sstd::vec<uint>& vLineNum, sstd::vvec<std::string>& vLine, sstd::vec<std::string>& vFileName){
     // refresh the settings to the default whenever cpm read a new packages_cpm.txt
-    vLine     <<= std::vector<std::string>({"INSTALL_MODE", "auto"});
     vLineNum  <<= 0;
+    vLine     <<= std::vector<std::string>({"INSTALL_MODE", "auto"});
     vFileName <<= std::string("cpm appends default setting");
 
-    vLine     <<= std::vector<std::string>({"BUILD_ENV", "CPM_ENV"});
     vLineNum  <<= 0;
+    vLine     <<= std::vector<std::string>({"BUILD_ENV", "CPM_ENV"});
     vFileName <<= std::string("cpm appends default setting");
 }
 bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& ret_table_reqPkg, const class cpm::PATH& p, const sstd::vec<uint>& vLineNum_in, const sstd::vvec<std::string>& vLine_in, const char* fileName){
@@ -71,7 +71,7 @@ bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& r
     if(vLineNum_in.size() != vLine_in.size()){ sstd::pdbg_err("vector size of \"vLineNum\" and \"vLine\" is not match.\n"); return false; }
     vLineNum  <<= vLineNum_in;
     vLine     <<= vLine_in;
-    vFileName <<= sstd::vec<std::string>(vLine.size(), fileName);
+    vFileName <<= sstd::vec<std::string>(vLine_in.size(), fileName);
 
     uint readOrder=0;
     for(uint i=0; i<vLine.size(); ++i, ++readOrder){
@@ -89,7 +89,7 @@ bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& r
             
             if(line.size()<2){
                 sstd::pdbg_err("The \"BUILD_ENV\" command requires at least 1 arg.\n");
-                sstd::pdbg_err("An error occured while reading the following line in the file:\n  FileName: \"%s\"\n  LineNum: %u\n  line: %s.\n", fileName.c_str(), lineNum, vStr2printStr(line).c_str());
+                sstd::pdbg_err("An error occured while reading the following line in the file:\n    FileName: \"%s\"\n    LineNum: %u\n    line: %s.\n", fileName.c_str(), lineNum, vStr2printStr(line).c_str());
                 return false;
             }
             build_env = line[1];
@@ -103,7 +103,7 @@ bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& r
             }else if(line[1]==cpm::cmd_SYSTEM_ENV){ // do nothing
             }else{
                 sstd::pdbg_err("Unexpected BUILD_ENV option.\n");
-                sstd::pdbg_err("An error occured while reading the following line in the file:\n  FileName: \"%s\"\n  LineNum: %u\n  line: %s.\n", fileName.c_str(), lineNum, vStr2printStr(line).c_str());
+                sstd::pdbg_err("An error occured while reading the following line in the file:\n    FileName: \"%s\"\n    LineNum: %u\n    line: %s.\n", fileName.c_str(), lineNum, vStr2printStr(line).c_str());
                 return false;
             }
             
@@ -139,7 +139,11 @@ bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& r
             install_mode = line[1];
             
         }else{
-            if(line.size()!=2){ sstd::pdbg_err("When specifing the library, version needs to be defined.\n"); return false; }
+            if(line.size()!=2){
+                sstd::pdbg_err("When specifing the library, version needs to be defined.\n");
+                printf("  An error occured while reading the following line in the file:\n    FileName: \"%s\"\n    LineNum: %u\n    line: %s.\n", fileName.c_str(), lineNum, vStr2printStr(line).c_str());
+                return false;
+            }
             
             struct cpm::install_cmd ic;
             ic.readOrder      = readOrder;

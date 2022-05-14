@@ -1,0 +1,14 @@
+ARCHITECTURE, amd64;
+BUILD_ENV, CPM_ENV;
+INSTALL_MODE, auto;
+
+/*
+ * set gcc as a base environmet
+ */
+gcc, ==12.1.0;
+
+/*
+ * install what you want
+ */
+cmake, ==3.*.*;
+googletest, ==1.*.*;

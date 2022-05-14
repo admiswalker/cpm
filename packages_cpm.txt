@@ -1,8 +1,26 @@
-ARCHITECTURE, amd64;
-BUILD_ENV, CPM_ENV;
+ARCHITECTURE, amd64; // must define
 INSTALL_MODE, auto;
-gcc, ==12.1.0;
+BUILD_ENV, SYSTEM_ENV;
 
-cmake, ==3.*.*;
-googletest, ==1.*.*;
-sstd;
+/*
+ * select base compiler in order not to depend on local system compiler
+ * As a default, gcc 7.5.0, 8.4.0, 9.4.0, 10.3.0 and 11.2.0 are defined at `cpm/cpm/packages/amd64/gcc`
+ */
+gcc, >=12.*.*;
+
+/*
+ * select installation environment which is initialized at above line
+ */
+//BUILD_ENV, CPM_ENV;
+
+/*
+ * CPM user can install packages defined at `cpm/cpm/packages/amd64/gcc`.
+ */
+sstd, ==2.*.*;
+
+/*
+ * CPM user can install packages using user defined installation scripts.
+ * NOTE: Users should check the safety of installation packages at their own risk.
+ */
+IMPORT, CPM_libExample_to_IMPORT, 0.1.0, "https://github.com/admiswalker/CPM_libExample_to_IMPORT/raw/main/cpm_import/script/0.1.0/download_installation_scripts.sh";
+CPM_libExample_to_IMPORT, ==0.1.0;

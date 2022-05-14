@@ -1,0 +1,12 @@
+ARCHITECTURE, amd64;
+BUILD_ENV, DOCKER_ENV, ./cpm/build_env/docker/ubuntu18.04_for_build_gcc;
+
+INSTALL_MODE, archive;
+m4, ==1.4.15;
+gmp, ==6.1.0;
+mpfr, ==3.1.4;
+mpc, ==1.0.3;
+isl, ==0.18;
+
+INSTALL_MODE, source;
+gcc, ==12.1.0;

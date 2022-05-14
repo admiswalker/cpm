@@ -139,7 +139,7 @@ bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& r
             install_mode = line[1];
             
         }else{
-            if(line.size()!=2){
+            if(line.size()<2){
                 sstd::pdbg_err("When specifing the library, version needs to be defined.\n");
                 printf("  An error occured while reading the following line in the file:\n    FileName: \"%s\"\n    LineNum: %u\n    line: %s.\n", fileName.c_str(), lineNum, vStr2printStr(line).c_str());
                 return false;
@@ -229,7 +229,7 @@ bool cpm::txt2instGraph(std::unordered_map<std::string, struct cpm::install_cmd>
 
     std::string fileName = sstd::getFileName( packages_path );
     ret_tf = cpm::vLine2instGraph(ret_table_reqPkg, p, vLineNum, vLine, fileName.c_str());
-    if(!ret_tf){ sstd::pdbg_err("packageTxt2instCmd() is failed.\n"); }
+    if(!ret_tf){ sstd::pdbg_err("packageTxt2instCmd() is failed.\n"); return false; }
     
     return true;
 }

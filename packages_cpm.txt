@@ -17,6 +17,7 @@ gcc, >=12.*.*;
  * CPM user can install packages defined at `cpm/cpm/packages/amd64/gcc`.
  */
 sstd, ==2.*.*;
+googletest; // Without specifying the version, the latest version among the matching versions will be installed.
 
 /*
  * CPM user can install packages using user defined installation scripts.

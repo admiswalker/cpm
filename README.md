@@ -26,7 +26,7 @@ NOTE: Every time CPM users should check the safety of installation scripts and p
 | cpm_env/cache/                | Cache directory for installation files to download |
 | cpm_env/local/                | Destination directory for installation |
 | cpm_env/local_work/           | Temporary directory for installation |
-| doc/                          | Document file for development |
+| doc/                          | Documents |
 | .git/                         | git files          |
 | LICENSE                       | License file |
 | Makefile                      | Makefile to call `cpm/Makefile` |
@@ -85,6 +85,7 @@ If you don't have `sudo`, you should get the privileges, request your system adm
     * CPM user can install packages defined at `cpm/cpm/packages/`.
     */
    sstd, ==2.*.*;
+   googletest; // Without specifying the version, the latest version among the matching versions will be installed.
    
    /*
     * CPM user can install packages using user defined installation scripts on the Internet.
@@ -104,7 +105,6 @@ If you don't have `sudo`, you should get the privileges, request your system adm
    - -p: a path to the package list. The default setting is `./packages_cpm.txt`.
    
    Note: 
-   - Running `cpm_env/local/set_env.sh` set environmental variables.
    - Whenever the base directory of the CPM environment changes, the user should run `cpm_env/local/init.sh` to solve the path dependency of installed packages.
 3. Set environmental variables
    1. Running a script to set environmental variables

@@ -35,7 +35,13 @@ gcc, ==12.1.0;
 
 ## Ex. 3) Use gcc compiler as a base environment and install user requiring libraries
 ```
-gcc, ==12.1.0; // dependents: gmp, mpfr, mpc, isl
+ARCHITECTURE, amd64;
+BUILD_ENV, CPM_ENV;
+INSTALL_MODE, auto;
+gcc, ==12.1.0; // set as a base environmet
+
+cmake, ==3.*.*;
+googletest, ==1.*.*;
 ```
 
 

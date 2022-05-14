@@ -194,7 +194,9 @@ bool cpm::vLine2instGraph(std::unordered_map<std::string, struct install_cmd>& r
             // get dependent packages
             //   1. read packages_cpm.txt
             const std::string packsPkg_dir = cpm::getPath_packsPkgDir(p.PACKS_DIR, architecture, ic.libName, latest_pkg_ver);
+            sstd::printn(packsPkg_dir);
             const std::string depPkg_txt = cpm::getTxt_depPkg(packsPkg_dir);
+            sstd::printn(depPkg_txt);
             //   2. Add the contents of packages_cpm.txt to stacks (vLine, vLineNum, vFileName).
             sstd::vec<uint> ret_vLineNum;
             sstd::vvec<std::string> ret_vLine;

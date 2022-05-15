@@ -7,3 +7,6 @@ The role of `download_installation_scripts.sh` file is to download the installat
 
 1. Copy [download_installation_scripts.sh](https://github.com/admiswalker/CPM_libExample_to_IMPORT/blob/main/cpm_import/script/0.1.0/download_installation_scripts.sh) and edit for your installation library
 1. Upload the `download_installation_scripts.sh` file to a location where the cpm/exe can download using `wget` command
+
+## References
+- [CPM_libExample_to_IMPORT](https://github.com/admiswalker/CPM_libExample_to_IMPORT) is a sample library to show the behavior of the IMPORT command.

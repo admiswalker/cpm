@@ -100,24 +100,3 @@ In this case, the latest versions of `cmake` and `googletest` among the matching
   ```
   cpm/exe -p sample/packages_cpm_03b.txt
   ```
-
-
-## Appendix
-
-
-### Archive files of libraries
-#### Archive files
-##### Repository
-[cpm_archive](https://github.com/admiswalker/cpm_archive)
-##### Compression format and its compression ratio
-tar.gz, zip, ...
-
-
-#### Build time
-| build target | environment                                           | build time     |
-| ------------ | ----------------------------------------------------- | -------------- |
-| sstd-1.0.0   | 8 core, 32 GB / gcc-8.4.0 / Ubuntu 20.04 LTS          |  0 mins 20 sec |
-| gcc-8.4.0    | 8 core, 32 GB / gcc-7.5.0 / Ubuntu 18.04 LTS (Docker) | 70 mins        |
-| cmake-3.20.1 | 8 core, 32 GB / gcc-8.4.0 / Ubuntu 20.04 LTS          | 45 mins        |
-
-Note. Building gcc and cmake may require a lot of memory. In this case, we recommend to use 32 or 64 GB RAM machine and adding a swap memory as insurance.

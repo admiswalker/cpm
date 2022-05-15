@@ -176,8 +176,9 @@ Finally, run the CPM installation process.
 ## Internal process of CPM
 ### Data flow
 See [CPM data flow](./doc/cpm_data_flow.md)
-### Version processing
-No documentation yet
+
+## Archived libraries
+See [Archived libraries](./doc/archived_lib.md)
 
 ## License
 MIT (See [license file](./LICENSE))

@@ -175,11 +175,9 @@ Finally, run the CPM installation process.
 
 ## Internal process of CPM
 ### Data flow
-See [CPM data flow](./doc/data_flow.md)
+See [CPM data flow](./doc/cpm_data_flow.md)
 ### Version processing
-See []()
-
-
+No documentation yet
 
 ## License
-See [license file](./LICENSE)
+MIT (See [license file](./LICENSE))

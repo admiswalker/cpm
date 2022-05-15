@@ -171,21 +171,13 @@ Finally, run the CPM installation process.
   - [method of construction](./doc/method_of_construction/installation_script.md)
 - Import script for `IMPORT` command (`download_installation_scripts.sh`)
   - [file descriptions](./doc/file_format/import_script.md)
-  - [method of construction]()
+  - [method of construction](./doc/method_of_construction/import_script.md)
 
 ## Internal process of CPM
 ### Data flow
 See [CPM data flow](./doc/data_flow.md)
 ### Version processing
 See []()
-
-
-## Use your own package using IMPORT command
-### Generate installation scripts with source option
-### Generate installation scripts with archive option
-#### Generate archive files and put on the Internet
-#### Generate installation scripts
-### Generate download script and put on the Internet
 
 
 

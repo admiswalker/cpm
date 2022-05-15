@@ -92,7 +92,7 @@ This document describes the method of constructing installation scripts of `down
    cd <prj>/cpm/packages/<architecture>/<libName>
    nano common_fn_envDependents.sh  # edit `cfn_set_archive_URL()` and `cfn_set_archive_fName()` for installation library
    ```
-1. Check the edited archive installation script works correctly  
+1. Check the edited archive installation script works correctly (1)  
    1. Make a `packages_cpm.txt` file to check the edited installation script
       ```sh
       cd <prj>
@@ -108,6 +108,23 @@ This document describes the method of constructing installation scripts of `down
       cd <prj>
       cpm/exe -p ./packages_cpm.txt
       ```
+1. Check the edited archive installation script works correctly (2)  
+   When using the docker, ckeck using the `DOCKER_ENV` option.
+   1. Make a `packages_cpm.txt` file to check the edited installation script
+      ```sh
+      cd <prj>
+      echo -e 'ARCHITECTURE, <architecture>;'                                            >> packages_cpm.txt
+      echo -e 'INSTALL_MODE, archive;'                                                   >> packages_cpm.txt
+      echo -e 'BUILD_ENV, SYSTEM_ENV;'                                                   >> packages_cpm.txt
+      echo -e 'gcc, >=12.*.*;'                                                           >> packages_cpm.txt
+      echo -e 'BUILD_ENV, DOCKER_ENV, ./cpm/build_env/docker/ubuntu18.04_for_build_gcc;' >> packages_cpm.txt
+      echo -e '<libName>, ==<version>'                                                   >> packages_cpm.txt
+      ```
+   1. Run cpm/exe
+      ```sh
+      cd <prj>
+      cpm/exe -p ./packages_cpm.txt
+      ```
 
 ## Publish a user-defined installation script using the IMPORT command
-See [----]()
+See [Method of constructing scripts for IMPORT command](./import_script.md)

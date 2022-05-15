@@ -1,4 +1,4 @@
-# Default archived libraries by cpm
+# Default archived libraries for cpm
 
 See `cpm/packages` directory or [cpm_archive](https://github.com/admiswalker/cpm_archive) repository.
 

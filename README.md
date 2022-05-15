@@ -178,7 +178,7 @@ Finally, run the CPM installation process.
 See [CPM data flow](./doc/cpm_data_flow.md)
 
 ## Archived libraries
-See [Archived libraries](./doc/archived_lib.md)
+See [Default archived libraries for cpm](./doc/archived_lib.md)
 
 ## License
 MIT (See [license file](./LICENSE))

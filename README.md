@@ -176,6 +176,8 @@ Finally, run the CPM installation process.
 ## Internal process of CPM
 ### Data flow
 See [CPM data flow](./doc/cpm_data_flow.md)
+### Version processing
+See [Version comparison specifications](./doc/ver_comp_specifications.md)
 
 ## Archived libraries
 See [Default archived libraries for CPM](./doc/archived_lib.md)

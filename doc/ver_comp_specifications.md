@@ -1,9 +1,7 @@
 # Version comparison specifications
 
+The CPM assumes the [semantic versioning](https://semver.org/) for versioning in `packages_cpm.txt` files. But the CPM can use version with more than 4 version numbers separated by the period (`.`), such as `x.y.z.a`, `x.y.z.a.b.c` or `x.y.z.a.b.c.d.e...` . And the delimited version number is treated as a larger value as the number is closer to the beginning. When the each delimited version number is not an Arabic numerals, the CPM defines a character's big or small according to the order of the ASCII Code.
 
-- セマンティックバージョニングを想定しているが，より多くのバージョンナンバーでも比較できる．ただし，各バージョンナンバーはピリオド (`.`) で区切られている必要がある．
-- 区切り同士の比較では，桁数の多い方が大きい
-- 同じ軽多数の場合は，ASCII Code の大きさに従って version の大小を決める
+The CPM can use wildcards such as `*` and `?` as an experimental trial. But note that the version processing between versions that include wildcards are not complete.
 
-その他  
-バージョン比較の実例は test code を参照するか，実際に試してみること．
+For other detailed operations, check the test code or try it. (Test code is in `cpm/test/version_processor.hpp`).

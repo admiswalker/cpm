@@ -135,7 +135,7 @@ Unreserved names as commands are considered lib-name.
 - inequality-sign  
   Inequality signs of `==`, `!=`, `>=` and `<=` are available.
 - version  
-  Version specification. [Semantic versioning](https://semver.org/) is assumed.
+  [Version comparison specifications](../ver_comp_specifications.md)
 #### EXAMPLES
 ```
 gcc, ==12.1.0;

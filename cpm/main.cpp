@@ -167,7 +167,7 @@ bool install_lib(const cpm::PATH& p,
         return false;
     }
     if(rto.TF_genArchive && !TF_useArchive){
-        if(sstd::glob(p.INST_WDIR+"/*.la", "fr").size()!=0 && sstd::fileExist(rtxt_path)==false){
+        if((sstd::glob(p.INST_WDIR+"/*.la", "fr").size()!=0||sstd::glob(p.INST_WDIR+"/*.pc", "fr").size()!=0) && sstd::fileExist(rtxt_path)==false){
             sstd::pdbg_err("replacement_path_for_cpm_archive.txt is not found.\n");
             return false;
         }

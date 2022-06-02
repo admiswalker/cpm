@@ -7,5 +7,6 @@ DST_PATH=$SCRIPT_DIR
 
 cd $SCRIPT_DIR
 find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!'$SRC_PATH'!'$DST_PATH'!g'
+find . -type f -name '*.pc' -print0 | xargs -0 sed -i 's!'$SRC_PATH'!'$DST_PATH'!g'
 echo $DST_PATH > 'replacement_path_for_cpm_archive.txt'
 cd $CPM_CALL_DIR

@@ -13,7 +13,14 @@ void replace_PATH_in_laFile(const std::string& la_file_path, const std::string& 
     // replace path in the '*.la' file.
     std::string cmd_r;
     cmd_r += "cd " + la_file_path + ';';
-    cmd_r += "find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!" + SRC_PATH + '!' + DST_PATH + "!g'"; // $ find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!cpm_env/local_archive!cpm_env/local!g'
+    cmd_r += "find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!" + SRC_PATH + '!' + DST_PATH + "!g' > /dev/null 2>&1"; // $ find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!cpm_env/local_archive!cpm_env/local!g' > /dev/null 2>&1
+    sstd::system(cmd_r);
+}
+void replace_PATH_in_pcFile(const std::string& la_file_path, const std::string& SRC_PATH, const std::string& DST_PATH){
+    // replace path in the '*.la' file.
+    std::string cmd_r;
+    cmd_r += "cd " + la_file_path + ';';
+    cmd_r += "find . -type f -name '*.pc' -print0 | xargs -0 sed -i 's!" + SRC_PATH + '!' + DST_PATH + "!g' > /dev/null 2>&1"; // $ find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!cpm_env/local_archive!cpm_env/local!g' > /dev/null 2>&1
     sstd::system(cmd_r);
 }
 void gen_archive(const std::string& save_name, const std::string& archive_ext, const std::string& path){
@@ -139,6 +146,7 @@ bool install_lib(const cpm::PATH& p,
         if(c.build_env == cpm::cmd_DOCKER_ENV){ DST_PATH = sstd::read(c.build_env_path+"/docker_base_path.txt"); sstd::stripAll_ow(DST_PATH, "\r\n"); DST_PATH += '/' + p.INST_PATH; }
         
         replace_PATH_in_laFile(p.INST_WDIR, SRC_PATH, DST_PATH);
+        replace_PATH_in_pcFile(p.INST_WDIR, SRC_PATH, DST_PATH);
         //replace_PATH_in_laFile(INST_WDIR+"/*.la", SRC_PATH, DST_PATH); 
         sstd::write(rtxt_path, DST_PATH);
     }

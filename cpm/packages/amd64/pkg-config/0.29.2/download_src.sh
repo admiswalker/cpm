@@ -23,10 +23,6 @@ if [ ! -e $CPM_CACHE_DIR/$fName ]; then
     mkdir -p $CPM_CACHE_DIR
     cd $CPM_CACHE_DIR; wget -O $fName $URL
 fi
-if [ ! -e $CPM_CACHE_DIR/$fName_cl ]; then
-    mkdir -p $CPM_CACHE_DIR
-    cd $CPM_CACHE_DIR; wget -O $fName_cl $URL_cl
-fi
 if [ ! -e $CPM_CACHE_DIR/$fName_hash ]; then
 #    wget -P $CPM_CACHE_DIR $URL_hash
     echo '6fc69c01688c9458a57eb9a1664c9aba372ccda420a02bf4429fe610e7e7d591  pkg-config-0.29.2.tar.gz' > $CPM_CACHE_DIR/$fName_hash

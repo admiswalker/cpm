@@ -37,17 +37,17 @@ NOTE: Every time CPM users should check the safety of installation scripts and p
 ## Initial setting
 ### Installing CPM in your project direcotry
 1. Download the CPM
-   ```
+   ```bash
    git clone git@github.com:admiswalker/cpm.git
    ```
 2. Build CPM
-   ```
+   ```bash
    cd cpm
    make
    ```
    NOTE: Building CPM requires build-essential at least.
 3. Copy all of under cpm to \<Your project directory\>
-   ```
+   ```bash
    cp -ra cpm <Your project directory>
    ```
 
@@ -65,7 +65,7 @@ If you don't have `sudo`, you should get the privileges, request your system adm
    `packages_cpm.txt` is a file to request install packages to CPM. The command needs to split by `,` and end by `;`. And comments rules of `//` and `/* ~ */` are available. For more information, see [packages file format](./doc/file_format/packages_cpm.txt.md).
 
    A example of `packages_cpm.txt`:
-   ```
+   ```c
    ARCHITECTURE, amd64; // must define
    INSTALL_MODE, auto; // select `src`, `archive` or `auto`.
    BUILD_ENV, SYSTEM_ENV; // select `SYSTEM_ENV`, `CPM_ENV` or `DOCKER_ENV`.
@@ -95,7 +95,7 @@ If you don't have `sudo`, you should get the privileges, request your system adm
    CPM_libExample_to_IMPORT, ==0.1.0;
    ```
 2. Install packages on `packages_cpm.txt` to your local project directory
-   ```
+   ```bash
    cpm/exe
    ```
    Options:
@@ -108,17 +108,17 @@ If you don't have `sudo`, you should get the privileges, request your system adm
    - Whenever the base directory of the CPM environment changes, the user should run `cpm_env/local/init.sh` to solve the path dependency of installed packages.
 3. Set environmental variables
    1. Running a script to set environmental variables
-      ```
+      ```bash
       source cpm_env/local/set_env.sh
       ```
    2. Make sure the environment variables are valid by checking the installed packages are valid
-      ```
+      ```bash
       gcc --version
       ```
 4. Run what you want  
    example:
    1. Generate a main.cpp file
-      ```
+      ```bash
       echo -e '#include <iostream>'                                                 >> main.cpp
       echo -e 'int main(){'                                                         >> main.cpp
       echo -e '    std::cout << "Hello CPM!" << std::endl;'                         >> main.cpp
@@ -127,11 +127,11 @@ If you don't have `sudo`, you should get the privileges, request your system adm
       echo -e '}'                                                                   >> main.cpp
       ```
    2. Compile the main.cpp file
-      ```
+      ```bash
       g++ main.cpp
       ```
    3. Run generated binary
-      ```
+      ```bash
       ./a.out
       ```
 ### Local package installation (Offline installation)
@@ -143,18 +143,18 @@ Finally, run the CPM installation process.
 
 1. Set requiring packages to `packages_cpm.txt`. (Same as the online installation)
 2. Download source and archive files
-   ```
+   ```bash
    Online-machine$ cpm/exe -c ture
    ```
 3. Copy files from online machine to the offline machine
    1. Copy files from online machine to USB flash drive or something similar
-      ```
+      ```bash
       Online-machine$ cp -ra cpm <USB flash drive>
       Online-machine$ cp -ra cpm_env <USB flash drive>
       ```
       The `cpm` directory contains CPM binary files and dependent files. The `cpm_env` direcotry contains `cpm_env/cache/` direcotry where the source and archive files are collected.
    2. Copy files from USB flash drive to offline machine
-      ```
+      ```bash
       Offline-machine$ cp -ra <USB flash drive>/cpm <Project directory>
       Offline-machine$ cp -ra <USB flash drive>/cpm_env <Project directory>
       ```

@@ -26,7 +26,7 @@ fi
 if [ `cfn_isInstalled` = 'false' ]; then
     cd $CPM_BUILD_DIR/$fName_base/
 
-    ./configure --prefix=$CPM_INST_WDIR
+    ./configure --prefix=$CPM_INST_WDIR --enable-utf --enable-unicode-properties
     
     make -j
     make install

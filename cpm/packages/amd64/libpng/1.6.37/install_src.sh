@@ -26,8 +26,6 @@ fi
 if [ `cfn_isInstalled` = 'false' ]; then
     cd $CPM_BUILD_DIR/$fName_base/
 
-    #export LIBFFI_CFLAGS=-I$CPM_INST_PATH/include
-    #export LIBFFI_LIBS="-L$CPM_INST_PATH/lib -lffi"
     ./configure --prefix=$CPM_INST_WDIR
     
     make -j

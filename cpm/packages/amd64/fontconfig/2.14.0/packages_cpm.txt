@@ -1,0 +1,6 @@
+freetype, >=2.10.0; // required: freetype2 >= 21.0.15
+// freetype == ??.??.?? <--> freetype2 == 21.0.15
+// freetype ==   2.12.1 <--> freetype2 == 24.3.18
+
+gperf, >=3.1;
+

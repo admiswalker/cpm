@@ -3,3 +3,4 @@ glib, >=2.31.0;
 cairo, <1.17.0;
 fontconfig, >=2.0.0;
 libffi, >=3.4.0;
+libtiff, >=4.0.0; // temporary value without foundation

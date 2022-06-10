@@ -349,7 +349,7 @@ std::vector<struct cpm::ver> cpm::verAND(bool& ret_TF, const cpm::verLR& l, cons
     // rl: r.first
     // rr: r.second
 
-// NOTE: case01 contained in the other cases, os no longer needed to implimenting.
+// NOTE: case01 is contained in the other cases, os no longer needed to implimenting.
 //
 //    // case01, case01wc_a, case01wc_b
 //    // ll == rl && lr == rr && ll.ver == lr.ver

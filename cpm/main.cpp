@@ -46,6 +46,22 @@ void gen_hashFile(const std::string& ACV_DIR, const std::string& save_name){
     sstd::write(save_name, w_str);
     return;
 }
+void gen_buildRecipe(const std::string& ACV_DIR, const std::string& save_name, const sstd::vvec<std::string>& vLine){
+    std::string w_str;
+    
+    for(uint ln=0; ln<vLine.size(); ++ln){ // ln: line number
+        uint num=vLine[ln].size();
+
+        uint i=0;
+        if(num>=1){ w_str += vLine[ln][i]; }
+        for(i=1; i<num; ++i){
+            w_str += ", " + vLine[ln][i];
+        }
+        w_str += ";\n";
+    }
+    sstd::write(save_name, w_str);
+    return;
+}
 
 struct runTimeOptions{
     bool TF_genArchive;
@@ -54,7 +70,8 @@ struct runTimeOptions{
 };
 bool install_lib(const cpm::PATH& p,
                  const struct runTimeOptions& rto,
-                 const cpm::install_cmd& c){
+                 const cpm::install_cmd& c,
+                 const sstd::vvec<std::string>& vLine){
     std::string call_path = sstd::system_stdout("pwd"); sstd::stripAll_ow(call_path, "\r\n");
     std::string ver = c.vVer[0].ver;
     
@@ -175,6 +192,7 @@ bool install_lib(const cpm::PATH& p,
         sstd::mkdir(archivePkg_dir);
         gen_archive(call_path+'/'+archive_baseName+'.'+rto.archive_ext, rto.archive_ext, call_path+'/'+p.INST_WDIR);
         gen_hashFile(archivePkg_dir, archive_baseName+"-sha256sum.txt");
+        gen_buildRecipe(archivePkg_dir, archive_baseName+"-buildRecipe.txt", vLine);
     }
     sstd::rm(p.INST_WDIR);
     
@@ -233,9 +251,14 @@ int main(int argc, char *argv[]){
     
     
     bool ret;
+    sstd::vec<uint> vLineNum;
+    sstd::vvec<std::string> vLine;
+    ret = sstd::txt2vCmdList(vLineNum, vLine, packages_path);
+    if(!ret){ sstd::pdbg_err("sstd::txt2vCmdList() is failed.\n"); printf("  Check the packages_path: %s\n", packages_path.c_str()); return -1; }
+    
     std::unordered_map<std::string, struct cpm::install_cmd> table_reqPkg;
-    ret = cpm::txt2instGraph(table_reqPkg, p, packages_path.c_str());
-    if(!ret){ sstd::pdbg_err("packageTxt2instCmd() is failed.\n"); return -1; }
+    ret = cpm::vLine2instGraph(table_reqPkg, p, vLineNum, vLine, sstd::getFileName( packages_path.c_str() ));
+    if(!ret){ sstd::pdbg_err("cpm::vLine2instGraph() is failed.\n"); return -1; }
     
     std::vector<cpm::install_cmd> vInst;
     ret = cpm::instGraph2instOrder(vInst, table_reqPkg);
@@ -255,7 +278,7 @@ int main(int argc, char *argv[]){
         std::string libName = vInst[i].libName;
         std::string ver     = vInst[i].vVer[0].ver;
         printf("  %d/%d (%.1lf %% -> %.1lf %%):  %s, %s\n", i+1, numOfLib, 100*(((double)(i))/((double)numOfLib)), 100*(((double)(i+1))/((double)numOfLib)), libName.c_str(), ver.c_str());
-        if(!install_lib(p, rto, vInst[i])){ return false; }
+        if(!install_lib(p, rto, vInst[i], vLine)){ return false; }
     }
     printf("End installation\n");
     

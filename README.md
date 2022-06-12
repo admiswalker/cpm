@@ -4,45 +4,15 @@ CPM is a toy package manager for C++, works on Ubuntu OS, without using `sudo` (
 
 NOTE: Every time CPM users should check the safety of installation scripts and packages at their own risk.
 
-## File and Directory descriptions
-
-| File or directory name        | Description Origin |
-| ----------------------------- | ------------------ |
-| cpm/                          | Files that make up the CPM |
-| cpm/build_env/docker/         | Dockerfile to build gcc and generate gcc archives |
-| cpm/packages/                 | Installation scripts for the CPM packages |
-| cpm/src/                      | Source files for the CPM |
-| cpm/test/                     | Test files for the CPM |
-| cpm/Makefile                  | Makefile to build `cpm/main.cpp` and `cpm/main_test.cpp` |
-| cpm/SubStandardLibrary-SSTD--master.zip | Depending library |
-| cpm/exe                       | Entry point of the CPM. (Build from `cpm/main.cpp`) |
-| cpm/exe_test                  | Entry point of the tests. (Build from `cpm/main_test.cpp`) |
-| cpm/googletest-master.zip | Depending library |
-| cpm/main.cpp                  | Entry point of the CPM |
-| cpm/main_test.cpp             | Entry point of the tests for the functions at `cpm/src/` |
-| cpm_env/                      | Default destination path of the CPM |
-| cpm_env/archive/              | Destination directory to archive package files of installation packages with running `cpm/exe` using `a` option |
-| cpm_env/build/                | Temporary directory for build |
-| cpm_env/cache/                | Cache directory for installation files to download |
-| cpm_env/local/                | Destination directory for installation |
-| cpm_env/local_work/           | Temporary directory for installation |
-| doc/                          | Documents |
-| .git/                         | git files          |
-| LICENSE                       | License file |
-| Makefile                      | Makefile to call `cpm/Makefile` |
-| READMD.md                     | This file          |
-| packages_cpm.txt              | Packages list to install by `cpm/exe` |
-| .gitignore                    | Ignoring list not to track files on git |
-
 ## Initial setting
 ### Installing CPM in your project direcotry
-1. Download the CPM
+1. Download the CPM and enter it
    ```bash
    git clone git@github.com:admiswalker/cpm.git
+   cd cpm
    ```
 2. Build CPM
    ```bash
-   cd cpm
    make
    ```
    NOTE: Building CPM requires build-essential at least.
@@ -60,7 +30,7 @@ If you don't have `sudo`, you should get the privileges, request your system adm
 [docker engine installation](./doc/docker.md)
 
 ## Usage
-### Local package installation (Online installation)
+### Online packages installation in the local directory
 1. Set requiring packages to `packages_cpm.txt`  
    `packages_cpm.txt` is a file to request install packages to CPM. The command needs to split by `,` and end by `;`. And comments rules of `//` and `/* ~ */` are available. For more information, see [packages file format](./doc/file_format/packages_cpm.txt.md).
 
@@ -96,26 +66,8 @@ If you don't have `sudo`, you should get the privileges, request your system adm
    ```
 2. Install packages on `packages_cpm.txt` to your local project directory
    ```bash
-   cpm/exe [-a {true,false}]
-           [-b BASE_DIR_NAME]
-           [-c {true,false}]
-           [-p PATH_TO_THE_PACKAGES_CPM_TXT_FILE]
+   cpm/exe
    ```
-   Detailed explanation
-   ```
-   optional arguments:
-     -a: A flag to switch whether generagte packages archive or not. 
-         This option can take `true` or `false` and the default setting is `false`.
-     -b: Set base directory for the CPM environment. `CACHE_DIR`, `PACKS_DIR`, `BUILD_DIR`, 
-         `INST_WDIR`, `INST_PATH` and `ACV_DIR` are generated under base directory.
-         (Default setting is `./cpm_env`)
-     -c: A flag to select whether only download installation requirements to cache and not
-         installing packages or not. This option can take `true` or `false` and the default
-         setting is `false`.
-     -p: A path to the package list. The default setting is `./packages_cpm.txt`.
-   ```
-   Note: 
-   - Whenever the base directory of the CPM environment changes, the user should run `cpm_env/local/init.sh` to solve the path dependency of installed packages.
 3. Set environmental variables
    1. Running a script to set environmental variables
       ```bash
@@ -144,8 +96,7 @@ If you don't have `sudo`, you should get the privileges, request your system adm
       ```bash
       ./a.out
       ```
-### Local package installation (Offline installation)
-
+### Offline packages installation in the local directory
 An online machine is required for offline installation.
 First, download the required packages to your online machine.
 Then copy the CPM containing the downloaded package files to your offline machine.
@@ -172,40 +123,143 @@ Finally, run the CPM installation process.
 5. Set environmental variables. (Same as the online installation)
 6. Run what you want. (Same as the online installation)
 
-## Run sample files
-### Sample01
-Full compile the gcc (==12.1.0) and its dependent libraries and install them in the `cpm_env/local` directroy
+## Quick start
+1. Initialization
+   ```
+   git clone git@github.com:admiswalker/cpm.git
+   cd cpm
+   make
+   ```
+2. Build CPM sample environment
+   - Sample01:  
+     Full compile the gcc (==12.1.0) and its dependent libraries and install them in the `cpm_env/local` directory
+     ```
+     cpm/clean_cpm_env.sh
+     cpm/exe -p sample/packages_cpm_01.txt # full compiling the gcc 12.1.0 and its dependent libraries
+     source cpm_env/local/set_env.sh # activating the cpm_env
+     gcc --version
+     ```
+   - Sample02:  
+     Full compile the gcc (==12.1.0) and use archive files of its dependent libraries and install them in the `cpm_env/local` directory
+     ```
+     cpm/clean_cpm_env.sh
+     cpm/exe -p sample/packages_cpm_02.txt # full compiling the gcc 12.1.0
+     source cpm_env/local/set_env.sh # activating the cpm_env
+     gcc --version
+     ```
+   - Sample03a:  
+     Install gcc (==12.1.0), cmake (==3.\*.\*) and googletest (==1.\*.\*) in the `cpm_env/local` directory using archive files.
+     ```
+     cpm/clean_cpm_env.sh
+     cpm/exe -p sample/packages_cpm_04.txt
+     source cpm_env/local/set_env.sh
+     gcc --version
+     ```
+   - Sample04:  
+     Install gcc (==12.1.0) and opencv (==4.5.5) in the `cpm_env/local` directory using archive files.
+     ```
+     cpm/clean_cpm_env.sh
+     cpm/exe -p sample/packages_cpm_04.txt
+     source cpm_env/local/set_env.sh
+     gcc --version
+     g++ sample/main_opencv.cpp -o exe -I cpm_env/local/include/opencv4 -L cpm_env/local/lib -lopencv_dnn -lopencv_ml -lopencv_shape -lopencv_stitching -lopencv_superres -lopencv_videostab -lopencv_calib3d -lopencv_features2d -lopencv_highgui -lopencv_videoio -lopencv_photo -lopencv_imgcodecs -lopencv_video -lopencv_objdetect -lopencv_imgproc -lopencv_flann -lopencv_core
+     ./exe  # read ./sample/test.png and write ./test_out.jpg adn ./test_out.png
+     ```
+
+## CPM development
+1. Clone this repository and enter it
+   ```
+   git clone git@github.com:admiswalker/cpm.git
+   cd cpm
+   ```
+2. Edite under `cpm/main.cpp`, `cpm/src`, `cpm/main_test.cpp` and `cpm/test`
+3. Compile
+   ```
+   make
+   ```
+4. Run cpm or cpm tests
+   ```
+   cpm/exe
+   cpm/exe_test
+   ```
+   NOTE: There is no installation tests yet
+
+## File and Directory descriptions
+
+| File or directory name        | Description Origin |
+| ----------------------------- | ------------------ |
+| cpm/                          | Files that make up the CPM |
+| cpm/build_env/docker/         | Dockerfile to build gcc and generate gcc archives |
+| cpm/packages/                 | Installation scripts for the CPM packages |
+| cpm/src/                      | Source files for the CPM |
+| cpm/test/                     | Test files for the CPM |
+| cpm/Makefile                  | Makefile to build `cpm/main.cpp` and `cpm/main_test.cpp` |
+| cpm/SubStandardLibrary-SSTD--master.zip | Depending library |
+| cpm/exe                       | Entry point of the CPM. (Build from `cpm/main.cpp`) |
+| cpm/exe_test                  | Entry point of the tests. (Build from `cpm/main_test.cpp`) |
+| cpm/googletest-master.zip | Depending library |
+| cpm/main.cpp                  | Entry point of the CPM |
+| cpm/main_test.cpp             | Entry point of the tests for the functions at `cpm/src/` |
+| cpm_env/                      | Default destination path of the CPM |
+| cpm_env/archive/              | Destination directory to archive package files of installation packages with running `cpm/exe` using `a` option |
+| cpm_env/build/                | Temporary directory for build |
+| cpm_env/cache/                | Cache directory for installation files to download |
+| cpm_env/local/                | Destination directory for installation |
+| cpm_env/local_work/           | Temporary directory for installation |
+| doc/                          | Documents |
+| .git/                         | git files          |
+| LICENSE                       | License file |
+| Makefile                      | Makefile to call `cpm/Makefile` |
+| READMD.md                     | This file          |
+| packages_cpm.txt              | Packages list to install by `cpm/exe` |
+| .gitignore                    | Ignoring list not to track files on git |
+
+## Command-line operations
+### Build cpm
 ```
-cpm/clean_cpm_env.sh
-cpm/exe -p sample/packages_cpm_01.txt # full compiling the gcc 12.1.0 and its dependent libraries
-source cpm_env/local/set_env.sh # activating the cpm_env
-gcc --version
+make
 ```
-### Sample02
-Full compile the gcc (==12.1.0) and use archive files of its dependent libraries and install them in the `cpm_env/local` directroy
+### Erase builded cpm
 ```
-cpm/clean_cpm_env.sh
-cpm/exe -p sample/packages_cpm_02.txt # full compiling the gcc 12.1.0
-source cpm_env/local/set_env.sh # activating the cpm_env
-gcc --version
+make clean
 ```
-### Sample03a
-Install gcc (==12.1.0), cmake (==3.\*.\*) and googletest (==1.\*.\*) in the `cpm_env/local` directroy using archive files.
+
+### Install packages
+```bash
+cpm/exe [-a {true,false}]
+        [-b BASE_DIR_NAME]
+        [-c {true,false}]
+        [-p PATH_TO_THE_PACKAGES_CPM_TXT_FILE]
 ```
-cpm/clean_cpm_env.sh
-cpm/exe -p sample/packages_cpm_04.txt
+Detailed explanation
+```
+optional arguments:
+  -a: A flag to switch whether generagte packages archive or not. 
+      This option can take `true` or `false` and the default setting is `false`.
+  -b: Set base directory for the CPM environment. `CACHE_DIR`, `PACKS_DIR`, `BUILD_DIR`, 
+      `INST_WDIR`, `INST_PATH` and `ACV_DIR` are generated under base directory.
+      (Default setting is `./cpm_env`)
+  -c: A flag to select whether only download installation requirements to cache and not
+      installing packages or not. This option can take `true` or `false` and the default
+      setting is `false`.
+  -p: A path to the package list. The default setting is `./packages_cpm.txt`.
+```
+
+### Set environment variable
+```
 source cpm_env/local/set_env.sh
-gcc --version
 ```
-### Sample04
-Install gcc (==12.1.0) and opencv (==4.5.5) in the `cpm_env/local` directroy using archive files.
+
+### Reset path of installed packages
+```
+source cpm_env/local/init.sh
+```
+Whenever the base directory of the CPM environment changes, the user should run `cpm_env/local/init.sh` to solve the path dependency of installed packages.
+
+### Erase installed packages
+Remove directory under `cpm_env` without cache directory.
 ```
 cpm/clean_cpm_env.sh
-cpm/exe -p sample/packages_cpm_04.txt
-source cpm_env/local/set_env.sh
-gcc --version
-g++ sample/main_opencv.cpp -o exe -I cpm_env/local/include/opencv4 -L cpm_env/local/lib -lopencv_dnn -lopencv_ml -lopencv_shape -lopencv_stitching -lopencv_superres -lopencv_videostab -lopencv_calib3d -lopencv_features2d -lopencv_highgui -lopencv_videoio -lopencv_photo -lopencv_imgcodecs -lopencv_video -lopencv_objdetect -lopencv_imgproc -lopencv_flann -lopencv_core
-./exe  # read ./sample/test.png and write ./test_out.jpg adn ./test_out.png
 ```
 
 ## File descriptions and their method of construction

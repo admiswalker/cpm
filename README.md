@@ -64,7 +64,7 @@ If you don't have `sudo`, you should get the privileges, request your system adm
    IMPORT, CPM_libExample_to_IMPORT, 0.1.0, "https://github.com/admiswalker/CPM_libExample_to_IMPORT/raw/main/cpm_import/script/0.1.0/download_installation_scripts.sh";
    CPM_libExample_to_IMPORT, ==0.1.0;
    ```
-2. Install packages on `packages_cpm.txt` to your local project directory
+2. Install packages on `packages_cpm.txt` to `cpm_env/local` directory
    ```bash
    cpm/exe
    ```

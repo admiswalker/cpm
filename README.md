@@ -104,15 +104,15 @@ If you don't have `sudo`, you should get the privileges, request your system adm
    Detailed explanation
    ```
    optional arguments:
-     - -a: a flag to switch whether generagte packages archive or not. 
-           This option can take `true` or `false` and the default setting is `false`.
-     - -b: Set base directory for the CPM environment. `CACHE_DIR`, `PACKS_DIR`, `BUILD_DIR`, 
-           `INST_WDIR`, `INST_PATH` and `ACV_DIR` are generated under base directory.
-           (Default setting is `./cpm_env`)
-     - -c: a flag to select whether only download installation requirements to cache and not
-           installing packages or not. This option can take `true` or `false` and the default
-           setting is `false`.
-     - -p: a path to the package list. The default setting is `./packages_cpm.txt`.
+     -a: A flag to switch whether generagte packages archive or not. 
+         This option can take `true` or `false` and the default setting is `false`.
+     -b: Set base directory for the CPM environment. `CACHE_DIR`, `PACKS_DIR`, `BUILD_DIR`, 
+         `INST_WDIR`, `INST_PATH` and `ACV_DIR` are generated under base directory.
+         (Default setting is `./cpm_env`)
+     -c: A flag to select whether only download installation requirements to cache and not
+         installing packages or not. This option can take `true` or `false` and the default
+         setting is `false`.
+     -p: A path to the package list. The default setting is `./packages_cpm.txt`.
    ```
    Note: 
    - Whenever the base directory of the CPM environment changes, the user should run `cpm_env/local/init.sh` to solve the path dependency of installed packages.
@@ -174,7 +174,7 @@ Finally, run the CPM installation process.
 
 ## Run sample files
 ### Sample01
-Full compile the gcc (==12.1.0) and its dependent libraries and install them in the `cpm_env/local` direcotry
+Full compile the gcc (==12.1.0) and its dependent libraries and install them in the `cpm_env/local` directroy
 ```
 cpm/clean_cpm_env.sh
 cpm/exe -p sample/packages_cpm_01.txt # full compiling the gcc 12.1.0 and its dependent libraries
@@ -182,7 +182,7 @@ source cpm_env/local/set_env.sh # activating the cpm_env
 gcc --version
 ```
 ### Sample02
-Full compile the gcc (==12.1.0) and use archive files of its dependent libraries and install them in the `cpm_env/local` direcotry
+Full compile the gcc (==12.1.0) and use archive files of its dependent libraries and install them in the `cpm_env/local` directroy
 ```
 cpm/clean_cpm_env.sh
 cpm/exe -p sample/packages_cpm_02.txt # full compiling the gcc 12.1.0
@@ -190,7 +190,7 @@ source cpm_env/local/set_env.sh # activating the cpm_env
 gcc --version
 ```
 ### Sample03a
-Install gcc (==12.1.0), cmake (==3.\*.\*) and googletest (==1.\*.\*) in the `cpm_env/local` direcotry using archive files.
+Install gcc (==12.1.0), cmake (==3.\*.\*) and googletest (==1.\*.\*) in the `cpm_env/local` directroy using archive files.
 ```
 cpm/clean_cpm_env.sh
 cpm/exe -p sample/packages_cpm_04.txt
@@ -198,7 +198,7 @@ source cpm_env/local/set_env.sh
 gcc --version
 ```
 ### Sample04
-Install gcc (==12.1.0) and opencv (==4.5.5) in the `cpm_env/local` direcotry using archive files.
+Install gcc (==12.1.0) and opencv (==4.5.5) in the `cpm_env/local` directroy using archive files.
 ```
 cpm/clean_cpm_env.sh
 cpm/exe -p sample/packages_cpm_04.txt

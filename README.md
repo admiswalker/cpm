@@ -131,27 +131,11 @@ Finally, run the CPM installation process.
    make
    ```
 2. Build CPM sample environment
-   - Sample01:  
-     Full compile the gcc (==12.1.0) and its dependent libraries and install them in the `cpm_env/local` directory
-     ```
-     cpm/clean_cpm_env.sh
-     cpm/exe -p sample/packages_cpm_01.txt # full compiling the gcc 12.1.0 and its dependent libraries
-     source cpm_env/local/set_env.sh # activating the cpm_env
-     gcc --version
-     ```
-   - Sample02:  
-     Full compile the gcc (==12.1.0) and use archive files of its dependent libraries and install them in the `cpm_env/local` directory
-     ```
-     cpm/clean_cpm_env.sh
-     cpm/exe -p sample/packages_cpm_02.txt # full compiling the gcc 12.1.0
-     source cpm_env/local/set_env.sh # activating the cpm_env
-     gcc --version
-     ```
    - Sample03a:  
      Install gcc (==12.1.0), cmake (==3.\*.\*) and googletest (==1.\*.\*) in the `cpm_env/local` directory using archive files.
      ```
      cpm/clean_cpm_env.sh
-     cpm/exe -p sample/packages_cpm_04.txt
+     cpm/exe -p sample/packages_cpm_03a.txt
      source cpm_env/local/set_env.sh
      gcc --version
      ```

@@ -96,14 +96,24 @@ If you don't have `sudo`, you should get the privileges, request your system adm
    ```
 2. Install packages on `packages_cpm.txt` to your local project directory
    ```bash
-   cpm/exe
+   cpm/exe [-a {true,false}]
+           [-b BASE_DIR_NAME]
+           [-c {true,false}]
+           [-p PATH_TO_THE_PACKAGES_CPM_TXT_FILE]
    ```
-   Options:
-   - -a: a flag to switch whether generagte packages archive or not. This option can take `true` or `false` and the default setting is `false`.
-   - -b: Set base directory for the CPM environment. `CACHE_DIR`, `PACKS_DIR`, `BUILD_DIR`, `INST_WDIR`, `INST_PATH` and `ACV_DIR` are generated under base directory. (Default setting is `./cpm_env`)
-   - -c: a flag to select whether only download installation requirements to cache and not installing packages or not. This option can take `true` or `false` and the default setting is `false`.
-   - -p: a path to the package list. The default setting is `./packages_cpm.txt`.
-   
+   Detailed explanation
+   ```
+   optional arguments:
+     - -a: a flag to switch whether generagte packages archive or not. 
+           This option can take `true` or `false` and the default setting is `false`.
+     - -b: Set base directory for the CPM environment. `CACHE_DIR`, `PACKS_DIR`, `BUILD_DIR`, 
+           `INST_WDIR`, `INST_PATH` and `ACV_DIR` are generated under base directory.
+           (Default setting is `./cpm_env`)
+     - -c: a flag to select whether only download installation requirements to cache and not
+           installing packages or not. This option can take `true` or `false` and the default
+           setting is `false`.
+     - -p: a path to the package list. The default setting is `./packages_cpm.txt`.
+   ```
    Note: 
    - Whenever the base directory of the CPM environment changes, the user should run `cpm_env/local/init.sh` to solve the path dependency of installed packages.
 3. Set environmental variables
@@ -161,6 +171,42 @@ Finally, run the CPM installation process.
 4. Install packages on `packages_cpm.txt` to your local project directory. (Same as the online installation)  
 5. Set environmental variables. (Same as the online installation)
 6. Run what you want. (Same as the online installation)
+
+## Run sample files
+### Sample01
+Full compile the gcc (==12.1.0) and its dependent libraries and install them in the `cpm_env/local` direcotry
+```
+cpm/clean_cpm_env.sh
+cpm/exe -p sample/packages_cpm_01.txt # full compiling the gcc 12.1.0 and its dependent libraries
+source cpm_env/local/set_env.sh # activating the cpm_env
+gcc --version
+```
+### Sample02
+Full compile the gcc (==12.1.0) and use archive files of its dependent libraries and install them in the `cpm_env/local` direcotry
+```
+cpm/clean_cpm_env.sh
+cpm/exe -p sample/packages_cpm_02.txt # full compiling the gcc 12.1.0
+source cpm_env/local/set_env.sh # activating the cpm_env
+gcc --version
+```
+### Sample03a
+Install gcc (==12.1.0), cmake (==3.\*.\*) and googletest (==1.\*.\*) in the `cpm_env/local` direcotry using archive files.
+```
+cpm/clean_cpm_env.sh
+cpm/exe -p sample/packages_cpm_04.txt
+source cpm_env/local/set_env.sh
+gcc --version
+```
+### Sample04
+Install gcc (==12.1.0) and opencv (==4.5.5) in the `cpm_env/local` direcotry using archive files.
+```
+cpm/clean_cpm_env.sh
+cpm/exe -p sample/packages_cpm_04.txt
+source cpm_env/local/set_env.sh
+gcc --version
+g++ sample/main_opencv.cpp -o exe -I cpm_env/local/include/opencv4 -L cpm_env/local/lib -lopencv_dnn -lopencv_ml -lopencv_shape -lopencv_stitching -lopencv_superres -lopencv_videostab -lopencv_calib3d -lopencv_features2d -lopencv_highgui -lopencv_videoio -lopencv_photo -lopencv_imgcodecs -lopencv_video -lopencv_objdetect -lopencv_imgproc -lopencv_flann -lopencv_core
+./exe  # read ./sample/test.png and write ./test_out.jpg adn ./test_out.png
+```
 
 ## File descriptions and their method of construction
 - Packages file (`packages_cpm.txt`)

@@ -16,7 +16,7 @@ namespace cpm{
         const std::string INST_WDIR;
         const std::string INST_PATH;
         const std::string ACV_DIR;
-        PATH(const std::string& baseDir);
+        explicit PATH(const std::string& baseDir);
         ~PATH();
     };
     
@@ -31,6 +31,7 @@ namespace cpm{
     std::string getPath_cachePkgDir_src(const std::string& CACHE_DIR, const std::string& architecture, const std::string& libName, const std::string& ver);
     std::string getPath_buildPkgDir    (const std::string& BUILD_DIR, const std::string& architecture, const std::string& libName, const std::string& ver);
 
+    std::string getSh_init   (const class cpm::PATH& p);
     std::string getSh_dlAcv  (const std::string& packsPkg_dir);
     std::string getSh_dlSrc  (const std::string& packsPkg_dir);
     std::string getSh_instAcv(const std::string& packsPkg_dir);

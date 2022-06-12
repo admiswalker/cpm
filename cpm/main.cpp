@@ -9,6 +9,7 @@
 std::string return_set_env_cmd(const std::string& INST_PATH){
     return sstd::read(INST_PATH+"/set_env.sh");
 }
+/*
 void replace_PATH_in_laFile(const std::string& la_file_path, const std::string& SRC_PATH, const std::string& DST_PATH){
     // replace path in the '*.la' file.
     std::string cmd_r;
@@ -23,6 +24,7 @@ void replace_PATH_in_pcFile(const std::string& la_file_path, const std::string& 
     cmd_r += "find . -type f -name '*.pc' -print0 | xargs -0 sed -i 's!" + SRC_PATH + '!' + DST_PATH + "!g' > /dev/null 2>&1"; // $ find . -type f -name '*.la' -print0 | xargs -0 sed -i 's!cpm_env/local_archive!cpm_env/local!g' > /dev/null 2>&1
     sstd::system(cmd_r);
 }
+*/
 void gen_archive(const std::string& save_name, const std::string& archive_ext, const std::string& path){
     
     if      (archive_ext=="tar.xz"){ sstd::system(sstd::ssprintf("cd %s; tar -Jcf %s *", path.c_str(), save_name.c_str()));
@@ -145,37 +147,37 @@ bool install_lib(const cpm::PATH& p,
     if(TF_isInstalled){ return true; }
     sstd::mkdir(p.INST_WDIR);
     int r;
-    printf("%s\n", b_DL.c_str());
-    r = sstd::system(cmd_env + cmd_runDL); if(r!=0){ sstd::pdbg_err("download command is failed.\n"); return false; } // download to CACHE_DIR
-    printf("%s\n", e_DL.c_str());
-    printf("%s\n", b_IT.c_str());
-    r = sstd::system(cmd_env + cmd_runIT); if(r!=0){ sstd::pdbg_err("installation command is failed.\n"); return false; } // install to INST_WDIR
-    printf("%s\n", e_IT.c_str());
-    
-    std::string rtxt_path = p.INST_WDIR + "/replacement_path_for_cpm_archive.txt";
-    
-    // replace path on '*la' and 'replacement_path_for_cpm_archive.txt' file (preproc to install on INST_PATH)
-    if(sstd::fileExist(rtxt_path)){
-        std::string cmd_r;
-        
-        std::string SRC_PATH = sstd::read(rtxt_path); sstd::stripAll_ow(SRC_PATH, "\r\n");
-        std::string DST_PATH = call_path + '/' + p.INST_PATH;
-        if(c.build_env == cpm::cmd_DOCKER_ENV){ DST_PATH = sstd::read(c.build_env_path+"/docker_base_path.txt"); sstd::stripAll_ow(DST_PATH, "\r\n"); DST_PATH += '/' + p.INST_PATH; }
-        
-        replace_PATH_in_laFile(p.INST_WDIR, SRC_PATH, DST_PATH);
-        replace_PATH_in_pcFile(p.INST_WDIR, SRC_PATH, DST_PATH);
-        //replace_PATH_in_laFile(INST_WDIR+"/*.la", SRC_PATH, DST_PATH); 
-        sstd::write(rtxt_path, DST_PATH);
+    {
+        // download
+        printf("%s\n", b_DL.c_str());
+        r = sstd::system(cmd_env + cmd_runDL); if(r!=0){ sstd::pdbg_err("download command is failed.\n"); return false; } // download to CACHE_DIR
+        printf("%s\n", e_DL.c_str());
+    }
+    {
+        // init path
+        std::string cmd_init = runner + ' ' + cpm::getSh_init(p) + ' ' + options + '\n';
+        r = sstd::system(cmd_env + cmd_init); if(r!=0){ sstd::pdbg_err("init.sh is failed.\n"); return false; }
+    }
+    {
+        // install
+        printf("%s\n", b_IT.c_str());
+        r = sstd::system(cmd_env + cmd_runIT); if(r!=0){ sstd::pdbg_err("installation command is failed.\n"); return false; } // install to INST_WDIR
+        printf("%s\n", e_IT.c_str());
     }
     
     // copy file (move INST_WDIR to INST_PATH)
     std::vector<std::string> vPath = sstd::glob(p.INST_WDIR+"/*", "df");
     if(vPath.size()!=0){
-        sstd::cp(p.INST_WDIR+"/*", p.INST_PATH, "pu");
+        sstd::cp(p.INST_WDIR+"/*", p.INST_PATH, "p");
 //      sstd::mv(p.WORK_PATH+"/*", p.INST_PATH); // Not implimented yet
     }else{
         sstd::pdbg_err("CPM_INST_WDIR is empty. installation of \"%s\" (ver: %s) is faild.\n", c.libName.c_str(), ver.c_str());
         return false;
+    }
+    {
+        // init path
+        std::string cmd_init = "bash " + cpm::getSh_init(p) + ' ' + options + '\n';
+        r = sstd::system(cmd_env + cmd_init); if(r!=0){ sstd::pdbg_err("init.sh is failed.\n"); return false; }
     }
     
     TF_isInstalled = sstd::stripAll(sstd::system_stdout(cmd_env + "bash "+cpm::getSh_isInst(packsPkg_dir)), " \r\n")=="true";
@@ -184,6 +186,7 @@ bool install_lib(const cpm::PATH& p,
         return false;
     }
     if(rto.TF_genArchive && !TF_useArchive){
+        std::string rtxt_path = p.INST_WDIR + "/replacement_path_for_cpm_archive.txt";
         if((sstd::glob(p.INST_WDIR+"/*.la", "fr").size()!=0||sstd::glob(p.INST_WDIR+"/*.pc", "fr").size()!=0) && sstd::fileExist(rtxt_path)==false){
             sstd::pdbg_err("replacement_path_for_cpm_archive.txt is not found.\n");
             return false;

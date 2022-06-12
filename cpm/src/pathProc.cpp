@@ -23,6 +23,7 @@ std::string cpm::getPath_cachePkgDir_acv(const std::string& CACHE_DIR, const std
 std::string cpm::getPath_cachePkgDir_src(const std::string& CACHE_DIR, const std::string& architecture, const std::string& libName, const std::string& ver){ return CACHE_DIR + "/src/"     + architecture + '-' + libName + '-' + ver; }
 std::string cpm::getPath_buildPkgDir    (const std::string& BUILD_DIR, const std::string& architecture, const std::string& libName, const std::string& ver){ return BUILD_DIR + '/' + architecture + '-' + libName + '-' + ver; }
 
+std::string cpm::getSh_init   (const class cpm::PATH& p){ return p.INST_PATH + "/init.sh"; }
 std::string cpm::getSh_dlAcv  (const std::string& packsPkg_dir){ return packsPkg_dir + "/download_archive.sh"; }
 std::string cpm::getSh_dlSrc  (const std::string& packsPkg_dir){ return packsPkg_dir + "/download_src.sh";     }
 std::string cpm::getSh_instAcv(const std::string& packsPkg_dir){ return packsPkg_dir + "/install_archive.sh";  }

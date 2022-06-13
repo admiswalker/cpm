@@ -4,6 +4,36 @@ CPM is a toy package manager for C++, works on Ubuntu OS, without using `sudo` (
 
 NOTE: Every time CPM users should check the safety of installation scripts and packages at their own risk.
 
+## Quick installation
+### Use latest version of CPM
+To install CPM in `project_directory/cpm`, copy, past and run the following commands.
+```bash
+mkdir project_directory
+cd project_directory
+
+wget -O cpm-main.zip https://github.com/admiswalker/cpm/archive/refs/heads/main.zip
+unzip cpm-main.zip
+mv cpm-main/cpm .
+cd cpm; make; cd ..
+rm -rf cpm-main cpm-main.zip
+```
+### Use released version of CPM
+1. See https://github.com/admiswalker/cpm/releases/ and get the URL of source-code archive.
+2. Download the archive file and install it  
+   Example of `cpm-0.1.0.zip`:
+   ```bash
+   mkdir project_directory
+   cd project_directory
+   
+   CPM_VERSION='0.1.0'
+   FILE_NAME=cpm-cpm-${CPM_VERSION}
+   wget -O ${FILE_NAME}.zip https://github.com/admiswalker/cpm/archive/refs/tags/cpm-${CPM_VERSION}.zip
+   unzip ${FILE_NAME}
+   mv ${FILE_NAME}/cpm .
+   cd cpm; make; cd ..
+   rm -rf ${FILE_NAME} ${FILE_NAME}.zip
+   ```
+
 ## Initial setting
 ### Installing CPM in your project direcotry
 1. Download the CPM and enter it
@@ -123,17 +153,33 @@ Finally, run the CPM installation process.
 5. Set environmental variables. (Same as the online installation)
 6. Run what you want. (Same as the online installation)
 
-## Quick start
+## Build CPM sample environments
 1. Initialization
-   ```
+   ```bash
    git clone git@github.com:admiswalker/cpm.git
    cd cpm
    make
    ```
 2. Build CPM sample environment
+   - Sample01:  
+     Full compile the gcc (==12.1.0) and its dependent libraries and install them in the `cpm_env/local` directory
+     ```bash
+     cpm/clean_cpm_env.sh
+     cpm/exe -p sample/packages_cpm_01.txt # full compiling the gcc 12.1.0 and its dependent libraries
+     source cpm_env/local/set_env.sh # activating the cpm_env
+     gcc --version
+     ```
+   - Sample02:  
+     Full compile the gcc (==12.1.0) and use archive files of its dependent libraries and install them in the `cpm_env/local` directory
+     ```bash
+     cpm/clean_cpm_env.sh
+     cpm/exe -p sample/packages_cpm_02.txt # full compiling the gcc 12.1.0
+     source cpm_env/local/set_env.sh # activating the cpm_env
+     gcc --version
+     ```
    - Sample03a:  
      Install gcc (==12.1.0), cmake (==3.\*.\*) and googletest (==1.\*.\*) in the `cpm_env/local` directory using archive files.
-     ```
+     ```bash
      cpm/clean_cpm_env.sh
      cpm/exe -p sample/packages_cpm_03a.txt
      source cpm_env/local/set_env.sh
@@ -141,7 +187,7 @@ Finally, run the CPM installation process.
      ```
    - Sample04:  
      Install gcc (==12.1.0) and opencv (==4.5.5) in the `cpm_env/local` directory using archive files.
-     ```
+     ```bash
      cpm/clean_cpm_env.sh
      cpm/exe -p sample/packages_cpm_04.txt
      source cpm_env/local/set_env.sh
@@ -152,17 +198,17 @@ Finally, run the CPM installation process.
 
 ## CPM development
 1. Clone this repository and enter it
-   ```
+   ```bash
    git clone git@github.com:admiswalker/cpm.git
    cd cpm
    ```
 2. Edite under `cpm/main.cpp`, `cpm/src`, `cpm/main_test.cpp` and `cpm/test`
 3. Compile
-   ```
+   ```bash
    make
    ```
 4. Run cpm or cpm tests
-   ```
+   ```bash
    cpm/exe
    cpm/exe_test
    ```
@@ -200,11 +246,11 @@ Finally, run the CPM installation process.
 
 ## Command-line operations
 ### Build cpm
-```
+```bash
 make
 ```
 ### Erase builded cpm
-```
+```bash
 make clean
 ```
 
@@ -216,7 +262,7 @@ cpm/exe [-a {true,false}]
         [-p PATH_TO_THE_PACKAGES_CPM_TXT_FILE]
 ```
 Detailed explanation
-```
+```bash
 optional arguments:
   -a: A flag to switch whether generagte packages archive or not. 
       This option can take `true` or `false` and the default setting is `false`.
@@ -230,19 +276,19 @@ optional arguments:
 ```
 
 ### Set environment variable
-```
+```bash
 source cpm_env/local/set_env.sh
 ```
 
 ### Reset path of installed packages
-```
+```bash
 source cpm_env/local/init.sh
 ```
 Whenever the base directory of the CPM environment changes, the user should run `cpm_env/local/init.sh` to solve the path dependency of installed packages.
 
 ### Erase installed packages
 Remove directory under `cpm_env` without cache directory.
-```
+```bash
 cpm/clean_cpm_env.sh
 ```
 

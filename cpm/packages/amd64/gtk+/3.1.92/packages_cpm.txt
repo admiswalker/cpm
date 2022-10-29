@@ -1,0 +1,8 @@
+glib, >=2.29.14;
+atk, >=2.1.5;
+pango, >=1.29.0;
+cairo, >=1.10.0;
+
+
+//configure: error: Package requirements (glib-2.0 >= 2.29.14    atk >= 2.1.5    pango >= 1.29.0    cairo >= 1.10.0    cairo-gobject >= 1.10.0    gdk-pixbuf-2.0 >= 2.23.5) were not met:
+

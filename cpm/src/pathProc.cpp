@@ -12,6 +12,22 @@ cpm::PATH::PATH(const std::string& baseDir):
     ACV_DIR  (BASE_DIR+"/archive")
 {
 }
+cpm::PATH::PATH(const std::string& baseDir,
+                const std::string& cacheDir,
+                const std::string& packsDir,
+                const std::string& buildDir,
+                const std::string& instWDir,
+                const std::string& instPDir,
+                const std::string& acvPDir):
+    BASE_DIR(baseDir),
+    CACHE_DIR(cacheDir),
+    PACKS_DIR(packsDir),
+    BUILD_DIR(buildDir),
+    INST_WDIR(instWDir),
+    INST_PATH(instPDir),
+    ACV_DIR  (acvPDir)
+{
+}
 cpm::PATH::~PATH(){}
 
 const std::string cpm::buildin_packages_dir = "cpm/packages";

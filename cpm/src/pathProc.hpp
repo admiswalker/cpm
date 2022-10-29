@@ -17,6 +17,13 @@ namespace cpm{
         const std::string INST_PATH;
         const std::string ACV_DIR;
         explicit PATH(const std::string& baseDir);
+        explicit PATH(const std::string& baseDir,
+                      const std::string& cacheDir,
+                      const std::string& packsDir,
+                      const std::string& buildDir,
+                      const std::string& instWDir,
+                      const std::string& instPDir,
+                      const std::string& acvPDir);
         ~PATH();
     };
     

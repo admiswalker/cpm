@@ -219,15 +219,17 @@ int main(int argc, char *argv[]){
     //rto.archive_ext = "zip"; // test by zip to reduce excusion time.
     rto.TF_dl_dps2cache_only = false; // Only downloads depending files to chache directory and exits.
     std::string base_dir = cpm::baseDir_default;
+    std::string cache_dir;
     
     char c = ' ';
     for(int i=1; i<argc; ++i){
-        std::string s = argv[i]; if(s.size() < 2){ sstd::pdbg_err("Unexpectec input: %s.\n", s.c_str()); return -1; }
-        if(s[0] == '-'){ c=s[1]; continue; }
+        std::string s = argv[i];
+        if(s.size()==2 && s[0] == '-'){ c=s[1]; continue; }
         
         switch(c){
         case 'a': { rto.TF_genArchive = (sstd::strcmp(s,"true") ? true:false); break; }
         case 'b': { base_dir=s; break; }
+        case 'c': { cache_dir=s; break; }
         case 'i': { rto.TF_dl_dps2cache_only = (sstd::strcmp(s,"true") ? true:false); break; }
         case 'p': { packages_path=s; break; }
         default: { break; }
@@ -236,21 +238,21 @@ int main(int argc, char *argv[]){
     
     // Because of when using Docker, the absolute path is determined at run time.
     // Use relative path internally and convert absolute path when immediately before running scripts and commands.
-    class cpm::PATH p(base_dir);
-    std::string CACHE_DIR = p.CACHE_DIR;
-    std::string PACKS_DIR = p.PACKS_DIR;
-    std::string BUILD_DIR = p.BUILD_DIR;
-    std::string INST_WDIR = p.INST_WDIR;
-    std::string INST_PATH = p.INST_PATH;
-    std::string ACV_DIR   = p.ACV_DIR;
-    sstd::mkdir(CACHE_DIR);
-    sstd::mkdir(PACKS_DIR);
-    sstd::mkdir(BUILD_DIR);
-    sstd::mkdir(INST_WDIR);
-    sstd::mkdir(INST_PATH);
-    sstd::cp(cpm::buildin_packages_dir+"/*", PACKS_DIR);
-    sstd::cp("cpm/src/scripts/init.sh",    INST_PATH);
-    sstd::cp("cpm/src/scripts/set_env.sh", INST_PATH);
+    class cpm::PATH p(base_dir,
+                      (cache_dir.size()!=0 ? cache_dir : base_dir+"/cache"),
+                      base_dir+"/packages",
+                      base_dir+"/build",
+                      base_dir+"/local_work",
+                      base_dir+"/local",
+                      base_dir+"/archive");
+    sstd::mkdir(p.CACHE_DIR);
+    sstd::mkdir(p.PACKS_DIR);
+    sstd::mkdir(p.BUILD_DIR);
+    sstd::mkdir(p.INST_WDIR);
+    sstd::mkdir(p.INST_PATH);
+    sstd::cp(cpm::buildin_packages_dir+"/*", p.PACKS_DIR);
+    sstd::cp("cpm/src/scripts/init.sh",    p.INST_PATH);
+    sstd::cp("cpm/src/scripts/set_env.sh", p.INST_PATH);
     
     
     bool ret;

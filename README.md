@@ -258,6 +258,7 @@ make clean
 ```bash
 cpm/exe [-a {true,false}]
         [-b BASE_DIR_NAME]
+        [-c CACHE_DIR_NAME]
         [-i {true,false}]
         [-p PATH_TO_THE_PACKAGES_CPM_TXT_FILE]
 ```
@@ -266,9 +267,11 @@ Detailed explanation
 optional arguments:
   -a: A flag to switch whether generagte packages archive or not. 
       This option can take `true` or `false` and the default setting is `false`.
-  -b: Set base directory for the CPM environment. `CACHE_DIR`, `PACKS_DIR`, `BUILD_DIR`, 
+  -b: Set base directory (`BASE_DIR`) for the CPM environment. `CACHE_DIR`, `PACKS_DIR`, `BUILD_DIR`, 
       `INST_WDIR`, `INST_PATH` and `ACV_DIR` are generated under base directory.
       (Default setting is `./cpm_env`)
+  -c: Set installation cache directory (`CACHE_DIR`) for the CPM environment.
+      (Default setting is `./cpm_env/cache` or `./<BASE_DIR>/cache`)
   -i: A flag to select whether only download installation requirements to cache and not
       installing packages or not. This option can take `true` or `false` and the default
       setting is `false`.

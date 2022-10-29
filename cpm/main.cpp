@@ -228,7 +228,7 @@ int main(int argc, char *argv[]){
         switch(c){
         case 'a': { rto.TF_genArchive = (sstd::strcmp(s,"true") ? true:false); break; }
         case 'b': { base_dir=s; break; }
-        case 'c': { rto.TF_dl_dps2cache_only = (sstd::strcmp(s,"true") ? true:false); break; }
+        case 'i': { rto.TF_dl_dps2cache_only = (sstd::strcmp(s,"true") ? true:false); break; }
         case 'p': { packages_path=s; break; }
         default: { break; }
         }

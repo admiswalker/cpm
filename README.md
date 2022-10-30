@@ -267,10 +267,10 @@ Detailed explanation
 optional arguments:
   -a: A flag to switch whether generagte packages archive or not. 
       This option can take `true` or `false` and the default setting is `false`.
-  -b: Set base directory (`BASE_DIR`) for the CPM environment. `CACHE_DIR`, `PACKS_DIR`, `BUILD_DIR`, 
-      `INST_WDIR`, `INST_PATH` and `ACV_DIR` are generated under base directory.
+  -b: Set base directory (`BASE_DIR`) for the CPM environment as a relative path.
+      `CACHE_DIR`, `PACKS_DIR`, `BUILD_DIR`, `INST_WDIR`, `INST_PATH` and `ACV_DIR` are generated under base directory.
       (Default setting is `./cpm_env`)
-  -c: Set installation cache directory (`CACHE_DIR`) for the CPM environment.
+  -c: Set installation cache directory (`CACHE_DIR`) for the CPM environment as a relative path.
       (Default setting is `./cpm_env/cache` or `./<BASE_DIR>/cache`)
   -i: A flag to select whether only download installation requirements to cache and not
       installing packages or not. This option can take `true` or `false` and the default

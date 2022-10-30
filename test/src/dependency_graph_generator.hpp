@@ -1,6 +1,6 @@
 #pragma once
-#include "../src/pathProc.hpp"
-#include "../src/dependency_graph_generator.hpp"
+#include "../../cpm/src/pathProc.hpp"
+#include "../../cpm/src/dependency_graph_generator.hpp"
 
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------

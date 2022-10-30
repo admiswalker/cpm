@@ -2,8 +2,8 @@
 #include <gtest/gtest.h>
 
 
-#include "test/version_processor.hpp"
-#include "test/dependency_graph_generator.hpp"
+#include "test/src/version_processor.hpp"
+#include "test/src/dependency_graph_generator.hpp"
 
 
 int main(int argc, char *argv[]){

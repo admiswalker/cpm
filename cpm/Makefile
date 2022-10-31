@@ -16,7 +16,7 @@ CFLAGS += -Wall
 CFLAGS += -O3
 
 #------------------------------------------------------------
-# src of exe
+# source codes to notify '-include $(DEPS)' and to build
 
 DIR  = ./src/*.
 

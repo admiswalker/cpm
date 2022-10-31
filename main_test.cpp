@@ -2,8 +2,14 @@
 #include <gtest/gtest.h>
 
 
-#include "test/src/version_processor.hpp"
-#include "test/src/dependency_graph_generator.hpp"
+// src code test
+//#include "test/src/version_processor.hpp"
+//#include "test/src/dependency_graph_generator.hpp"
+
+// archive installation test
+#include "test/packages/amd64/gcc/12.1.0/archive_installation_test.hpp"
+
+// full build and installation test
 
 
 int main(int argc, char *argv[]){

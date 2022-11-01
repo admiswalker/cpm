@@ -16,8 +16,8 @@ int main(int argc, char *argv[]){
     printf("\n");
     printf("+---------------------------------------------------+\n");
     printf("|                                                   |\n");
-    printf("|      Welcome to the test codes of                 |\n");
-    printf("|                 Cpp Package Manager (CPM) !       |\n");
+    printf("|      Welcome to The Test Codes of                 |\n");
+    printf("|             The Cpp Package Manager (CPM) !       |\n");
     printf("|                                                   |\n");
     printf("+---------------------------------------------------+\n");
     printf("\n");

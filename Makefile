@@ -18,7 +18,7 @@ CFLAGS += -O3
 #------------------------------------------------------------
 # source codes to notify '-include $(DEPS)' and to build
 
-DIR  = ./test/test_tools/*.
+DIR  = test/test_tools/*.
 
 #------------------------------------------------------------
 
@@ -52,14 +52,14 @@ LIB_ALL += $(LIB_GOOGLETEST)
 TARGET_all = FORCE_MAKEALL
 $(TARGET_all): $(LIB_ALL) $(TARGET_t)
 	@echo "maked all"
-$(TARGET_t): $(LIB_ALL) $(SRC_t)
+$(TARGET_t): $(LIB_ALL) $(SRC_t) $(OBJS)
 	@echo ""
 	@echo "------------------------------------------------------------"
 	@echo "TARGET: \n$@\n"
 	@echo "SRCS_t: \n$<\n"
 	@echo "CFLAGS: \n$(CFLAGS)"
 	@echo "------------------------------------------------------------"
-	$(CXX) -o $@ $(SRC_t) $(CPM_OBJS) $(CFLAGS)
+	$(CXX) -o $@ $(SRC_t) $(CPM_OBJS) $(OBJS) $(CFLAGS)
 	@echo ""
 
 

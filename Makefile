@@ -41,7 +41,8 @@ CPM_OBJS     = $(wildcard $(CPM_OBJSDIR))
 
 # when you need to check the change of files in lib, you need to change file name to a not-existing name like "FORCE_XXX".
 #LIB_SSTD = FORCE_SSTD
-LIB_CPM = ./cpm/exe
+LIB_CPM = FORCE_CPM
+#LIB_CPM = ./cpm/exe
 LIB_GOOGLETEST = ./googletest-master/build/lib/libgtest.a
 LIB_ALL += $(LIB_CPM)
 LIB_ALL += $(LIB_GOOGLETEST)
@@ -63,13 +64,13 @@ $(TARGET_t): $(LIB_ALL) $(SRC_t)
 
 
 # 各ファイルの分割コンパイル
-$(TEMP_DIR)/%.o: %.cpp $(LIB_CPM)
+$(TEMP_DIR)/%.o: %.cpp
 	@echo ""
 	mkdir -p $(dir $@);\
 	$(CXX) $< -c -o $@ $(CFLAGS)
 
 # 「-include $(DEPS)」により，必要な部分のみ分割で再コンパイルを行うため，依存関係を記した *.d ファイルに生成する
-$(TEMP_DIR)/%.d: %.cpp $(LIB_CPM)
+$(TEMP_DIR)/%.d: %.cpp
 	@echo ""
 	mkdir -p $(dir $@);\
 	$(CXX) $< -MM $(CFLAGS)\

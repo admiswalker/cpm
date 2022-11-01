@@ -206,7 +206,7 @@ int main(int argc, char *argv[]){
     printf("\n");
     printf("+---------------------------------------------------+\n");
     printf("|                                                   |\n");
-    printf("|      Welcome to C++ Package Manager (CPM) !       |\n");
+    printf("|     Welcome to The C++ Package Manager (CPM) !    |\n");
     printf("|                                                   |\n");
     printf("+---------------------------------------------------+\n");
     printf("\n");

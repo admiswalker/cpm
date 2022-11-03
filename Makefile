@@ -31,7 +31,7 @@ HEADS    = $(wildcard $(HDIR))
 HPPDIR   = $(patsubst %., %.hpp, $(DIR))
 HEADppS  = $(wildcard $(HPPDIR))
 
-TEMP_DIR = tmpMake
+TEMP_DIR = tmp/make
 OBJS     = $(addprefix $(TEMP_DIR)/, $(patsubst %.cpp, %.o, $(SRCS)))
 DEPS     = $(addprefix $(TEMP_DIR)/, $(patsubst %.cpp, %.d, $(SRCS)))
 

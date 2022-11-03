@@ -1,9 +1,8 @@
 exe
 exe_test
-tmpMake/*
+tmp/*
 googletest-master/*
 cpm_env/*
-cpm_tmp/*
 cpm/tmpMake/*
 cpm/sstd/*
 

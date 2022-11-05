@@ -18,6 +18,7 @@ sstd, ==2.0.1;
 
     cmd_inst += " -a true"; // add: archive option
     std::string ret = sstd::system_stdout(cmd_inst); // installation
+    if(CPM_TEST_PRINT_INST_PROCESS){ sstd::printn(ret); }
 
     std::string lib_test_code = R"(
 #include <stdio.h>
@@ -41,6 +42,7 @@ gcc -o exe main.cpp -lstdc++ -lsstd
     
     std::string cmd_test = "bash "+test_script_path+";\n";
     std::string test_ret = sstd::system_stdout(cmd_test); // run test script
+    if(CPM_TEST_PRINT_TEST_PROCESS){ sstd::printn(ret); }
     
     std::string test_ret_ans;
     test_ret_ans += "\"hello sstd\"\n";

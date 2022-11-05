@@ -1,6 +1,8 @@
 #include <sstd/sstd.hpp>
 #include <gtest/gtest.h>
 
+#define CPM_TEST_PRINT_INST_PROCESS true
+#define CPM_TEST_PRINT_TEST_PROCESS true
 
 // src code test
 //#include "test/src/version_processor.hpp"
@@ -10,7 +12,7 @@
 #include "test/packages/amd64/sstd/build_and_gen_archive_test.cpp"
 
 // archive installation test
-#include "test/packages/amd64/gcc/archive_installation_test.hpp"
+//#include "test/packages/amd64/gcc/archive_installation_test.hpp"
 
 // full build and installation test
 

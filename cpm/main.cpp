@@ -28,13 +28,13 @@ void replace_PATH_in_pcFile(const std::string& la_file_path, const std::string& 
 void gen_archive(const std::string& save_name, const std::string& archive_ext, const std::string& path){
     
     if      (archive_ext=="tar.xz"){ sstd::system(sstd::ssprintf("cd %s; tar -Jcf %s *", path.c_str(), save_name.c_str()));
-    }else if(archive_ext=="zip"   ){ sstd::system(sstd::ssprintf("cd %s; zip -rq %s *", path.c_str(), save_name.c_str()));
+    }else if(archive_ext=="zip"   ){ sstd::system(sstd::ssprintf("cd %s; zip -rq %s *", path.c_str(), save_name.c_str())); // test by zip to reduce excusion time.
     }else                          { sstd::pdbg_err("Unexpected extension.");
     }
     
     uint64 size = std::stoull(sstd::system_stdout(sstd::ssprintf("ls -al %s | cut -d ' ' -f 5", save_name.c_str())));
     if(size >= 104857600){
-        sstd::system(sstd::ssprintf("split -d -b 100m %s %s-", save_name.c_str(), save_name.c_str())); // test by zip to reduce excusion time.
+        sstd::system(sstd::ssprintf("split -d -b 100m %s %s-", save_name.c_str(), save_name.c_str()));
     }
     return;
 }
@@ -43,8 +43,9 @@ void gen_hashFile(const std::string& ACV_DIR, const std::string& save_name){
     
     std::vector<std::string> vPath = sstd::glob(ACV_DIR+R"(/*)");
     for(uint i=0; i<vPath.size(); ++i){
-        w_str += sstd::system_stdout("cd "+ACV_DIR+"; sha256sum "+&vPath[i][ACV_DIR.size()+1]);
+        w_str += sstd::sha256sum(vPath[i]) + "  " + sstd::getFileName(vPath[i].c_str()) + "\n";
     }
+    
     sstd::write(save_name, w_str);
     return;
 }

@@ -6,6 +6,9 @@
 //#include "test/src/version_processor.hpp"
 //#include "test/src/dependency_graph_generator.hpp"
 
+// build and gen archive test
+#include "test/packages/amd64/sstd/build_and_gen_archive_test.cpp"
+
 // archive installation test
 #include "test/packages/amd64/gcc/archive_installation_test.hpp"
 
